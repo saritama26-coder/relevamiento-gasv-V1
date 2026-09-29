@@ -1,1 +1,415 @@
-PLACEHOLDER
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#17365d">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Relevamiento GASV">
+  <link rel="manifest" href="./manifest-mobile.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./icons/favicon-32.png">
+  <title>Relevamiento Arquitectónico — GASV Móvil</title>
+  <style>
+    #mobile-tools {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 8px; padding: max(6px, env(safe-area-inset-top)) 10px 6px;
+      background: rgba(23,54,93,.96); color: #fff;
+      font: 600 13px system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    #connection-badge { white-space: nowrap; }
+    #install-app {
+      border: 0; border-radius: 8px; padding: 8px 12px; min-height: 40px;
+      background: #fff; color: #17365d; font-weight: 700;
+    }
+    #install-app[hidden] { display:none; }
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+    #app-frame {
+      display: block;
+      width: 100%;
+      height: 100dvh;
+      min-height: 100dvh;
+      border: 0;
+      background: #fff;
+    }
+    #status {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 14px;
+      text-align: center;
+      z-index: 10;
+    }
+    #status.hidden { display: none; }
+    #status-card {
+      width: min(92vw, 420px);
+      padding: 24px;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 8px 32px rgba(15, 23, 42, .08);
+    }
+    #status-title {
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 800;
+      color: #17365d;
+    }
+    #status-text { margin: 0; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div id="mobile-tools"><span id="connection-badge">● En línea</span><button id="install-app" hidden>Instalar app</button></div>
+  <div id="status">
+    <div id="status-card">
+      <h1 id="status-title">Relevamiento Arquitectónico</h1>
+      <p id="status-text">Cargando versión móvil…</p>
+    </div>
+  </div>
+
+  <!-- Mantiene la aplicación original intacta. -->
+  <iframe id="app-frame" title="Relevamiento Arquitectónico" src="./index.html"></iframe>
+
+  <script>
+    (() => {
+      const frame = document.getElementById("app-frame");
+      const status = document.getElementById("status");
+      const badge = document.getElementById("connection-badge");
+      const installButton = document.getElementById("install-app");
+      let deferredInstallPrompt = null;
+
+      function updateConnection() {
+        badge.textContent = navigator.onLine ? "● En línea" : "● Sin conexión";
+      }
+      updateConnection();
+      window.addEventListener("online", updateConnection);
+      window.addEventListener("offline", updateConnection);
+
+      window.addEventListener("beforeinstallprompt", (event) => {
+        event.preventDefault();
+        deferredInstallPrompt = event;
+        installButton.hidden = false;
+      });
+      installButton.addEventListener("click", async () => {
+        if (!deferredInstallPrompt) return;
+        deferredInstallPrompt.prompt();
+        await deferredInstallPrompt.userChoice;
+        deferredInstallPrompt = null;
+        installButton.hidden = true;
+      });
+      window.addEventListener("appinstalled", () => {
+        installButton.hidden = true;
+      });
+      if (/iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone) {
+        installButton.hidden = false;
+        installButton.textContent = "Cómo instalar";
+        installButton.addEventListener("click", () => alert("En Safari: pulsa Compartir → Añadir a pantalla de inicio → Añadir."), {once:true});
+      }
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      }
+
+      const mobileCss = `
+        :root {
+          --mobile-gap: 10px;
+          --mobile-pad: 12px;
+        }
+
+        html, body {
+          overscroll-behavior-x: none !important;
+          max-width: 100% !important;
+          overflow-x: hidden !important;
+          background: #f8fafc !important;
+          -webkit-text-size-adjust: 100% !important;
+        }
+
+        body {
+          padding-top: 52px !important;
+          padding-bottom: env(safe-area-inset-bottom) !important;
+        }
+
+        #root {
+          width: 100% !important;
+          max-width: 100% !important;
+          overflow-x: hidden !important;
+        }
+
+        button, input, select, textarea {
+          font-size: 16px !important;
+        }
+
+        button {
+          min-height: 44px !important;
+          touch-action: manipulation !important;
+        }
+
+        input, select, textarea {
+          min-height: 44px !important;
+          border-radius: 10px !important;
+        }
+
+        textarea {
+          min-height: 88px !important;
+        }
+
+        .grid {
+          gap: var(--mobile-gap) !important;
+        }
+
+        [class~="md:grid-cols-2"],
+        [class~="md:grid-cols-3"],
+        [class~="md:grid-cols-4"],
+        [class~="md:grid-cols-6"] {
+          grid-template-columns: 1fr !important;
+        }
+
+        [class~="md:col-span-2"],
+        [class~="md:col-span-3"],
+        [class~="md:col-span-4"] {
+          grid-column: auto !important;
+        }
+
+        [class~="md:flex-row"] {
+          flex-direction: column !important;
+        }
+
+        [class~="md:w-64"] {
+          width: 100% !important;
+        }
+
+        .overflow-x-auto {
+          overflow-x: auto !important;
+          -webkit-overflow-scrolling: touch !important;
+          scrollbar-width: thin !important;
+          max-width: 100% !important;
+        }
+
+        table {
+          min-width: 760px !important;
+          font-size: 13px !important;
+        }
+
+        th, td {
+          white-space: nowrap !important;
+        }
+
+        th {
+          position: sticky !important;
+          top: 0 !important;
+          z-index: 2 !important;
+        }
+
+        .print-card {
+          padding: 12px !important;
+          border-radius: 14px !important;
+        }
+
+        .print-card h2 {
+          font-size: 18px !important;
+          line-height: 1.25 !important;
+        }
+
+        .p-6 {
+          padding: var(--mobile-pad) !important;
+        }
+
+        .p-5 {
+          padding: 14px !important;
+        }
+
+        .p-4 {
+          padding: 12px !important;
+        }
+
+        .gap-4 {
+          gap: 10px !important;
+        }
+
+        .gap-3 {
+          gap: 8px !important;
+        }
+
+        .space-y-6 > :not([hidden]) ~ :not([hidden]),
+        .space-y-4 > :not([hidden]) ~ :not([hidden]),
+        .space-y-3 > :not([hidden]) ~ :not([hidden]) {
+          margin-top: 10px !important;
+        }
+
+        /* Barra superior y botones de gestión */
+        .flex {
+          max-width: 100% !important;
+        }
+
+        /* Modales */
+        .fixed.inset-0 {
+          padding: 8px !important;
+          align-items: flex-start !important;
+        }
+
+        .fixed.inset-0 > div {
+          max-height: calc(100dvh - 16px) !important;
+          border-radius: 14px !important;
+        }
+
+        /* El manual usa navegación horizontal en móvil */
+        [class~="md:flex-col"] {
+          flex-direction: row !important;
+          overflow-x: auto !important;
+        }
+
+        [class~="md:min-w-0"] {
+          min-width: 200px !important;
+        }
+
+        /* Fotos: dos columnas cuando el ancho lo permite, una si no */
+        img {
+          max-width: 100% !important;
+        }
+
+        /* Menor densidad visual en listados */
+        .text-2xl {
+          font-size: 20px !important;
+        }
+
+        .text-xl {
+          font-size: 18px !important;
+        }
+
+        /* Evita que textos largos ensanchen la pantalla */
+        p, h1, h2, h3, h4, label, span, div, td, th {
+          overflow-wrap: break-word;
+          word-break: normal;
+        }
+
+        button {
+          word-break: normal !important;
+          overflow-wrap: normal !important;
+          hyphens: none !important;
+          line-height: 1.2 !important;
+        }
+
+        /* Encabezado: logo + título arriba, botones en cuadrícula debajo */
+        [class~="sticky"][class~="top-0"][class~="z-50"] {
+          position: relative !important;
+          flex-direction: column !important;
+          align-items: stretch !important;
+          gap: 12px !important;
+          padding: 12px !important;
+        }
+
+        [class~="sticky"][class~="top-0"][class~="z-50"] > div:first-child {
+          min-width: 0 !important;
+        }
+
+        [class~="sticky"][class~="top-0"][class~="z-50"] > div:first-child {
+          flex-direction: column !important;
+          align-items: flex-start !important;
+          gap: 8px !important;
+        }
+
+        [class~="sticky"][class~="top-0"][class~="z-50"] > div:first-child > * {
+          margin-left: 0 !important;
+        }
+
+        [class~="sticky"][class~="top-0"][class~="z-50"] > div:first-child > div {
+          min-width: 0 !important;
+          border-left: 0 !important;
+          padding-left: 0 !important;
+        }
+
+        /* Mensajes de tabla vacía visibles al inicio de la fila */
+        td[colspan] {
+          white-space: normal !important;
+          text-align: left !important;
+        }
+
+        [class~="sticky"][class~="top-0"][class~="z-50"] h1 {
+          font-size: 16px !important;
+          line-height: 1.25 !important;
+          letter-spacing: .02em !important;
+        }
+
+        [class~="sticky"][class~="top-0"][class~="z-50"] > div:last-child {
+          display: grid !important;
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+          gap: 8px !important;
+          width: 100% !important;
+        }
+
+        [class~="sticky"][class~="top-0"][class~="z-50"] > div:last-child > button {
+          width: 100% !important;
+          justify-content: center !important;
+          text-align: center !important;
+          padding: 8px 6px !important;
+        }
+
+        /* Filas título + acciones: se reacomodan en varias líneas */
+        [class~="justify-between"] {
+          flex-wrap: wrap !important;
+          row-gap: 8px !important;
+        }
+
+        div[class~="flex"][class~="gap-2"],
+        div[class~="flex"][class~="space-x-2"] {
+          flex-wrap: wrap !important;
+        }
+
+        @media (min-width: 520px) and (max-width: 767px) {
+          [class~="grid-cols-1"][class~="md:grid-cols-2"] {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+          }
+        }
+      `;
+
+      function injectMobileStyles() {
+        try {
+          const doc = frame.contentDocument;
+          if (!doc || !doc.head) return;
+          const old = doc.getElementById("gasv-mobile-overrides");
+          if (old) old.remove();
+
+          const style = doc.createElement("style");
+          style.id = "gasv-mobile-overrides";
+          style.textContent = mobileCss;
+          doc.head.appendChild(style);
+
+          // Mejora la experiencia táctil en controles nativos.
+          doc.addEventListener("touchstart", () => {}, { passive: true });
+          status.classList.add("hidden");
+        } catch (error) {
+          document.getElementById("status-text").textContent =
+            "La aplicación se cargó, pero el navegador impidió aplicar los ajustes móviles automáticamente.";
+        }
+      }
+
+      frame.addEventListener("load", () => {
+        injectMobileStyles();
+        // Reaplica por si React vuelve a reconstruir parte del DOM.
+        setTimeout(injectMobileStyles, 400);
+        setTimeout(injectMobileStyles, 1500);
+      });
+
+      window.addEventListener("resize", injectMobileStyles);
+      document.documentElement.style.setProperty("--gasv-mobile", "1");
+    })();
+  </script>
+</body>
+</html>
