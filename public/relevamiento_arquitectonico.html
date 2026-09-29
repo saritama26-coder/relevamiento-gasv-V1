@@ -689,7 +689,177 @@ Error generating stack: `+l.message+`
       </section>
       ${selected.map((f,i)=>fichaHtml(f,state,i,selected.length)).join('')}
       <div style="margin-top:14px;border-top:1px solid #17365d;padding-top:6px;font-size:7pt;color:#64748b">Documento generado por Relevamiento Arquitectónico GASV · Arq. Gabriel Saritama V. · ${esc(new Date().toLocaleString('es-EC'))}</div>
-      </div></body></html>`;
+      </div>
+<style id="gasv-force-writing-ui">
+.gasv-force-assistant{margin:6px 0 7px;padding:8px 10px;border:1px solid #cbd8e8;border-left:3px solid #17365d;border-radius:7px;background:#f8fafc;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.gasv-force-assistant .gfa-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.gasv-force-assistant .gfa-title{font-size:11px;font-weight:800;color:#17365d}
+.gasv-force-assistant .gfa-count{font-size:10px;color:#64748b;margin-left:7px}
+.gasv-force-assistant .gfa-actions{display:flex;gap:5px;flex-wrap:wrap}
+.gasv-force-assistant .gfa-actions button{border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:5px;padding:5px 9px;font-size:10px;font-weight:800;line-height:1.1;min-height:30px}
+.gasv-force-assistant .gfa-actions button:first-child{background:#17365d;color:#fff;border-color:#17365d}
+.gasv-force-assistant .gfa-actions button:disabled{opacity:.45;cursor:not-allowed}
+.gasv-force-assistant .gfa-status{margin-top:5px;font-size:9.5px;color:#64748b}
+.gasv-force-assistant .gfa-status.ok{color:#166534;font-weight:800}
+.gasv-force-assistant .gfa-status.over{color:#b91c1c;font-weight:800}
+</style>
+<script id="GASV_FORCE_WRITING_ASSISTANT_V2">
+(function(){
+"use strict";
+if(window.__GASV_FORCE_WRITING_ASSISTANT_V2__)return;
+window.__GASV_FORCE_WRITING_ASSISTANT_V2__=true;
+
+function norm(v){return String(v==null?"":v).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();}
+function txt(e){return String(e&&e.textContent||"").trim();}
+function clean(v){return String(v==null?"":v).trim();}
+function words(v){return clean(v).split(/\s+/).filter(Boolean).length;}
+function limit(v){var a=clean(v).split(/\s+/).filter(Boolean);return a.length<=100?a.join(" "):a.slice(0,100).join(" ").replace(/[;,.:\s]+$/,"")+".");}
+function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m];});}
+function section(title){
+  var hs=Array.from(document.querySelectorAll("h2"));
+  var h=hs.find(function(x){return norm(txt(x))===norm(title);});
+  return h&&h.closest(".print-card")||null;
+}
+function field(sec,label){
+  if(!sec)return null;
+  var ls=Array.from(sec.querySelectorAll("label"));
+  var l=ls.find(function(x){return norm(txt(x))===norm(label);});
+  return l&&l.parentElement&&l.parentElement.querySelector("input,select,textarea")||null;
+}
+function currentFields(){
+  var sec=section("1. Datos generales");
+  return {
+    code:clean(field(sec,"Código")&&field(sec,"Código").value),
+    amb:clean(field(sec,"Ambiente / Área")&&field(sec,"Ambiente / Área").value)
+  };
+}
+async function state(){
+  try{
+    var s=window.__GASV_STORAGE__;
+    if(!s||typeof s.getItem!=="function")return{fichas:[],projectData:{}};
+    return{
+      fichas:await s.getItem("fichas")||[],
+      projectData:await s.getItem("projectData")||{}
+    };
+  }catch(e){return{fichas:[],projectData:{}};}
+}
+function currentFicha(st){
+  var k=currentFields();
+  return (st.fichas||[]).find(function(f){return k.code&&clean(f.codigo)===k.code;}) ||
+         (st.fichas||[]).find(function(f){return k.amb&&clean(f.ambiente)===k.amb;}) || {};
+}
+function rowValues(a,key1,key2){
+  return Array.from(new Set((Array.isArray(a)?a:[]).map(function(r){return clean(r&&r[key1])||clean(r&&r[key2]);}).filter(Boolean)));
+}
+function diagnosis(st){
+  var f=currentFicha(st),p=Array.isArray(f.pat)?f.pat.filter(Boolean):[],q=Array.isArray(f.cuan)?f.cuan.filter(Boolean):[],out=[];
+  if(clean(f.diagestado))out.push("El estado general registrado es "+clean(f.diagestado).toLowerCase()+".");
+  if(p.length){
+    var el=rowValues(p,"elemento",""),pa=rowValues(p,"patologia",""),sv=rowValues(p,"severidad","");
+    var s="Se registran "+p.length+" patología"+(p.length===1?"":"s");
+    if(el.length)s+=" en "+el.slice(0,3).join(", ");
+    if(pa.length)s+="; corresponden a "+pa.slice(0,3).join(", ").toLowerCase();
+    out.push(s+".");
+    if(sv.length)out.push("Las severidades consignadas son "+sv.slice(0,4).join(", ").toLowerCase()+".");
+    var iv=rowValues(p,"intervencion","");if(iv.length)out.push("Las intervenciones registradas incluyen "+iv.slice(0,3).join(", ").toLowerCase()+".");
+  }else out.push("No existen registros de patologías en la ficha.");
+  if(q.length)out.push("Se registran "+q.length+" actividades de cuantificación.");
+  if(clean(f.interv))out.push("La intervención general seleccionada es "+clean(f.interv).toLowerCase()+".");
+  return limit(out.join(" "));
+}
+function dimensional(){
+  var sec=section("2. Levantamiento dimensional"),f=currentFields(),out=[];
+  var geo=clean(field(sec,"Tipo de geometría")&&field(sec,"Tipo de geometría").value);
+  var l=clean(field(sec,"Largo (m)")&&field(sec,"Largo (m)").value);
+  var a=clean(field(sec,"Ancho (m)")&&field(sec,"Ancho (m)").value);
+  var h=clean(field(sec,"Altura libre (m)")&&field(sec,"Altura libre (m)").value);
+  var ar=clean(field(sec,"Área registrada (m²)")&&field(sec,"Área registrada (m²)").value);
+  var ad=clean(field(sec,"Área del ambiente (m²)")&&field(sec,"Área del ambiente (m²)").value);
+  var per=clean(field(sec,"Perímetro calculado (m)")&&field(sec,"Perímetro calculado (m)").value);
+  var est=clean(field(sec,"Estado general")&&field(sec,"Estado general").value);
+  if(geo)out.push("El ambiente presenta una geometría "+(norm(geo)==="irregular"?"irregular":"regular"));
+  if(norm(geo)==="irregular"&&ad)out.push("con un área registrada de "+ad+" m²");
+  if(norm(geo)!=="irregular"&&l&&a)out.push("con dimensiones registradas de "+l+" m de largo por "+a+" m de ancho");
+  if(h)out.push("altura libre de "+h+" m");
+  if(ar)out.push("área de "+ar+" m²");
+  if(per)out.push("perímetro de "+per+" m");
+  var t=out.length?out.join(", ")+".":"";
+  if(est)t+=(t?" ":"")+"Estado general: "+est.toLowerCase()+".";
+  return limit(t);
+}
+function general(st){
+  var f=currentFicha(st),p=Array.isArray(f.pat)?f.pat.filter(Boolean):[],q=Array.isArray(f.cuan)?f.cuan.filter(Boolean):[],cons=Array.isArray(f.cons)?f.cons.filter(Boolean):[],eq=Array.isArray(f.equip)?f.equip.filter(Boolean):[],inst=[].concat(f.elec||[],f.hidro||[]).filter(Boolean),parts=[];
+  var ar=f.geometria==="irregular"?clean(f.areaDirecta):(clean(f.largo)&&clean(f.ancho)?(Number(f.largo)*Number(f.ancho)).toFixed(2):"");
+  if(ar)parts.push("área registrada de "+ar+" m²");
+  if(cons.length||eq.length||inst.length)parts.push((cons.length+eq.length+inst.length)+" registros de elementos e instalaciones");
+  if(p.length)parts.push(p.length+" patologías o deficiencias registradas");
+  if(q.length)parts.push(q.length+" actividades de cuantificación");
+  if(Array.isArray(f.fotos)&&f.fotos.length)parts.push(f.fotos.length+" fotografías");
+  var t=parts.length?"La ficha registra "+parts.join(", ")+".":"La ficha contiene los registros disponibles del ambiente.";
+  if(clean(f.diagestado))t+=" El estado general consignado es "+clean(f.diagestado).toLowerCase()+".";
+  return limit(t+" La síntesis corresponde exclusivamente a los datos registrados en la ficha.");
+}
+function setValue(el,v){
+  var setter=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,"value")&&Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,"value").set;
+  setter?setter.call(el,v):el.value=v;
+  el.dispatchEvent(new Event("input",{bubbles:true}));
+  el.dispatchEvent(new Event("change",{bubbles:true}));
+}
+function copy(v){
+  if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(v).then(function(){return true;}).catch(function(){return false;});
+  return Promise.resolve(false);
+}
+function mount(sec,title,kind,label){
+  if(!sec)return;
+  var ta=label?field(sec,label):null;
+  if(!ta)ta=Array.from(sec.querySelectorAll("textarea")).pop();
+  if(!ta)return;
+  Array.from(sec.querySelectorAll(".gasv-writing-assistant")).forEach(function(x){x.style.display="none";});
+  var host=ta.parentElement;
+  if(!host)return;
+  var wrap=host.querySelector('[data-gasv-force-kind="'+kind+'"]');
+  if(!wrap){
+    wrap=document.createElement("div");
+    wrap.className="gasv-force-assistant";
+    wrap.setAttribute("data-gasv-force-kind",kind);
+    wrap.innerHTML='<div class="gfa-top"><div><span class="gfa-title">'+esc(title)+'</span><span class="gfa-count" data-gfa-count>0 / 100 palabras</span></div><div class="gfa-actions"><button type="button" data-gfa-generate>Generar</button><button type="button" data-gfa-regenerate disabled>Regenerar</button><button type="button" data-gfa-copy disabled>Copiar</button><button type="button" data-gfa-clear>Limpiar</button></div></div><div class="gfa-status" data-gfa-status>0 / 100 palabras · ✓ Dentro del límite</div>';
+    ta.insertAdjacentElement("beforebegin",wrap);
+    var count=wrap.querySelector("[data-gfa-count]"),status=wrap.querySelector("[data-gfa-status]"),gen=wrap.querySelector("[data-gfa-generate]"),regen=wrap.querySelector("[data-gfa-regenerate]"),cp=wrap.querySelector("[data-gfa-copy]"),cl=wrap.querySelector("[data-gfa-clear]");
+    function update(){
+      var v=ta.value||"",w=words(v),over=w>100,has=clean(v)!=="";
+      count.textContent=w+" / 100 palabras";
+      status.textContent=over?"⚠ Excede 100 palabras":"✓ Dentro del límite";
+      status.className="gfa-status "+(over?"over":"ok");
+      regen.disabled=!has;cp.disabled=!has;
+    }
+    gen.addEventListener("click",async function(){
+      gen.disabled=true;
+      try{
+        var st=await state(),v=kind==="dim"?dimensional():kind==="diag"?diagnosis(st):general(st);
+        setValue(ta,v);
+      }finally{gen.disabled=false;update();}
+    });
+    regen.addEventListener("click",function(){if(!regen.disabled)gen.click();});
+    cp.addEventListener("click",async function(){if(!cp.disabled){var ok=await copy(ta.value);status.textContent=ok?"✓ Texto copiado.":"No fue posible copiar.";if(ok)setTimeout(update,1500);}});
+    cl.addEventListener("click",function(){setValue(ta,"");update();});
+    ta.addEventListener("input",update);
+  }
+  wrap.__gasvForceTextarea=ta;
+  wrap.style.display="";
+}
+function boot(){
+  mount(section("2. Levantamiento dimensional"),"Asistente de redacción técnica · Punto 2","dim","Observaciones");
+  mount(section("10. Diagnóstico preliminar"),"Asistente de redacción técnica · Punto 10","diag","Diagnóstico / criterio técnico");
+  mount(section("11. Observaciones generales"),"Asistente de redacción técnica · Punto 11","obs");
+}
+boot();
+var mo=new MutationObserver(function(){boot();});
+mo.observe(document.body,{childList:true,subtree:true});
+setInterval(boot,1000);
+})();
+</script>
+
+</body></html>`;
 
     const w=window.open('','_blank','width=1100,height=800');
     if(!w){alert('El navegador bloqueó la ventana del reporte. Habilite las ventanas emergentes para Exportar PDF.');return}
