@@ -1065,8 +1065,6 @@ export default function App() {
           />
         )}
 
-        )}
-
         {/* Offline Status Indicator */}
         <OfflineIndicator />
       </div>
