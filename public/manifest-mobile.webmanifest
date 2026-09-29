@@ -1,7 +1,7 @@
 {
-  "name": "Relevamiento Arquitectónico GASV",
-  "short_name": "GASV Móvil",
-  "description": "Relevamiento Arquitectónico GASV · SUPER V3",
+  "name": "GASV · Relevamiento de Campo",
+  "short_name": "GASV Campo",
+  "description": "Aplicación móvil para levantamiento, diagnóstico, registro fotográfico y cuantificación arquitectónica en campo.",
   "id": "/mobile_GASV_PWA_v2.html",
   "start_url": "/mobile_GASV_PWA_v2.html",
   "scope": "/",
@@ -11,6 +11,12 @@
   "theme_color": "#17365d",
   "background_color": "#17365d",
   "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
     {
       "src": "/pwa-192x192.png",
       "sizes": "192x192",
@@ -22,12 +28,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
-    },
-    {
-      "src": "/pwa-maskable-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
     }
   ]
 }
