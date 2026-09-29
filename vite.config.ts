@@ -52,14 +52,17 @@ export default defineConfig(() => {
         },
         workbox: {
           cleanupOutdatedCaches: true,
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,txt,woff,woff2}'],
+          skipWaiting: true,
+          clientsClaim: true,
+          globPatterns: ['**/*.{js,css,ico,png,svg,txt,woff,woff2}'],
+          globIgnores: ['**/index.html', '**/relevamiento_arquitectonico.html'],
           runtimeCaching: [
             {
               urlPattern: ({request}) => request.destination === 'document',
               handler: 'NetworkFirst',
               options: {
                 cacheName: 'gasv-v4-pages',
-                networkTimeoutSeconds: 3,
+                networkTimeoutSeconds: 8,
                 expiration: {maxEntries: 20, maxAgeSeconds: 86400},
                 cacheableResponse: {statuses: [0, 200]},
               },
