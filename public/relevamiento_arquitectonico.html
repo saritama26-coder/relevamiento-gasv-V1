@@ -207,15 +207,25 @@ Error generating stack: `+l.message+`
 </style>
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <meta name="gasv-version" content="4.0.0-20260929-field-2115">
     <script>
-      window.GASV_BUILD="2026-09-29T20:55:00-05:00";
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("load", function () {
-          navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" })
-            .then(function (registration) { try { registration.update(); } catch (_) {} })
-            .catch(function () {});
-        }, { once: true });
-      }
+      window.GASV_BUILD="2026-09-29T21:15:00-05:00";
+      window.GASV_VERSION="4.0.0";
+      (function(){
+        if(!("serviceWorker" in navigator)) return;
+        window.addEventListener("load", async function(){
+          try{
+            const regs=await navigator.serviceWorker.getRegistrations();
+            for(const reg of regs){try{await reg.unregister()}catch(_){}}
+            if(window.caches&&caches.keys){
+              const keys=await caches.keys();
+              await Promise.all(keys.map(k=>caches.delete(k)));
+            }
+            const reg=await navigator.serviceWorker.register("/sw.js?gasv-v4-2115", {updateViaCache:"none"});
+            try{await reg.update()}catch(_){}
+          }catch(_){}
+        }, {once:true});
+      })();
     </script>
 </head>
   <body>
