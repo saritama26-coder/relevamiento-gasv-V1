@@ -218,8 +218,30 @@ Error generating stack: `+l.message+`
 .gasv-v4-tb-version,
 .gasv-v4-tb-integrity{display:none!important}
 </style>
+    <style id="gasv-mobile-icon-toolbar-style">
+@media(max-width:1023px){
+  header:has(.gasv-toolbar-organized[data-gasv-mobile-toolbar="1"]){
+    padding-bottom:var(--gasv-mobile-toolbar-space,210px)!important;
+  }
+  .gasv-toolbar-organized[data-gasv-mobile-toolbar="1"]{
+    position:absolute!important; top:56px!important; left:8px!important; right:8px!important;
+    width:auto!important; max-width:none!important; box-sizing:border-box!important;
+    display:grid!important; grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px!important; padding:8px!important; margin:0!important;
+    background:rgba(15,23,42,.24)!important;
+    border:1px solid rgba(255,255,255,.12)!important; border-radius:10px!important;
+  }
+  .gasv-toolbar-organized[data-gasv-mobile-toolbar="1"] .gasv-v4-toolbar-btn{
+    width:100%!important; min-width:0!important; min-height:38px!important;
+    box-sizing:border-box!important; justify-content:center!important;
+    white-space:normal!important; text-align:center!important;
+  }
+  .gasv-toolbar-organized[data-gasv-mobile-toolbar="1"] .gasv-v4-tb-field{grid-column:1/-1!important;}
+}
+</style>
+    <link rel="icon" type="image/svg+xml" href="/icon.svg">
     <link rel="manifest" href="/manifest.webmanifest">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="/icon.svg">
     <meta name="gasv-version" content="4.0.0-20260929-field-2115">
     <script>
       window.GASV_BUILD="2026-09-29T21:15:00-05:00";
@@ -737,12 +759,44 @@ Error generating stack: `+l.message+`
     const toolbar=probe?.parentElement;
     if(!toolbar) return;
     toolbar.classList.add('gasv-toolbar-organized');
+    const order=[
+      ['Nuevo',b=>textOf(b)==='Nuevo'],
+      ['Guardar',b=>textOf(b)==='Guardar'],
+      ['Ambientes',b=>textOf(b).startsWith('Ambientes')],
+      ['Consolidado',b=>textOf(b).startsWith('Consolidado')||textOf(b).startsWith('Reporte Consolidado')],
+      ['Trabajo de Campo',b=>textOf(b)==='Trabajo de Campo'],
+      ['Manual',b=>textOf(b).startsWith('Manual')],
+      ['Exportar',b=>textOf(b).startsWith('Exportar')&&!textOf(b).startsWith('Exportar PDF')],
+      ['Importar',b=>textOf(b).startsWith('Importar')],
+      ['CSV',b=>textOf(b).startsWith('CSV')||textOf(b).startsWith('Exportar CSV')],
+      ['PDF',b=>textOf(b)==='PDF'||textOf(b).startsWith('PDF / Imprimir')],
+      ['Exportar PDF',b=>textOf(b)==='Exportar PDF']
+    ];
+    const buttons=qsa('button',toolbar);
+    for(const pair of order){
+      const btn=buttons.find(pair[1]);
+      if(btn) toolbar.appendChild(btn);
+    }
     qsa('button',toolbar).forEach(btn=>{
       const label=textOf(btn);
       btn.classList.add('gasv-toolbar-btn');
       btn.classList.remove('gasv-toolbar-group-start');
-      if(label.startsWith('Fichas Guardadas') || label==='Exportar CSV' || label==='PDF / Imprimir') btn.classList.add('gasv-toolbar-group-start');
+      if(label.startsWith('Fichas Guardadas') || label.startsWith('Ambientes') || label==='Exportar CSV' || label==='CSV' || label==='PDF / Imprimir' || label==='PDF') btn.classList.add('gasv-toolbar-group-start');
     });
+    const mobile=window.matchMedia ? window.matchMedia('(max-width:1023px)').matches : window.innerWidth<=1023;
+    const header=toolbar.closest('header');
+    if(header){
+      if(mobile){
+        toolbar.dataset.gasvMobileToolbar='1';
+        requestAnimationFrame(()=>{
+          const h=Math.ceil(toolbar.getBoundingClientRect().height||190);
+          header.style.setProperty('--gasv-mobile-toolbar-space',String(h+14)+'px');
+        });
+      }else{
+        toolbar.dataset.gasvMobileToolbar='0';
+        header.style.removeProperty('--gasv-mobile-toolbar-space');
+      }
+    }
     toolbar.dataset.gasvToolbarOrganized='1';
   }
 
