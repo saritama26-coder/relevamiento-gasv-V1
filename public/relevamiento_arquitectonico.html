@@ -204,6 +204,20 @@ Error generating stack: `+l.message+`
 @media(max-width:640px){.gasv-v4-modal{padding:8px}.gasv-v4-box{width:100%;max-height:96vh;border-radius:12px}.gasv-v4-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.gasv-v4-field-grid{grid-template-columns:1fr}.gasv-v4-field-actions{grid-template-columns:1fr 1fr}.gasv-v4-barrow{grid-template-columns:1fr 1fr}.gasv-v4-barrow>div{grid-column:1/3}.gasv-v4-barrow em{text-align:left}.gasv-v4-states{grid-template-columns:repeat(2,minmax(0,1fr))}.gasv-v4-version-actions{flex-direction:column}.gasv-v4-toolbar-btn{min-width:130px}}
 @media print{.gasv-v4-modal,.gasv-v4-toolbar-btn{display:none!important}}
 </style>
+    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <script>
+      window.GASV_BUILD="2026-09-29T20:45:00-05:00";
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+          navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" })
+            .then(function (registration) {
+              try { registration.update(); } catch (_) {}
+            })
+            .catch(function () {});
+        }, { once: true });
+      }
+    </script>
 </head>
   <body>
     <div id="root"></div>
