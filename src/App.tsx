@@ -236,7 +236,7 @@ export default function App() {
       await StorageService.deleteFicha(id);
       const updated = await StorageService.getFichas();
       setFichas(updated);
-      triggerGoogleDriveAutoBackup(updated, projectData, catalogos);
+
       if (selectedAmbienteId === id) setSelectedAmbienteId(null);
       if (activeFicha.id === id) loadFicha(createEmptyFicha());
     }
@@ -426,28 +426,6 @@ export default function App() {
                 <span className="hidden xl:inline">Sincronizar</span>
               </button>
 
-              {/* Botón Respaldo en la Nube (Google Drive) */}
-              <button
-                type="button"
-                onClick={() => setShowGDriveModal(true)}
-                className={`flex items-center px-2 sm:px-2.5 py-1.5 rounded text-xs font-semibold transition-colors shadow-xs ${
-                  gdriveAutoStatus === 'synced'
-                    ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white'
-                    : gdriveAutoStatus === 'syncing'
-                    ? 'bg-amber-600/90 hover:bg-amber-500 text-white animate-pulse'
-                    : 'bg-[#1e5282] hover:bg-sky-600 text-white'
-                }`}
-                title="Respaldo automático en Google Drive"
-              >
-                {gdriveAutoStatus === 'synced' ? (
-                  <CloudCheck size={15} className="sm:mr-1 shrink-0 text-emerald-200" />
-                ) : (
-                  <Cloud size={15} className="sm:mr-1 shrink-0" />
-                )}
-                <span className="hidden md:inline">Google Drive</span>
-              </button>
-
-              {/* Desktop Groups (Visible from lg: 1024px) */}
               <div className="hidden lg:flex items-center gap-2">
                 {/* GRUPO 1: Acciones principales: [Nuevo] | [Guardar] */}
                 <div className="flex items-center bg-black/20 p-0.5 rounded-md border border-white/10 space-x-1">
@@ -666,16 +644,6 @@ export default function App() {
                     className="flex items-center justify-center p-2 bg-slate-700 hover:bg-slate-600 rounded font-semibold text-center"
                   >
                     <Printer size={14} className="mr-1.5 shrink-0" /> PDF
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowGDriveModal(true);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="col-span-2 flex items-center justify-center p-2 bg-sky-700 hover:bg-sky-600 rounded font-semibold text-center text-white"
-                  >
-                    <Cloud size={14} className="mr-1.5 shrink-0" /> Respaldo Google Drive
                   </button>
                 </div>
               </div>
