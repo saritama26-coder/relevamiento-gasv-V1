@@ -240,8 +240,53 @@ Error generating stack: `+l.message+`
 }
 </style>
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
+    <style id="gasv-mobile-real-toolbar-fix">
+@media(max-width:1023px){
+  .gasv-real-mobile-topbar{
+    flex-direction:column!important;
+    align-items:stretch!important;
+    justify-content:flex-start!important;
+    gap:10px!important;
+    padding:10px!important;
+    box-sizing:border-box!important;
+  }
+  .gasv-real-mobile-brand{
+    width:100%!important;
+    justify-content:center!important;
+    box-sizing:border-box!important;
+  }
+  .gasv-real-mobile-actions{
+    position:static!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    width:100%!important;
+    max-width:none!important;
+    box-sizing:border-box!important;
+    gap:6px!important;
+    padding:0!important;
+    margin:0!important;
+    align-items:stretch!important;
+  }
+  .gasv-real-mobile-actions>button{
+    min-width:0!important;
+    width:100%!important;
+    min-height:40px!important;
+    margin:0!important;
+    justify-content:center!important;
+    text-align:center!important;
+    white-space:normal!important;
+    box-sizing:border-box!important;
+  }
+  .gasv-real-mobile-actions>button[data-gasv-mobile-field]{
+    grid-column:1/-1!important;
+  }
+}
+@media(min-width:1024px){
+  .gasv-real-mobile-topbar .gasv-real-mobile-actions{position:static!important}
+}
+</style>
     <link rel="manifest" href="/manifest.webmanifest">
-    <link rel="apple-touch-icon" href="/icon.svg">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <meta name="gasv-version" content="4.0.0-20260929-field-2115">
     <script>
       window.GASV_BUILD="2026-09-29T21:15:00-05:00";
@@ -726,6 +771,62 @@ Error generating stack: `+l.message+`
       ${selected.map((f,i)=>fichaHtml(f,state,i,selected.length)).join('')}
       <div style="margin-top:14px;border-top:1px solid #17365d;padding-top:6px;font-size:7pt;color:#64748b">Documento generado por Relevamiento Arquitectónico GASV · Arq. Gabriel Saritama V. · ${esc(new Date().toLocaleString('es-EC'))}</div>
       </div>
+<script id="gasv-mobile-real-toolbar-script">
+(()=>{
+  'use strict';
+  const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  const labels=['Nuevo','Guardar','Fichas Guardadas','Reporte Consolidado','Trabajo de Campo','Manual','Exportar CSV','Exportar proyecto','Importar proyecto','PDF / Imprimir','Exportar PDF'];
+  const rank=new Map(labels.map((x,i)=>[norm(x),i]));
+  function clean(){
+    const root=document.getElementById('root');
+    const app=root?.firstElementChild;
+    const top=app?.firstElementChild;
+    if(!top || !String(top.className||'').includes('bg-[#17365d]')) return;
+    top.classList.add('gasv-real-mobile-topbar');
+    const brand=top.firstElementChild;
+    const actions=top.children?.[1];
+    if(!actions) return;
+    brand?.classList.add('gasv-real-mobile-brand');
+    actions.classList.add('gasv-real-mobile-actions');
+    const buttons=Array.from(actions.querySelectorAll(':scope > button'));
+    for(const b of buttons){
+      const t=norm(b.textContent);
+      if(t==='panel'||t==='versiones'||t==='integridad'){
+        b.remove();
+        continue;
+      }
+      b.classList.add('gasv-v4-toolbar-btn');
+      if(t==='trabajo de campo') b.setAttribute('data-gasv-mobile-field','1');
+    }
+    const remaining=Array.from(actions.querySelectorAll(':scope > button'));
+    remaining.sort((a,b)=>{
+      const ra=rank.get(norm(a.textContent));
+      const rb=rank.get(norm(b.textContent));
+      return (ra??99)-(rb??99);
+    });
+    for(const b of remaining) actions.appendChild(b);
+    const mobile=window.matchMedia ? window.matchMedia('(max-width:1023px)').matches : window.innerWidth<=1023;
+    top.dataset.gasvRealMobileToolbar=mobile?'1':'0';
+    if(mobile){
+      actions.style.removeProperty('display');
+      actions.style.removeProperty('flex-wrap');
+    }
+  }
+  let timer=0;
+  const schedule=()=>{clearTimeout(timer);timer=setTimeout(clean,80)};
+  function boot(){
+    clean();
+    [250,800,1600,3000].forEach(ms=>setTimeout(clean,ms));
+    const root=document.getElementById('root');
+    if(root){
+      const obs=new MutationObserver(schedule);
+      obs.observe(root,{childList:true,subtree:true});
+      window.addEventListener('resize',schedule,{passive:true});
+    }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true}); else boot();
+})();
+</script>
 </body></html>`;
 
     const w=window.open('','_blank','width=1100,height=800');
