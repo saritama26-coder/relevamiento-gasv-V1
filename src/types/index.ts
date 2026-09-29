@@ -73,7 +73,10 @@ export interface Ficha {
   nivel: string;
   ambiente: string;
   codigo: string;
+  numeroFicha?: string;
   fecha: string;
+  hora?: string;
+  gps?: string;
   responsable: string;
   geometria: 'regular' | 'irregular';
   largo: string;
