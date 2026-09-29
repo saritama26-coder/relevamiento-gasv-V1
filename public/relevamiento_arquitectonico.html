@@ -427,8 +427,6 @@ Error generating stack: `+l.message+`
       if(matchQ&&matchB) visible++;
     }
     const empty=qs('[data-gasv-drawer-empty-filter]',host);
-    const count=qs('[data-gasv-drawer-count]',host);
-    if(count) count.textContent=visible+' ambiente'+(visible===1?'':'s')+' encontrados';
     if(empty) empty.textContent=visible?'':'No hay ambientes que coincidan con el filtro.';
   }
 
@@ -450,8 +448,7 @@ Error generating stack: `+l.message+`
       <div style="flex:1;min-width:220px"><input class="gasv-enh-input" data-gasv-drawer-query placeholder="Buscar por código, ambiente o bloque..." value="${esc(window.__GASV_DRAWER_QUERY__||'')}"></div>
       <div style="flex:0 0 175px"><select class="gasv-enh-select" data-gasv-drawer-block><option value="">Todos los bloques</option></select></div>
     </div>
-    <div data-gasv-drawer-count class="text-xs font-semibold text-slate-600 py-1">0 ambientes encontrados</div>
-    <div data-gasv-drawer-empty-filter class="text-xs text-slate-500 italic py-1"></div>`;
+    <div data-gasv-drawer-empty-filter class="text-xs text-slate-500 italic py-2"></div>`;
     header.insertAdjacentElement('afterend',box);
     const data=await readState().catch(()=>null);
     const sel=qs('[data-gasv-drawer-block]',box);
@@ -617,43 +614,7 @@ Error generating stack: `+l.message+`
       body{margin:0;background:#fff;color:#1e293b;font-family:Arial,Helvetica,sans-serif;font-size:8.1pt;line-height:1.28}
       .wrap{max-width:190mm;margin:0 auto}
       ${document.querySelector('#gasv-enhancements-v4-css')?.textContent||''}
-      </style><style id="gasv-v4-ui">
-.gasv-v4-nav{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:8px}
-.gasv-v4-btn{border:1px solid rgba(255,255,255,.16);background:#17365d;color:#fff;border-radius:7px;min-height:36px;padding:7px 10px;font-size:12px;font-weight:800;cursor:pointer}.gasv-v4-btn.panel{background:#4f46e5}.gasv-v4-btn.field{background:#0f766e}
-.gasv-v4-overlay{position:fixed;inset:0;background:rgba(2,8,23,.62);z-index:1200;display:flex;align-items:center;justify-content:center;padding:14px}
-.gasv-v4-box{width:min(1120px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.28);color:#0f172a}
-.gasv-v4-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#17365d;color:#fff}
-.gasv-v4-head h2{margin:0;font-size:16px}.gasv-v4-head small{display:block;margin-top:3px;color:#cbd5e1}.gasv-v4-close{border:0;background:transparent;color:#fff;font-size:24px;cursor:pointer}
-.gasv-v4-body{padding:14px}.gasv-v4-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}.gasv-v4-card{border:1px solid #dbe2ea;border-radius:10px;padding:10px;background:#f8fafc}
-.gasv-v4-card .k{font-size:10px;font-weight:800;text-transform:uppercase;color:#64748b}.gasv-v4-card .v{font-size:22px;font-weight:900;color:#17365d}
-.gasv-v4-section{margin-top:12px;border:1px solid #dbe2ea;border-radius:10px;padding:12px}.gasv-v4-section h3{margin:0 0 8px;color:#17365d;font-size:13px}
-.gasv-v4-bar-row{display:grid;grid-template-columns:125px 1fr 80px;gap:7px;align-items:center;margin:6px 0}.gasv-v4-bar-label,.gasv-v4-bar-value{font-size:11px}.gasv-v4-track{height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden}.gasv-v4-bar{height:100%;background:#17365d;border-radius:999px}
-.gasv-v4-status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.gasv-v4-status{padding:8px;border:1px solid #dbe2ea;border-radius:8px;text-align:center;background:#fff}.gasv-v4-status b{display:block;font-size:11px;color:#64748b}.gasv-v4-status span{display:block;font-size:18px;font-weight:900;color:#17365d}
-.gasv-v4-table{width:100%;border-collapse:collapse;font-size:11px}.gasv-v4-table th,.gasv-v4-table td{border:1px solid #dbe2ea;padding:5px;text-align:left;vertical-align:top}.gasv-v4-table th{background:#f1f5f9}
-.gasv-v4-action{border:1px solid #cbd5e1;background:#fff;color:#17365d;border-radius:7px;padding:6px 9px;font-size:11px;font-weight:800;cursor:pointer}.gasv-v4-primary{background:#17365d;color:#fff;border-color:#17365d}.gasv-v4-ok{color:#166534;font-weight:900}.gasv-v4-bad{color:#b91c1c;font-weight:900}
-.gasv-v4-meta{margin:0 0 8px;padding:8px;border:1px solid #dbe2ea;border-radius:9px;background:#f8fafc;display:flex;gap:8px;flex-wrap:wrap;align-items:center}.gasv-v4-meta .item{font-size:10px;color:#475569}.gasv-v4-meta strong{color:#17365d}
-.gasv-v4-fieldbar{position:fixed;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));z-index:1100;display:none;grid-template-columns:repeat(6,1fr);gap:5px;padding:6px;border-radius:14px;background:rgba(23,54,93,.98);box-shadow:0 10px 28px rgba(15,23,42,.26)}
-.gasv-v4-fieldbar button{min-height:50px;border:0;border-radius:10px;background:#fff;color:#17365d;font-size:10px;font-weight:900;padding:4px 2px;line-height:1.05}.gasv-v4-fieldbar button[data-a=save]{background:#16a05f;color:#fff}
-.gasv-v4-toast{position:fixed;left:50%;transform:translateX(-50%);bottom:78px;z-index:1110;background:#17365d;color:#fff;padding:6px 11px;border-radius:999px;font-size:10px;font-weight:900;display:none}
-@media(max-width:900px){.gasv-v4-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:760px){.gasv-v4-nav{margin-left:0}.gasv-v4-fieldbar{display:grid}.gasv-v4-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gasv-v4-bar-row{grid-template-columns:90px 1fr 62px}.gasv-v4-status-grid{grid-template-columns:repeat(2,1fr)}}@media print{.gasv-v4-overlay,.gasv-v4-fieldbar,.gasv-v4-toast,.gasv-v4-nav{display:none!important}}
-</style>
-<style id="gasv-v4-ui">
-.gasv-v4-nav{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:8px}
-.gasv-v4-nav button{border:1px solid rgba(255,255,255,.16);background:#17365d;color:#fff;border-radius:7px;min-height:36px;padding:7px 10px;font-size:12px;font-weight:800;cursor:pointer}
-.gasv-v4-nav .panel{background:#4f46e5}.gasv-v4-nav .field{background:#0f766e}
-.gasv-v4-overlay{position:fixed;inset:0;background:rgba(2,8,23,.62);z-index:1200;display:flex;align-items:center;justify-content:center;padding:14px}
-.gasv-v4-box{width:min(1120px,96vw);max-height:92vh;overflow:auto;background:#fff;border-radius:16px;box-shadow:0 24px 80px rgba(0,0,0,.28);color:#0f172a}
-.gasv-v4-head{position:sticky;top:0;z-index:2;display:flex;justify-content:space-between;align-items:center;padding:14px 16px;background:#17365d;color:#fff}
-.gasv-v4-head h2{margin:0;font-size:16px}.gasv-v4-head small{display:block;margin-top:3px;color:#cbd5e1}.gasv-v4-close{border:0;background:transparent;color:#fff;font-size:24px;cursor:pointer}
-.gasv-v4-body{padding:14px}.gasv-v4-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
-.gasv-v4-card{border:1px solid #dbe2ea;border-radius:10px;padding:10px;background:#f8fafc}.gasv-v4-card .k{font-size:10px;font-weight:800;text-transform:uppercase;color:#64748b}.gasv-v4-card .v{font-size:22px;font-weight:900;color:#17365d}
-.gasv-v4-section{margin-top:12px;border:1px solid #dbe2ea;border-radius:10px;padding:12px}.gasv-v4-section h3{margin:0 0 8px;color:#17365d;font-size:13px}
-.gasv-v4-bar-row{display:grid;grid-template-columns:125px 1fr 80px;gap:7px;align-items:center;margin:6px 0}.gasv-v4-bar-label,.gasv-v4-bar-value{font-size:11px}.gasv-v4-track{height:10px;background:#e2e8f0;border-radius:999px;overflow:hidden}.gasv-v4-bar{height:100%;background:#17365d;border-radius:999px}
-.gasv-v4-status-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}.gasv-v4-status{padding:8px;border:1px solid #dbe2ea;border-radius:8px;text-align:center;background:#fff}.gasv-v4-status b{display:block;font-size:11px;color:#64748b}.gasv-v4-status span{display:block;font-size:18px;font-weight:900;color:#17365d}
-.gasv-v4-table{width:100%;border-collapse:collapse;font-size:11px}.gasv-v4-table th,.gasv-v4-table td{border:1px solid #dbe2ea;padding:5px;text-align:left;vertical-align:top}.gasv-v4-table th{background:#f1f5f9}
-.gasv-v4-action{border:1px solid #cbd5e1;background:#fff;color:#17365d;border-radius:7px;padding:6px 9px;font-size:11px;font-weight:800;cursor:pointer}.gasv-v4-primary{background:#17365d;color:#fff;border-color:#17365d}.gasv-v4-ok{color:#166534;font-weight:900}.gasv-v4-bad{color:#b91c1c;font-weight:900}
-@media(max-width:900px){.gasv-v4-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}@media(max-width:760px){.gasv-v4-nav{margin-left:0}.gasv-v4-nav button{min-height:42px}.gasv-v4-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.gasv-v4-bar-row{grid-template-columns:90px 1fr 62px}.gasv-v4-status-grid{grid-template-columns:repeat(2,1fr)}}@media print{.gasv-v4-overlay,.gasv-v4-nav{display:none!important}}
-</style></head><body><div class="wrap gasv-enh-print-report gasv-enh-pdf-report">
+      </style></head><body><div class="wrap gasv-enh-print-report gasv-enh-pdf-report">
       <div class="gasv-enh-running-header">RELEVAMIENTO ARQUITECTÓNICO GASV · REPORTE TÉCNICO</div>
       <div class="gasv-enh-running-footer">Arq. Gabriel Saritama V. · Documento generado automáticamente por GASV</div>
       <div class="gasv-enh-print-cover">${allLogo?`<img src="${esc(allLogo)}" alt="GSARITAMA ARQ.">`:'<div style="font-weight:800;font-size:18pt;color:#17365d">GSARITAMA ARQ.</div>'}
@@ -692,10 +653,7 @@ Error generating stack: `+l.message+`
       </section>
       ${selected.map((f,i)=>fichaHtml(f,state,i,selected.length)).join('')}
       <div style="margin-top:14px;border-top:1px solid #17365d;padding-top:6px;font-size:7pt;color:#64748b">Documento generado por Relevamiento Arquitectónico GASV · Arq. Gabriel Saritama V. · ${esc(new Date().toLocaleString('es-EC'))}</div>
-      </div>
-
-
-</body></html>`;
+      </div></body></html>`;
 
     const w=window.open('','_blank','width=1100,height=800');
     if(!w){alert('El navegador bloqueó la ventana del reporte. Habilite las ventanas emergentes para Exportar PDF.');return}
@@ -732,8 +690,7 @@ Error generating stack: `+l.message+`
       const label=textOf(btn);
       btn.classList.add('gasv-toolbar-btn');
       btn.classList.remove('gasv-toolbar-group-start');
-      if(label.startsWith('Fichas Guardadas') || label.toLowerCase()==='manual' || label==='Exportar CSV' || label==='PDF / Imprimir') btn.classList.add('gasv-toolbar-group-start');
-      if(label.toLowerCase()==='manual') btn.setAttribute('aria-label','Manual');
+      if(label.startsWith('Fichas Guardadas') || label==='Exportar CSV' || label==='PDF / Imprimir') btn.classList.add('gasv-toolbar-group-start');
     });
     toolbar.dataset.gasvToolbarOrganized='1';
   }
@@ -766,190 +723,115 @@ Error generating stack: `+l.message+`
     el.dispatchEvent(new Event('change',{bubbles:true}));
     return true;
   }
-  function gasvClean(v){return String(v==null?'':v).trim();}
-  function gasvNum(v){var n=parseFloat(gasvClean(v).replace(',','.'));return isFinite(n)?n:null;}
-  function gasvFmt(v){var n=gasvNum(v);return n==null?'':n.toLocaleString('es-EC',{minimumFractionDigits:2,maximumFractionDigits:2});}
-  function gasvUnique(a){return Array.from(new Set((a||[]).map(gasvClean).filter(Boolean)));}
-  function gasvRows(a){return (Array.isArray(a)?a:[]).filter(function(r){return r&&Object.keys(r).some(function(k){return gasvClean(r[k])!==''});});}
-  function gasvField(section,label,f,key){var el=gasvFieldByLabel(section,label);var v=gasvClean(el&&el.value);if(v)return v;return gasvClean(f&&f[key]);}
-  function gasvArea(geo,largo,ancho,area,f){
-    var direct=gasvNum(area);
-    if(gasvNormalize(geo)==='irregular'&&direct!=null)return direct;
-    var stored=gasvNum(f&&f.area);if(stored!=null&&stored>0)return stored;
-    var l=gasvNum(largo),a=gasvNum(ancho);return l!=null&&a!=null?l*a:null;
-  }
-  function gasvPer(largo,ancho,per,f){
-    var stored=gasvNum(per);if(stored!=null&&stored>0)return stored;
-    var l=gasvNum(largo),a=gasvNum(ancho);return l!=null&&a!=null?2*(l+a):null;
-  }
   async function gasvCurrentFicha(){
     try{
-      var st=await readState(),sec=gasvSection('1. Datos generales');
-      var code=gasvClean(gasvFieldByLabel(sec,'Código')&&gasvFieldByLabel(sec,'Código').value);
-      var amb=gasvClean(gasvFieldByLabel(sec,'Ambiente / Área')&&gasvFieldByLabel(sec,'Ambiente / Área').value);
-      var f=(st.fichas||[]).find(function(x){return code&&gasvClean(x.codigo)===code;});
-      if(!f&&amb)f=(st.fichas||[]).find(function(x){return gasvClean(x.ambiente)===amb;});
-      return {state:st,f:f||{}};
-    }catch(e){return {state:null,f:{}};}
+      const state=await readState();
+      const sec=gasvSection('1. Datos generales');
+      const code=gasvFieldByLabel(sec,'Código')?.value?.trim();
+      const amb=gasvFieldByLabel(sec,'Ambiente / Área')?.value?.trim();
+      let f=(state.fichas||[]).find(x=>code&&String(x.codigo||'').trim()===code);
+      if(!f&&amb) f=(state.fichas||[]).find(x=>String(x.ambiente||'').trim()===amb);
+      return {state,f};
+    }catch(e){ return {state:null,f:null}; }
   }
-  function gasvDimensionalText(ctx){
-    var f=(ctx&&ctx.f)||{},sec=gasvSection('2. Levantamiento dimensional');if(!sec)return '';
-    var geo=gasvField(sec,'Tipo de geometría',f,'geometria'),l=gasvField(sec,'Largo (m)',f,'largo'),a=gasvField(sec,'Ancho (m)',f,'ancho');
-    var ad=gasvField(sec,'Área del ambiente (m²)',f,'areaDirecta'),h=gasvField(sec,'Altura libre (m)',f,'altura');
-    var ar=gasvField(sec,'Área registrada (m²)',f,'area'),p=gasvField(sec,'Perímetro calculado (m)',f,'perimetro');
-    var est=gasvField(sec,'Estado general',f,'estadoDimensional'),obs=gasvField(sec,'Observaciones',f,'obsdim'),parts=[];
-    if(geo)parts.push('El ambiente presenta una geometría '+(gasvNormalize(geo)==='irregular'?'irregular':'regular'));
-    if(gasvNormalize(geo)==='irregular'&&gasvNum(ad)!=null)parts.push('con un área registrada de '+gasvFmt(ad)+' m²');
-    if(gasvNormalize(geo)!=='irregular'&&gasvNum(l)!=null&&gasvNum(a)!=null)parts.push('con dimensiones registradas de '+gasvFmt(l)+' m de largo por '+gasvFmt(a)+' m de ancho');
-    if(gasvNum(h)!=null)parts.push('altura libre de '+gasvFmt(h)+' m');
-    var area=gasvArea(geo,l,a,ar,f);if(area!=null&&area>0)parts.push('área de '+gasvFmt(area)+' m²');
-    var per=gasvPer(l,a,p,f);if(per!=null&&per>0)parts.push('perímetro de '+gasvFmt(per)+' m');
-    var t=parts.length?parts.join(', ')+'.':'';if(est)t+=(t?' ':'')+'Estado general: '+est.toLowerCase()+'.';if(obs)t+=(t?' ':'')+'Observaciones registradas: '+obs;
+  function gasvDimensionalText(){
+    const sec=gasvSection('2. Levantamiento dimensional');
+    if(!sec) return '';
+    const geo=gasvFieldByLabel(sec,'Tipo de geometría')?.value||'regular';
+    const largo=gasvFieldByLabel(sec,'Largo (m)')?.value;
+    const ancho=gasvFieldByLabel(sec,'Ancho (m)')?.value;
+    const areaDirecta=gasvFieldByLabel(sec,'Área del ambiente (m²)')?.value;
+    const altura=gasvFieldByLabel(sec,'Altura libre (m)')?.value;
+    const area=gasvFieldByLabel(sec,'Área registrada (m²)')?.value;
+    const per=gasvFieldByLabel(sec,'Perímetro calculado (m)')?.value;
+    const estado=gasvFieldByLabel(sec,'Estado general')?.value||'Regular';
+    const obs=gasvFieldByLabel(sec,'Observaciones')?.value?.trim();
+    const tipo=gasvNormalize(geo)==='irregular'?'irregular':'regular';
+    let t='El ambiente presenta una geometría '+tipo;
+    if(tipo==='regular' && largo && ancho) t+=`, con ${largo} m de largo por ${ancho} m de ancho`;
+    if(tipo==='irregular' && areaDirecta) t+=`, con un área registrada de ${areaDirecta} m²`;
+    if(altura) t+=`, y una altura libre de ${altura} m`;
+    if(area && area!=='0.00') t+=`, con un área calculada de ${area} m²`;
+    if(per && per!=='0.00') t+=` y un perímetro calculado de ${per} m`;
+    t+=`. El estado dimensional registrado es ${String(estado).toLowerCase()}.`;
+    if(obs) t+=` ${obs}`;
     return gasvLimit(t,100);
   }
-  function gasvPat(f){return gasvRows(f&&f.pat).filter(function(r){return gasvClean(r.elemento)||gasvClean(r.patologia);});}
-  function gasvQ(f){return gasvRows(f&&f.cuan).filter(function(r){return gasvClean(r.elemento)||gasvClean(r.actividad);});}
-  function gasvC(f){return gasvRows(f&&f.cons).filter(function(r){return gasvClean(r.elemento)||gasvClean(r.descripcion);});}
-  function gasvE(f){return gasvRows(f&&f.equip).filter(function(r){return gasvClean(r.elemento)||gasvClean(r.descripcion);});}
-  function gasvI(f){return gasvRows([].concat(f&&f.elec||[],f&&f.hidro||[])).filter(function(r){return gasvClean(r.elemento)||gasvClean(r.descripcion);});}
   function gasvDiagnosisText(ctx){
-    var f=(ctx&&ctx.f)||{},sec=gasvSection('10. Diagnóstico preliminar');
-    var estado=gasvField(sec,'Estado',f,'diagestado'),interv=gasvField(sec,'Intervención',f,'interv');
-    var pats=gasvPat(f),q=gasvQ(f),c=gasvC(f),e=gasvE(f),i=gasvI(f),parts=[];
-    if(estado)parts.push('El estado general registrado es '+estado.toLowerCase()+'.');
+    const {f}=ctx;
+    const sec=gasvSection('10. Diagnóstico preliminar');
+    const estado=gasvFieldByLabel(sec,'Estado')?.value||f?.diagestado||'Regular';
+    const interv=gasvFieldByLabel(sec,'Intervención')?.value||f?.interv||'Mantenimiento correctivo';
+    const pats=Array.isArray(f?.pat)?f.pat.filter(x=>x&&(x.elemento||x.patologia)):[];
+    const sev={Crítica:0,Severa:0,Moderada:0,Leve:0};
+    pats.forEach(x=>{ if(sev[x.severidad]!==undefined) sev[x.severidad]++; });
+    const elements=[...new Set(pats.map(x=>String(x.elemento||'').trim()).filter(Boolean))];
+    let t=`El ambiente se clasifica en estado ${String(estado).toLowerCase()} y requiere ${String(interv).toLowerCase()}.`;
     if(pats.length){
-      var pe=gasvUnique(pats.map(function(r){return r.elemento;})),pn=gasvUnique(pats.map(function(r){return r.patologia;}));
-      var s='Se registran '+pats.length+' patología'+(pats.length===1?'':'s');if(pe.length)s+=' en '+pe.slice(0,3).join(', ');if(pn.length)s+='; corresponden a '+pn.slice(0,3).join(', ').toLowerCase();parts.push(s+'.');
-      var sv=gasvUnique(pats.map(function(r){return r.severidad;})),iv=gasvUnique(pats.map(function(r){return r.intervencion;}));
-      if(sv.length)parts.push('Las severidades consignadas son '+sv.slice(0,4).join(', ').toLowerCase()+'.');
-      if(iv.length)parts.push('Las intervenciones recomendadas registradas incluyen '+iv.slice(0,3).join(', ').toLowerCase()+'.');
-    }else parts.push('No existen registros de patologías en la ficha.');
-    var scope=[];if(c.length)scope.push(c.length+' elementos constructivos');if(e.length)scope.push(e.length+' elementos de equipamiento');if(i.length)scope.push(i.length+' registros de instalaciones');if(scope.length)parts.push('Además, se registran '+scope.join(', ')+'.');
-    var states=gasvUnique([].concat(c,e,i).map(function(r){return r.estado||r.est||'';}));if(states.length)parts.push('Los estados consignados en estos registros incluyen '+states.slice(0,4).join(', ').toLowerCase()+'.');
-    if(q.length){var qn=gasvUnique(q.map(function(r){return r.actividad||r.elemento;})),pr=gasvUnique(q.map(function(r){return r.prioridad;}));var qs='Se registran '+q.length+' actividades de cuantificación';if(qn.length)qs+=': '+qn.slice(0,3).join(', ');parts.push(qs+'.');if(pr.length)parts.push('Las prioridades consignadas incluyen '+pr.slice(0,4).join(', ').toLowerCase()+'.');}
-    if(interv)parts.push('La intervención general seleccionada es '+interv.toLowerCase()+'.');
-    return gasvLimit(parts.join(' '),100);
+      t+=` Se registraron ${pats.length} deficiencia${pats.length===1?'':'s'}${elements.length?` en ${elements.slice(0,3).join(', ')}`:''}.`;
+      const sevText=Object.entries(sev).filter(([,v])=>v).map(([k,v])=>`${v} de severidad ${k.toLowerCase()}`).join(', ');
+      if(sevText) t+=` La valoración corresponde a ${sevText}.`;
+      const actions=[...new Set(pats.map(x=>String(x.intervencion||'').trim()).filter(Boolean))];
+      if(actions.length) t+=` Las acciones consignadas incluyen ${actions.slice(0,3).join(', ').toLowerCase()}.`;
+    }else t+=' No se registran patologías o deficiencias específicas en la ficha.';
+    return gasvLimit(t,100);
   }
   function gasvGeneralText(ctx){
-    var f=(ctx&&ctx.f)||{},sec2=gasvSection('2. Levantamiento dimensional'),sec10=gasvSection('10. Diagnóstico preliminar');
-    var geo=gasvField(sec2,'Tipo de geometría',f,'geometria'),l=gasvField(sec2,'Largo (m)',f,'largo'),a=gasvField(sec2,'Ancho (m)',f,'ancho'),ar=gasvField(sec2,'Área registrada (m²)',f,'area');
-    var pats=gasvPat(f),q=gasvQ(f),c=gasvC(f),e=gasvE(f),i=gasvI(f),photos=Array.isArray(f.fotos)?f.fotos.filter(function(x){return x&&x.src;}).length:0,estado=gasvField(sec10,'Estado',f,'diagestado'),parts=[];
-    var area=gasvArea(geo,l,a,ar,f);if(area!=null&&area>0)parts.push('área registrada de '+gasvFmt(area)+' m²');if(pats.length)parts.push(pats.length+' patologías o deficiencias registradas');if(c.length||e.length||i.length)parts.push((c.length+e.length+i.length)+' registros de elementos e instalaciones');if(q.length)parts.push(q.length+' actividades de cuantificación');if(photos)parts.push(photos+' fotografías');
-    var t=parts.length?'La ficha registra '+parts.join(', ')+'.':'';if(geo&&!t)t='La ficha registra una geometría '+(gasvNormalize(geo)==='irregular'?'irregular':'regular')+'.';if(estado)t+=(t?' ':'')+'El estado general consignado es '+estado.toLowerCase()+'.';
-    var iv=gasvUnique(pats.map(function(r){return r.intervencion;}));if(iv.length)t+=(t?' ':'')+'Las intervenciones recomendadas registradas incluyen '+iv.slice(0,3).join(', ').toLowerCase()+'.';
-    t+=(t?' ':'')+'La síntesis corresponde exclusivamente a los datos registrados en la ficha; las cantidades y condiciones deberán verificarse durante la ejecución.';
+    const {f}=ctx;
+    const sec2=gasvSection('2. Levantamiento dimensional');
+    const sec10=gasvSection('10. Diagnóstico preliminar');
+    const estado=gasvFieldByLabel(sec10,'Estado')?.value||f?.diagestado||gasvFieldByLabel(sec2,'Estado general')?.value||'Regular';
+    const interv=gasvFieldByLabel(sec10,'Intervención')?.value||f?.interv||'Mantenimiento correctivo';
+    const pats=Array.isArray(f?.pat)?f.pat.filter(x=>x&&(x.elemento||x.patologia)):[];
+    const fotos=Array.isArray(f?.fotos)?f.fotos.length:0;
+    const cuan=Array.isArray(f?.cuan)?f.cuan.filter(x=>x&&(x.actividad||x.elemento)).length:0;
+    let t=`Durante el relevamiento se verificaron las condiciones dimensionales, constructivas y funcionales del ambiente. El estado general registrado es ${String(estado).toLowerCase()}.`;
+    if(pats.length) t+=` Se identificaron ${pats.length} deficiencia${pats.length===1?'':'s'} que requieren seguimiento técnico.`;
+    if(cuan) t+=` Se registraron ${cuan} actividad${cuan===1?'':'es'} para cuantificación preliminar.`;
+    t+=` La intervención prevista corresponde a ${String(interv).toLowerCase()}.`;
+    if(fotos) t+=` El registro fotográfico incluye ${fotos} imagen${fotos===1?'':'es'}.`;
+    t+=' Las cantidades y condiciones deberán verificarse durante la ejecución.';
     return gasvLimit(t,100);
   }
-  async function gasvCopyText(value){
-    value=gasvClean(value);if(!value)return false;
-    try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(value);return true;}}catch(e){}
-    try{var ta=document.createElement('textarea');ta.value=value;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=document.execCommand('copy');ta.remove();return ok;}catch(e){return false;}
-  }
   function gasvAddAssistant(section,title,kind){
-    if(!section)return;
+    if(!section) return;
     const textarea=Array.from(section.querySelectorAll('textarea')).pop();
-    if(!textarea || textarea.dataset.gasvAssistantReady==='1')return;
+    if(!textarea || textarea.dataset.gasvAssistantReady==='1') return;
     textarea.dataset.gasvAssistantReady='1';
-
     const wrap=document.createElement('div');
     wrap.className='gasv-writing-assistant print:hidden';
-    wrap.innerHTML=\`<div class="gasv-writing-toolbar"><div><strong>\${esc(title)}</strong><span data-gasv-words>0 / 100 palabras</span></div><div class="gasv-writing-actions"><button type="button" data-gasv-generate>Generar</button><button type="button" data-gasv-regenerate style="display:none">Regenerar</button><button type="button" data-gasv-clear>Limpiar</button></div></div><div class="gasv-writing-status" data-gasv-status>Generación basada únicamente en los datos registrados en la ficha.</div>\`;
-
+    wrap.innerHTML=`<div class="gasv-writing-toolbar"><div><strong>${esc(title)}</strong><span data-gasv-words>0 / 100 palabras</span></div><div class="gasv-writing-actions"><button type="button" data-gasv-generate>Generar</button><button type="button" data-gasv-regenerate style="display:none">Regenerar</button><button type="button" data-gasv-clear>Limpiar</button></div></div><div class="gasv-writing-status" data-gasv-status>Generación basada únicamente en los datos registrados en la ficha.</div>`;
     textarea.parentElement?.insertBefore(wrap,textarea);
-
-    const counter=qs('[data-gasv-words]',wrap);
-    const status=qs('[data-gasv-status]',wrap);
-    const update=()=>{
-      const w=gasvWords(textarea.value);
-      if(counter){
-        counter.textContent=\`\${w} / 100 palabras\`;
-        counter.classList.toggle('over',w>100);
-      }
-      if(status){
-        status.classList.toggle('ok',w<=100);
-        status.classList.toggle('over',w>100);
-      }
-    };
-
-    textarea.addEventListener('input',update);
-    update();
-
-    qs('[data-gasv-clear]',wrap)?.addEventListener('click',()=>{
-      gasvSetValue(textarea,'');
-      status.textContent='Texto eliminado. Puede escribirlo manualmente.';
-      update();
-    });
-
+    const counter=qs('[data-gasv-words]',wrap), status=qs('[data-gasv-status]',wrap);
+    const update=()=>{const w=gasvWords(textarea.value); if(counter){counter.textContent=`${w} / 100 palabras`;counter.classList.toggle('over',w>100);}};
+    textarea.addEventListener('input',update); update();
+    qs('[data-gasv-clear]',wrap)?.addEventListener('click',()=>{gasvSetValue(textarea,'');status.textContent='Texto eliminado. Puede escribirlo manualmente.';update();});
     qs('[data-gasv-generate]',wrap)?.addEventListener('click',async()=>{
       const ctx=await gasvCurrentFicha();
-      let txt='';
-      if(kind==='dim')txt=gasvDimensionalText(ctx);
-      else if(kind==='diag')txt=gasvDiagnosisText(ctx);
-      else txt=gasvGeneralText(ctx);
+      let txt=kind==='dim'?gasvDimensionalText():kind==='diag'?gasvDiagnosisText(ctx):gasvGeneralText(ctx);
       gasvSetValue(textarea,txt);
       qs('[data-gasv-regenerate]',wrap).style.display='inline-flex';
-      status.textContent=txt?\`Texto generado con datos registrados · \${gasvWords(txt)} palabras.\`:'No hay datos suficientes para generar un texto técnico.';
+      status.textContent=txt?`Texto generado con datos registrados · ${gasvWords(txt)} palabras.`:'No hay datos suficientes para generar un texto técnico.';
       update();
     });
-
     qs('[data-gasv-regenerate]',wrap)?.addEventListener('click',()=>qs('[data-gasv-generate]',wrap)?.click());
   }
-
   function ensureWritingAssistants(){
     gasvAddAssistant(gasvSection('2. Levantamiento dimensional'),'Asistente de observación dimensional','dim');
     gasvAddAssistant(gasvSection('10. Diagnóstico preliminar'),'Asistente de diagnóstico técnico','diag');
     gasvAddAssistant(gasvSection('11. Observaciones generales'),'Asistente de observaciones generales','obs');
   }
 
-  var v4Pending=null,v4Dup=false,v4Panel=null,v4Life=false,v4VerKey="gasv_v4_versions";
-function v4Now(){var d=new Date(),p=function(n){return String(n).padStart(2,"0")};return{fecha:d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate()),hora:p(d.getHours())+":"+p(d.getMinutes())}}
-function v4Num(f){var m=String(f&&f.numeroFicha||"").match(/(\d+)/);return m?parseInt(m[1],10):0}
-function v4Next(fs){var m=0;(fs||[]).forEach(function(f){m=Math.max(m,v4Num(f))});return "F-"+String(m+1).padStart(3,"0")}
-function v4Migrate(forceId){return readState().then(function(st){var fs=[...(st.fichas||[])],used=new Set(),max=fs.reduce(function(m,f){return Math.max(m,v4Num(f))},0),changed=false,now=v4Now();fs.sort(function(a,b){return String(a.updatedAt||"").localeCompare(String(b.updatedAt||""))});fs.forEach(function(f){var n=String(f.numeroFicha||"").trim();if(!n||used.has(n)){max++;n="F-"+String(max).padStart(3,"0");f.numeroFicha=n;changed=true}used.add(n);if(!f.fecha){f.fecha=now.fecha;changed=true}if(!f.hora){f.hora=f.updatedAt?new Date(f.updatedAt).toLocaleTimeString("es-EC",{hour:"2-digit",minute:"2-digit"}):now.hora;changed=true}if(f.gps===undefined){f.gps="";changed=true}if(forceId&&f.id===forceId){var newId="F"+Date.now();while(fs.some(function(x){return x!==f&&String(x.id||"")===newId}))newId="F"+Date.now()+Math.floor(Math.random()*1000);f.id=newId;f.numeroFicha=v4Next(fs);Object.assign(f,{fecha:now.fecha,hora:now.hora,gps:"",obsdim:"",diag:"",obs:"",cuan:[],fotos:[],obsdimGenerated:"",diagGenerated:"",obsGenerated:""});changed=true}});if(changed)return window.__GASV_STORAGE__.setItem("fichas",fs);})}
-function v4Active(){var sec=qsa("h2").find(function(h){return textOf(h)==="1. Datos generales"})?.closest(".print-card");if(!sec)return{};var ls=qsa("label",sec),code=ls.find(function(l){return textOf(l)==="Código"})?.parentElement?.querySelector("input")?.value?.trim()||"",amb=ls.find(function(l){return textOf(l)==="Ambiente / Área"})?.parentElement?.querySelector("input")?.value?.trim()||"";return{code:code,amb:amb}}
-function v4MetaStrip(){if(qs("[data-gasv-v4-meta]"))return;var h=qsa("h2").find(function(x){return textOf(x)==="1. Datos generales"}),c=h?.closest(".print-card");if(!c)return;var e=document.createElement("div");e.className="gasv-v4-meta";e.dataset.gasvV4Meta="1";e.innerHTML=`<span class="item"><strong>N.º de ficha:</strong> <span data-n>—</span></span><span class="item"><strong>Fecha:</strong> <span data-d>—</span></span><span class="item"><strong>Hora:</strong> <span data-h>—</span></span><span class="item"><strong>GPS:</strong> <span data-g>GPS no registrado</span></span><button type="button" class="gasv-v4-action" data-v4-gps>Obtener ubicación</button>`;(q("h2",c)?.parentElement||c).insertAdjacentElement("afterend",e)}
-function v4RefreshMeta(){return readState().then(function(st){v4MetaStrip();var e=qs("[data-gasv-v4-meta]"),a=v4Active(),f=(st.fichas||[]).find(function(x){return(a.code&&String(x.codigo||"").trim()===a.code)||(a.amb&&String(x.ambiente||"").trim()===a.amb)});if(f&&e){e.querySelector("[data-n]").textContent=f.numeroFicha||"—";e.querySelector("[data-d]").textContent=f.fecha||"—";e.querySelector("[data-h]").textContent=f.hora||"—";e.querySelector("[data-g]").textContent=f.gps?"GPS registrado":"GPS no registrado";var gb=e.querySelector("[data-v4-gps]");if(gb&&!gb.dataset.bound){gb.dataset.bound="1";gb.addEventListener("click",v4Gps)}}})}
-function v4Toast(msg){var e=qs("#gasv-v4-toast");if(!e)return;e.textContent=msg;e.style.display="block";clearTimeout(window.__gasvV4ToastT);window.__gasvV4ToastT=setTimeout(function(){e.style.display="none"},2200)}
-function v4Scroll(title){var h=qsa("h2,h3").find(function(x){return textOf(x)===title});if(h){h.scrollIntoView({behavior:"smooth",block:"start"});setTimeout(function(){var sec=h.closest(".print-card")||h.parentElement;var i=q("input,select,textarea",sec);if(i)i.focus()},350)}}
-function v4SaveMeta(){return readState().then(function(st){var a=v4Active(),f=(st.fichas||[]).find(function(x){return(a.code&&String(x.codigo||"").trim()===a.code)||(a.amb&&String(x.ambiente||"").trim()===a.amb)});if(!f)return;var m=v4Pending||v4Now(),mx=(st.fichas||[]).reduce(function(n,x){return Math.max(n,v4Num(x))},0);f.numeroFicha=v4Pending?.numeroFicha||f.numeroFicha||"F-"+String(mx+1).padStart(3,"0");if(v4Pending){f.fecha=m.fecha;f.hora=m.hora;f.gps=m.gps||""}return window.__GASV_STORAGE__.setItem("fichas",st.fichas)})}
-function v4Gps(){if(!navigator.geolocation){v4Toast("GPS no disponible");return}navigator.geolocation.getCurrentPosition(function(p){var v=p.coords.latitude.toFixed(6)+", "+p.coords.longitude.toFixed(6);v4Pending=v4Pending||{numeroFicha:"",...v4Now(),gps:""};v4Pending.gps=v;v4Active();v4Toast("GPS registrado");v4SaveMeta().then(v4RefreshMeta).catch(function(){})},function(){v4Toast("No se pudo obtener la ubicación. Verifique el permiso GPS.")},{enableHighAccuracy:true,timeout:10000,maximumAge:0})}
-function v4FieldBar(){if(qs(".gasv-v4-fieldbar"))return;var b=document.createElement("div");b.className="gasv-v4-fieldbar";b.innerHTML=`<button data-a="new">＋<br>Nueva</button><button data-a="measure">📐<br>Medir</button><button data-a="photo">📷<br>Foto</button><button data-a="gps">⌖<br>GPS</button><button data-a="diag">◉<br>Diagnóstico</button><button data-a="save">✓<br>Guardar</button>`;var t=document.createElement("div");t.id="gasv-v4-toast";t.className="gasv-v4-toast";document.body.append(b,t);b.addEventListener("click",async function(e){var a=e.target.closest("button")?.dataset.a;if(a==="new"){var st=await readState();v4Pending={numeroFicha:v4Next(st.fichas),...v4Now(),gps:""};qsa("button").find(function(x){return textOf(x)==="Nuevo"})?.click();await v4RefreshMeta();v4Toast("Nueva "+v4Pending.numeroFicha)}else if(a==="measure")v4Scroll("2. Levantamiento dimensional");else if(a==="photo")v4Scroll("9. Registro fotográfico");else if(a==="gps")v4Gps();else if(a==="diag")v4Scroll("10. Diagnóstico preliminar");else if(a==="save"){qsa("button").find(function(x){return textOf(x)==="Guardar"})?.click();setTimeout(function(){v4SaveMeta().then(v4Migrate).then(v4RefreshMeta).catch(function(){})},900)}})}
-function v4Toolbar(){if(qs("[data-gasv-v4-toolbar]"))return;var b=qsa("button").find(function(x){return textOf(x)==="Nuevo"}),h=b?.parentElement;if(!h)return;var n=document.createElement("div");n.className="gasv-v4-nav";n.dataset.gasvV4Toolbar="1";n.innerHTML=`<button type="button" class="gasv-v4-btn panel">▦ Panel</button><button type="button" class="gasv-v4-btn field">⌖ Trabajo de Campo</button>`;h.appendChild(n);n.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;if(b.classList.contains("panel"))v4OpenPanel();else v4Scroll("2. Levantamiento dimensional")})}
-function v4Complete(f){var miss=[],c=!!String(f.codigo||"").trim()&&!!String(f.ambiente||"").trim(),d=f.geometria==="irregular"?parseFloat(f.areaDirecta)>0:(parseFloat(f.largo)>0&&parseFloat(f.ancho)>0),x=[["Identificación",c],["Dimensiones",d],["Constructivos",!!f.cons?.length],["Equipamiento",!!f.equip?.length],["Instalaciones",!!(f.elec?.length||f.hidro?.length)],["Patologías",!!f.pat?.length],["Cuantificación",!!f.cuan?.length],["Fotografías",!!f.fotos?.length],["Diagnóstico",!!String(f.diag||"").trim()],["Observaciones",!!String(f.obs||"").trim()]];x.forEach(function(y){if(!y[1])miss.push(y[0])});return{pct:Math.round((10-miss.length)*10),miss:miss,complete:!miss.length}}
-function v4Integrity(st){var o=[],ids={};(st.fichas||[]).forEach(function(f){var id=String(f.id||"").trim();if(!id)o.push([f,"Ficha sin ID interno"]);else ids[id]=(ids[id]||0)+1;if(!f.codigo)o.push([f,"Ficha sin código"]);if(!f.ambiente)o.push([f,"Ficha sin ambiente"]);if(f.geometria==="irregular"?!(parseFloat(f.areaDirecta)>0):(!(parseFloat(f.largo)>0)||!(parseFloat(f.ancho)>0)))o.push([f,"Dimensiones inconsistentes"]);(f.pat||[]).forEach(function(p){if((p.elemento||p.patologia)&&(!p.severidad||!p.intervencion))o.push([f,"Patología incompleta"])});(f.cuan||[]).forEach(function(a){if((a.elemento||a.actividad)&&(!String(a.cantidad||"").trim()||!String(a.unidad||"").trim()))o.push([f,"Actividad sin cantidad/unidad"])});(f.fotos||[]).forEach(function(ph){if(ph.src&&!String(ph.desc||"").trim())o.push([f,"Fotografía sin descripción"])})});Object.keys(ids).forEach(function(id){if(ids[id]>1){var f=(st.fichas||[]).find(function(x){return String(x.id||"")===id});o.push([f,"ID duplicado: "+id])}});return o}
-function v4Versions(){try{return JSON.parse(localStorage.getItem(v4VerKey)||"[]")}catch(e){return[]}}
-function v4SaveVersions(v){localStorage.setItem(v4VerKey,JSON.stringify(v.slice(0,20)))}
-function v4CreateVersion(){return readState().then(function(st){var vs=v4Versions(),label=prompt("Nombre de la versión:","V"+String(vs.length+1).padStart(2,"0")+" · Revisión");if(!label)return;v4SaveVersions([{id:"V"+Date.now(),label:label,createdAt:new Date().toISOString(),state:st}].concat(vs));v4OpenPanel()})}
-function v4RestoreVersion(id){var v=v4Versions().find(function(x){return x.id===id});if(!v)return;if(!confirm("Restaurar \""+v.label+"\"? Se guardará un respaldo previo del estado actual."))return;return readState().then(function(cur){localStorage.setItem("gasv_v4_pre_restore",JSON.stringify({createdAt:new Date().toISOString(),state:cur}));return Promise.all([window.__GASV_STORAGE__.setItem("fichas",v.state.fichas||[]),window.__GASV_STORAGE__.setItem("projectData",v.state.projectData||{}),window.__GASV_STORAGE__.setItem("catalogosPersonalizados",v.state.catalogosPersonalizados||{})])}).then(function(){location.reload()})}
-function v4OpenPanel(){if(v4Panel){v4Panel.remove();v4Panel=null}readState().then(function(st){var f=st.fichas||[],status={Bueno:0,Regular:0,Malo:0,"Crítico":0},pri={Crítica:0,Alta:0,Media:0,Baja:0},groups={},ar=0,ph=0,pa=0,ac=0,cr=0;f.forEach(function(x){ar+=areaOf(x);ph+=(x.fotos||[]).length;pa+=(x.pat||[]).length;ac+=(x.cuan||[]).length;if(status[x.diagestado]!==undefined)status[x.diagestado]++;if(x.diagestado==="Crítico")cr++;(x.pat||[]).forEach(function(p){pri[p.severidad==="Crítica"?"Crítica":p.severidad==="Severa"?"Alta":p.severidad==="Moderada"?"Media":"Baja"]++});var b=blockOf(x,st.projectData);groups[b]=(groups[b]||0)+areaOf(x)});var g=Object.keys(groups),mx=Math.max(1,...g.map(function(k){return groups[k]})),bad=f.map(function(x){return{x:x,c:v4Complete(x)}}).filter(function(x){return!x.c.complete}),ins=v4Integrity(st),vs=v4Versions(),details=[];f.forEach(function(x){(x.pat||[]).forEach(function(p){if(p&&(p.elemento||p.patologia))details.push([p.severidad==="Crítica"?"Crítica":p.severidad==="Severa"?"Alta":p.severidad==="Moderada"?"Media":"Baja",x,p])})});var rank={Crítica:0,Alta:1,Media:2,Baja:3};details.sort(function(a,b){return rank[a[0]]-rank[b[0]]});v4Panel=document.createElement("div");v4Panel.className="gasv-v4-overlay";v4Panel.innerHTML=`<div class="gasv-v4-box"><div class="gasv-v4-head"><div><h2>GASV V4 · Panel del proyecto</h2><small>Resumen · prioridades · validación · integridad · versiones</small></div><button class="gasv-v4-close">×</button></div><div class="gasv-v4-body"><div class="gasv-v4-grid"><div class="gasv-v4-card"><div class="k">Ambientes</div><div class="v">${f.length}</div></div><div class="gasv-v4-card"><div class="k">Área evaluada</div><div class="v">${ar.toFixed(2)}</div><div class="k">m²</div></div><div class="gasv-v4-card"><div class="k">Fotografías</div><div class="v">${ph}</div></div><div class="gasv-v4-card"><div class="k">Patologías</div><div class="v">${pa}</div></div><div class="gasv-v4-card"><div class="k">Actividades</div><div class="v">${ac}</div></div><div class="gasv-v4-card"><div class="k">Ambientes críticos</div><div class="v">${cr}</div></div></div><div class="gasv-v4-section"><h3>Distribución de áreas por bloque</h3>${g.length?g.sort((a,b)=>groups[b]-groups[a]).map(k=>`<div class="gasv-v4-bar-row"><div class="gasv-v4-bar-label">${k}</div><div class="gasv-v4-track"><div class="gasv-v4-bar" style="width:${(groups[k]/mx*100).toFixed(1)}%"></div></div><div class="gasv-v4-bar-value">${groups[k].toFixed(2)} m²</div></div>`).join(""):"<div>No hay áreas registradas.</div>"}</div><div class="gasv-v4-section"><h3>Distribución por estado</h3><div class="gasv-v4-status-grid">${Object.keys(status).map(k=>`<div class="gasv-v4-status"><b>${k}</b><span>${status[k]}</span></div>`).join("")}</div></div><div class="gasv-v4-section"><h3>Resumen de prioridades</h3>${Object.keys(pri).map(k=>`<div class="gasv-v4-bar-row"><div class="gasv-v4-bar-label">${k}</div><div class="gasv-v4-track"><div class="gasv-v4-bar" style="width:${Math.max(pri[k]?3:0,pri[k]/Math.max(1,...Object.values(pri))*100)}%"></div></div><div class="gasv-v4-bar-value">${pri[k]}</div></div>`).join("")}${details.length?`<table class="gasv-v4-table"><thead><tr><th>Prioridad</th><th>Ambiente</th><th>Elemento afectado</th><th>Patología</th><th>Severidad</th><th>Intervención recomendada</th></tr></thead><tbody>${details.slice(0,15).map(x=>`<tr><td>${x[0]}</td><td>${x[1].codigo||"S/C"} · ${x[1].ambiente||"Sin nombre"}</td><td>${x[2].elemento||"—"}</td><td>${x[2].patologia||"—"}</td><td>${x[2].severidad||"—"}</td><td>${x[2].intervencion||"—"}</td></tr>`).join("")}</tbody></table>`:"<div>No existen patologías registradas.</div>"}</div><div class="gasv-v4-section"><h3>Validación de fichas</h3>${bad.length?`<table class="gasv-v4-table"><thead><tr><th>Ficha</th><th>Completitud</th><th>Faltantes</th></tr></thead><tbody>${bad.map(x=>`<tr><td>${x.x.codigo||"S/C"} · ${x.x.ambiente||"Sin nombre"}</td><td>${x.c.pct}%</td><td>${x.c.miss.join(", ")}</td></tr>`).join("")}</tbody></table>`:"<div class="gasv-v4-ok">✓ Fichas completas.</div>"}</div><div class="gasv-v4-section"><h3>Diagnóstico de integridad</h3>${ins.length?`<div class="gasv-v4-bad">⚠ ${ins.length} incidencias.</div><ul>${ins.slice(0,40).map(i=>`<li>${i[1]} · ${i[0]?.codigo||"S/C"} · ${i[0]?.ambiente||"Sin nombre"}</li>`).join("")}</ul>`:"<div class="gasv-v4-ok">✓ Integridad correcta.</div>"}</div><div class="gasv-v4-section"><h3>Versiones</h3><button class="gasv-v4-action gasv-v4-primary" data-v4-create>Crear versión</button>${vs.length?`<table class="gasv-v4-table"><thead><tr><th>Versión</th><th>Fecha</th><th></th></tr></thead><tbody>${vs.map(v=>`<tr><td>${v.label}</td><td>${new Date(v.createdAt).toLocaleString("es-EC")}</td><td><button class="gasv-v4-action" data-v4-restore="${v.id}">Restaurar</button></td></tr>`).join("")}</tbody></table>`:"<div>No existen versiones guardadas.</div>"}</div></div></div>`;document.body.appendChild(v4Panel);q(".gasv-v4-close",v4Panel).onclick=function(){v4Panel.remove();v4Panel=null};v4Panel.onclick=function(e){if(e.target.closest("[data-v4-create]")){v4CreateVersion();return}var r=e.target.closest("[data-v4-restore]");if(r)v4RestoreVersion(r.dataset.v4Restore)}}).catch(function(){})}
-function v4PdfBlock(){var m=qs(".gasv-enh-modal [data-pdf-list]");if(!m||qs("[data-v4-pdf-block]",m.parentElement))return;var qin=qs("[data-pdf-query]",m.parentElement),h=qin?.parentElement;if(!h)return;var sel=document.createElement("select");sel.className="gasv-enh-select";sel.dataset.v4PdfBlock="1";sel.innerHTML="<option value=\"\">Todos los bloques</option>";readState().then(function(st){var bs=[];(st.fichas||[]).forEach(function(f){var b=blockOf(f,st.projectData);if(bs.indexOf(b)<0)bs.push(b)});bs.sort().forEach(function(b){var o=document.createElement("option");o.value=b;o.textContent=b;sel.appendChild(o)})});h.appendChild(sel);sel.onchange=function(){var v=String(sel.value||"").toLowerCase();qsa("[data-pdf-list] > *",m).forEach(function(c){c.style.display=!v||textOf(c).toLowerCase().indexOf(v)>=0?"":"none"})}}
-function v4Lifecycle(){if(v4Life)return;v4Life=true;document.addEventListener("click",function(e){var b=e.target.closest("button");if(!b)return;var l=textOf(b);if(l==="Nuevo"){readState().then(function(st){v4Pending={numeroFicha:v4Next(st.fichas),...v4Now(),gps:""};v4RefreshMeta()})}if(l==="Guardar")setTimeout(function(){v4SaveMeta().then(v4Migrate).then(v4RefreshMeta).catch(function(){})},900);if(l==="Crear ambiente")setTimeout(function(){var st=readState();st.then(function(x){var f=[...(x.fichas||[])].sort(function(a,b){return String(b.updatedAt||"").localeCompare(String(a.updatedAt||""))})[0];if(f)return v4Migrate(f.id).then(v4SaveMeta).then(v4RefreshMeta).catch(function(){})})},1200)})}
-function v4PhotoControls(){
-  var sec=qsa("h2").find(function(h){return textOf(h)==="9. Registro fotográfico"})?.closest(".print-card");if(!sec)return;
-  var input=q("input[type=file][accept*=\"image/\"]",sec);if(!input)return;
-  if(input.dataset.gasvPhotoReady==="1"){if(/iphone|ipad|ipod|android/i.test(navigator.userAgent))input.setAttribute("capture","environment");return;}
-  input.dataset.gasvPhotoReady="1";
-  var bar=document.createElement("div");bar.className="gasv-v4-photo-actions";bar.innerHTML='<button type="button" class="gasv-v4-action" data-photo-camera>📷 Cámara</button><button type="button" class="gasv-v4-action" data-photo-gallery>▣ Galería</button>';
-  input.parentElement&&input.parentElement.insertBefore(bar,input);
-  var mobile=/iphone|ipad|ipod|android/i.test(navigator.userAgent);if(mobile)input.setAttribute("capture","environment");
-  var cam=q("[data-photo-camera]",bar),gal=q("[data-photo-gallery]",bar);
-  cam&&cam.addEventListener("click",function(){input.setAttribute("capture","environment");input.click();});
-  gal&&gal.addEventListener("click",function(){input.removeAttribute("capture");input.click();});
-}
-function v4Ensure(){v4Toolbar();v4FieldBar();v4MetaStrip();v4PdfBlock();v4PhotoControls();v4Lifecycle();v4RefreshMeta().catch(function(){})}
-function ensureEnhancements(){
+  function ensureEnhancements(){
     addMainPdfButton();
     organizeToolbar();
     ensureMainChart();
     ensureDrawerSearch();
     ensureConsolidatedChart();
     ensureWritingAssistants();
-    v4Ensure();
   }
 
-  const observer=new MutationObserver(()=>{ensureEnhancements();gasvRepositionAssistants();});
-  window.addEventListener("scroll",gasvRepositionAssistants,true);
-  window.addEventListener("resize",gasvRepositionAssistants);
+  const observer=new MutationObserver(()=>{ensureEnhancements()});
   function boot(){
     if(window[ENH]) return;
     window[ENH]={version:'4.0.0',readState,groupAreas,openPdfSelector,generateTechnicalPdf};
