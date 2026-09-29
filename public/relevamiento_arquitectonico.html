@@ -322,7 +322,7 @@ Error generating stack: `+l.message+`
 .gasv-writing-actions{display:flex;gap:5px;flex-wrap:wrap}
 .gasv-writing-actions button{border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:5px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer}
 .gasv-writing-actions button:first-child{background:#17365d;color:#fff;border-color:#17365d}
-.gasv-writing-status{margin-top:5px;color:#64748b;font-size:9.5px;line-height:1.35}.gasv-v4-photo-actions{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 7px}.gasv-v4-photo-actions .gasv-v4-action{min-height:36px}.gasv-v4-meta [data-v4-gps]{min-height:30px}.gasv-writing-status.ok{color:#166534;font-weight:700}.gasv-writing-status.over{color:#b91c1c;font-weight:700}.gasv-writing-actions button:disabled{opacity:.55;cursor:wait}
+.gasv-writing-status{margin-top:5px;color:#64748b;font-size:9.5px;line-height:1.35;display:flex;gap:9px;flex-wrap:wrap;align-items:center}.gasv-writing-status .gasv-writing-source{opacity:.86}.gasv-writing-actions button:disabled{opacity:.48;cursor:not-allowed}.gasv-writing-actions button:not(:disabled){cursor:pointer}.gasv-v4-photo-actions{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 7px}.gasv-v4-photo-actions .gasv-v4-action{min-height:36px}.gasv-v4-meta [data-v4-gps]{min-height:30px}.gasv-writing-status.ok{color:#166534;font-weight:700}.gasv-writing-status.over{color:#b91c1c;font-weight:700}.gasv-writing-actions button:disabled{opacity:.55;cursor:wait}
 @media print{.gasv-writing-assistant{display:none!important}}
 .gasv-toolbar-organized{display:flex!important;flex-wrap:wrap!important;justify-content:flex-end!important;align-items:center!important;gap:6px!important;max-width:940px!important}
 .gasv-toolbar-organized .gasv-toolbar-btn{white-space:nowrap!important;min-height:36px!important}
@@ -842,20 +842,20 @@ Error generating stack: `+l.message+`
   function gasvAddAssistant(section,title,kind){
     if(!section)return;var ta=Array.from(section.querySelectorAll('textarea')).pop();if(!ta||ta.dataset.gasvAssistantReady==='1')return;ta.dataset.gasvAssistantReady='1';
     var wrap=document.createElement('div');wrap.className='gasv-writing-assistant print:hidden';
-    wrap.innerHTML='<div class="gasv-writing-toolbar"><div><strong>'+esc(title)+'</strong><span data-gasv-words>0 / 100 palabras</span></div><div class="gasv-writing-actions"><button type="button" data-gasv-generate>Generar observación técnica</button><button type="button" data-gasv-regenerate style="display:none">Regenerar</button><button type="button" data-gasv-copy style="display:none">Copiar</button><button type="button" data-gasv-clear>Limpiar</button></div></div><div class="gasv-writing-status" data-gasv-status>0 / 100 palabras · ✓ Dentro del límite</div>';
+    wrap.innerHTML='<div class="gasv-writing-toolbar"><div><strong>'+esc(title)+'</strong><span data-gasv-words>0 / 100 palabras</span></div><div class="gasv-writing-actions"><button type="button" data-gasv-generate>Generar</button><button type="button" data-gasv-regenerate disabled>Regenerar</button><button type="button" data-gasv-copy disabled>Copiar</button><button type="button" data-gasv-clear>Limpiar</button></div></div><div class="gasv-writing-status" data-gasv-status><span data-gasv-status-main>0 / 100 palabras · ✓ Dentro del límite</span><span class="gasv-writing-source">Basado exclusivamente en los datos registrados en la ficha.</span></div>';
     ta.parentElement&&ta.parentElement.insertBefore(wrap,ta);
-    var counter=qs('[data-gasv-words]',wrap),status=qs('[data-gasv-status]',wrap),gen=qs('[data-gasv-generate]',wrap),regen=qs('[data-gasv-regenerate]',wrap),copy=qs('[data-gasv-copy]',wrap);
-    function update(){var w=gasvWords(ta.value),over=w>100,has=gasvClean(ta.value)!=='';if(counter){counter.textContent=w+' / 100 palabras';counter.classList.toggle('over',over);}if(status){status.textContent=over?'⚠ Excede 100 palabras':'✓ Dentro del límite';status.classList.toggle('over',over);status.classList.toggle('ok',!over);}if(regen)regen.style.display=has?'inline-flex':'none';if(copy)copy.style.display=has?'inline-flex':'none';}
+    var counter=qs('[data-gasv-words]',wrap),status=qs('[data-gasv-status-main]',wrap),gen=qs('[data-gasv-generate]',wrap),regen=qs('[data-gasv-regenerate]',wrap),copy=qs('[data-gasv-copy]',wrap);
+    function update(){var w=gasvWords(ta.value),over=w>100,has=gasvClean(ta.value)!=='';if(counter){counter.textContent=w+' / 100 palabras';counter.classList.toggle('over',over);}if(status){status.textContent=over?'⚠ Excede 100 palabras':'✓ Dentro del límite';status.classList.toggle('over',over);status.classList.toggle('ok',!over);}if(regen)regen.disabled=!has;if(copy)copy.disabled=!has;}
     ta.addEventListener('input',update);update();
     qs('[data-gasv-clear]',wrap)&&qs('[data-gasv-clear]',wrap).addEventListener('click',function(){gasvSetValue(ta,'');update();});
-    gen&&gen.addEventListener('click',async function(){gen.disabled=true;try{var ctx=await gasvCurrentFicha(),out=kind==='dim'?gasvDimensionalText(ctx):kind==='diag'?gasvDiagnosisText(ctx):gasvGeneralText(ctx);if(!out){status.textContent='No hay datos suficientes registrados para generar una observación técnica.';status.classList.remove('ok','over');return;}gasvSetValue(ta,out);}finally{gen.disabled=false;update();}});
-    regen&&regen.addEventListener('click',function(){gen&&gen.click();});
-    copy&&copy.addEventListener('click',async function(){var ok=await gasvCopyText(ta.value);status.textContent=ok?'✓ Texto copiado al portapapeles.':'No fue posible copiar el texto.';if(ok)setTimeout(update,1800);});
+    gen&&gen.addEventListener('click',async function(){gen.disabled=true;try{var ctx=await gasvCurrentFicha(),out=kind==='dim'?gasvDimensionalText(ctx):kind==='diag'?gasvDiagnosisText(ctx):gasvGeneralText(ctx);if(!out){status.textContent='No hay datos suficientes registrados para generar una observación técnica.';return;}gasvSetValue(ta,out);}finally{gen.disabled=false;update();}});
+    regen&&regen.addEventListener('click',function(){if(!regen.disabled&&gen)gen.click();});
+    copy&&copy.addEventListener('click',async function(){if(copy.disabled)return;var ok=await gasvCopyText(ta.value);status.textContent=ok?'✓ Texto copiado al portapapeles.':'No fue posible copiar el texto.';if(ok)setTimeout(update,1800);});
   }
   function ensureWritingAssistants(){
-    gasvAddAssistant(gasvSection('2. Levantamiento dimensional'),'Asistente · Punto 2 — Levantamiento dimensional','dim');
-    gasvAddAssistant(gasvSection('10. Diagnóstico preliminar'),'Asistente · Punto 10 — Diagnóstico / criterio técnico','diag');
-    gasvAddAssistant(gasvSection('11. Observaciones generales'),'Asistente · Punto 11 — Observaciones generales','obs');
+    gasvAddAssistant(gasvSection('2. Levantamiento dimensional'),'Asistente de redacción técnica · Punto 2','dim');
+    gasvAddAssistant(gasvSection('10. Diagnóstico preliminar'),'Asistente de redacción técnica · Punto 10','diag');
+    gasvAddAssistant(gasvSection('11. Observaciones generales'),'Asistente de redacción técnica · Punto 11','obs');
   }
 
   var v4Pending=null,v4Dup=false,v4Panel=null,v4Life=false,v4VerKey="gasv_v4_versions";
