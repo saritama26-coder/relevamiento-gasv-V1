@@ -794,24 +794,43 @@ Error generating stack: `+l.message+`
     return gasvLimit(t,100);
   }
   function gasvAddAssistant(section,title,kind){
-    if(!section) return;
+    if(!section)return;
     const textarea=Array.from(section.querySelectorAll('textarea')).pop();
-    if(!textarea || textarea.dataset.gasvAssistantReady==='1') return;
-    textarea.dataset.gasvAssistantReady='1';
+    if(!textarea)return;
+
+    const existing=section.querySelector('[data-gasv-assistant-kind="'+kind+'"]');
+    if(existing&&existing.isConnected){
+      if(existing.__gasvTextarea===textarea)return;
+      existing.remove();
+    }
+
     const wrap=document.createElement('div');
     wrap.className='gasv-writing-assistant print:hidden';
-    wrap.innerHTML=`<div class="gasv-writing-toolbar"><div><strong>${esc(title)}</strong><span data-gasv-words>0 / 100 palabras</span></div><div class="gasv-writing-actions"><button type="button" data-gasv-generate>Generar</button><button type="button" data-gasv-regenerate style="display:none">Regenerar</button><button type="button" data-gasv-clear>Limpiar</button></div></div><div class="gasv-writing-status" data-gasv-status>Generación basada únicamente en los datos registrados en la ficha.</div>`;
+    wrap.setAttribute('data-gasv-assistant-kind',kind);
+    wrap.innerHTML='<div class="gasv-writing-toolbar"><div><strong>'+esc(title)+'</strong><span data-gasv-words>0 / 100 palabras</span></div><div class="gasv-writing-actions"><button type="button" data-gasv-generate>Generar</button><button type="button" data-gasv-regenerate style="display:none">Regenerar</button><button type="button" data-gasv-clear>Limpiar</button></div></div><div class="gasv-writing-status" data-gasv-status>Generación basada únicamente en los datos registrados en la ficha.</div>';
+
     textarea.parentElement?.insertBefore(wrap,textarea);
-    const counter=qs('[data-gasv-words]',wrap), status=qs('[data-gasv-status]',wrap);
-    const update=()=>{const w=gasvWords(textarea.value); if(counter){counter.textContent=`${w} / 100 palabras`;counter.classList.toggle('over',w>100);}};
-    textarea.addEventListener('input',update); update();
+    wrap.__gasvTextarea=textarea;
+
+    const counter=qs('[data-gasv-words]',wrap),status=qs('[data-gasv-status]',wrap);
+    const update=()=>{
+      const w=gasvWords(textarea.value);
+      if(counter){counter.textContent=w+' / 100 palabras';counter.classList.toggle('over',w>100);}
+      if(status){status.classList.toggle('ok',w<=100);status.classList.toggle('over',w>100);}
+    };
+    textarea.addEventListener('input',update);
+    update();
     qs('[data-gasv-clear]',wrap)?.addEventListener('click',()=>{gasvSetValue(textarea,'');status.textContent='Texto eliminado. Puede escribirlo manualmente.';update();});
     qs('[data-gasv-generate]',wrap)?.addEventListener('click',async()=>{
       const ctx=await gasvCurrentFicha();
-      let txt=kind==='dim'?gasvDimensionalText():kind==='diag'?gasvDiagnosisText(ctx):gasvGeneralText(ctx);
-      gasvSetValue(textarea,txt);
-      qs('[data-gasv-regenerate]',wrap).style.display='inline-flex';
-      status.textContent=txt?`Texto generado con datos registrados · ${gasvWords(txt)} palabras.`:'No hay datos suficientes para generar un texto técnico.';
+      let out='';
+      if(kind==='dim')out=gasvDimensionalText(ctx);
+      else if(kind==='diag')out=gasvDiagnosisText(ctx);
+      else out=gasvGeneralText(ctx);
+      gasvSetValue(textarea,out);
+      const rb=qs('[data-gasv-regenerate]',wrap);
+      if(rb)rb.style.display='inline-flex';
+      status.textContent=out?'Texto generado con datos registrados · '+gasvWords(out)+' palabras.':'No hay datos suficientes para generar un texto técnico.';
       update();
     });
     qs('[data-gasv-regenerate]',wrap)?.addEventListener('click',()=>qs('[data-gasv-generate]',wrap)?.click());
