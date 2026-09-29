@@ -12,10 +12,7 @@ export default defineConfig(() => {
       VitePWA({
         registerType: 'autoUpdate',
         includeAssets: [
-          'apple-touch-icon.png',
-          'icon.svg',
-          'pwa-192x192.png',
-          'pwa-512x512.png',
+          'gasv-icon.svg',
         ],
         manifest: {
           id: '/',
@@ -31,13 +28,7 @@ export default defineConfig(() => {
           scope: '/',
           icons: [
             {
-              src: '/pwa-192x192.png',
-              sizes: '192x192',
-              type: 'image/png',
-              purpose: 'any',
-            },
-            {
-              src: '/icon.svg',
+              src: '/gasv-icon.svg',
               sizes: '512x512',
               type: 'image/svg+xml',
               purpose: 'any',
