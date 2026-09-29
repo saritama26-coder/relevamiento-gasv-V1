@@ -313,7 +313,7 @@ Error generating stack: `+l.message+`
   .gasv-enh-no-print{display:none!important}
 }
 
-.gasv-writing-assistant{margin:0 0 7px;padding:7px 9px;border:1px solid #d8e1ec;border-left:3px solid #17365d;border-radius:6px;background:#f8fafc}.gasv-writing-floating{position:fixed!important;margin:0!important;z-index:1305!important;box-shadow:0 8px 24px rgba(15,23,42,.12)}
+.gasv-writing-assistant{margin:0 0 7px;padding:7px 9px;border:1px solid #d8e1ec;border-left:3px solid #17365d;border-radius:6px;background:#f8fafc}
 .gasv-writing-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:11px;color:#334155}
 .gasv-writing-toolbar>div:first-child{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .gasv-writing-toolbar strong{color:#17365d;font-size:10.5px}
@@ -322,8 +322,11 @@ Error generating stack: `+l.message+`
 .gasv-writing-actions{display:flex;gap:5px;flex-wrap:wrap}
 .gasv-writing-actions button{border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:5px;padding:4px 8px;font-size:10px;font-weight:700;cursor:pointer}
 .gasv-writing-actions button:first-child{background:#17365d;color:#fff;border-color:#17365d}
-.gasv-writing-status{margin-top:5px;color:#64748b;font-size:9.5px;line-height:1.35;display:flex;gap:9px;flex-wrap:wrap;align-items:center}.gasv-writing-status .gasv-writing-source{opacity:.86}.gasv-writing-actions button:disabled{opacity:.48;cursor:not-allowed}.gasv-writing-actions button:not(:disabled){cursor:pointer}.gasv-v4-photo-actions{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 7px}.gasv-v4-photo-actions .gasv-v4-action{min-height:36px}.gasv-v4-meta [data-v4-gps]{min-height:30px}.gasv-writing-status.ok{color:#166534;font-weight:700}.gasv-writing-status.over{color:#b91c1c;font-weight:700}.gasv-writing-actions button:disabled{opacity:.55;cursor:wait}
+.gasv-writing-status{margin-top:5px;color:#64748b;font-size:9.5px;line-height:1.35}
+.gasv-writing-status.ok{color:#166534;font-weight:700}
+.gasv-writing-status.over{color:#b91c1c;font-weight:700}
 @media print{.gasv-writing-assistant{display:none!important}}
+{display:none!important}}
 .gasv-toolbar-organized{display:flex!important;flex-wrap:wrap!important;justify-content:flex-end!important;align-items:center!important;gap:6px!important;max-width:940px!important}
 .gasv-toolbar-organized .gasv-toolbar-btn{white-space:nowrap!important;min-height:36px!important}
 .gasv-toolbar-organized .gasv-toolbar-group-start{margin-left:9px!important;padding-left:10px!important;border-left:1px solid rgba(255,255,255,.24)!important}
@@ -690,174 +693,7 @@ Error generating stack: `+l.message+`
       ${selected.map((f,i)=>fichaHtml(f,state,i,selected.length)).join('')}
       <div style="margin-top:14px;border-top:1px solid #17365d;padding-top:6px;font-size:7pt;color:#64748b">Documento generado por Relevamiento Arquitectónico GASV · Arq. Gabriel Saritama V. · ${esc(new Date().toLocaleString('es-EC'))}</div>
       </div>
-<style id="gasv-force-writing-ui">
-.gasv-force-assistant{margin:6px 0 7px;padding:8px 10px;border:1px solid #cbd8e8;border-left:3px solid #17365d;border-radius:7px;background:#f8fafc;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.gasv-force-assistant .gfa-top{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
-.gasv-force-assistant .gfa-title{font-size:11px;font-weight:800;color:#17365d}
-.gasv-force-assistant .gfa-count{font-size:10px;color:#64748b;margin-left:7px}
-.gasv-force-assistant .gfa-actions{display:flex;gap:5px;flex-wrap:wrap}
-.gasv-force-assistant .gfa-actions button{border:1px solid #cbd5e1;background:#fff;color:#334155;border-radius:5px;padding:5px 9px;font-size:10px;font-weight:800;line-height:1.1;min-height:30px}
-.gasv-force-assistant .gfa-actions button:first-child{background:#17365d;color:#fff;border-color:#17365d}
-.gasv-force-assistant .gfa-actions button:disabled{opacity:.45;cursor:not-allowed}
-.gasv-force-assistant .gfa-status{margin-top:5px;font-size:9.5px;color:#64748b}
-.gasv-force-assistant .gfa-status.ok{color:#166534;font-weight:800}
-.gasv-force-assistant .gfa-status.over{color:#b91c1c;font-weight:800}
-</style>
-<script id="GASV_FORCE_WRITING_ASSISTANT_V2">
-(function(){
-"use strict";
-if(window.__GASV_FORCE_WRITING_ASSISTANT_V2__)return;
-window.__GASV_FORCE_WRITING_ASSISTANT_V2__=true;
 
-function norm(v){return String(v==null?"":v).normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase().trim();}
-function txt(e){return String(e&&e.textContent||"").trim();}
-function clean(v){return String(v==null?"":v).trim();}
-function words(v){return clean(v).split(/\s+/).filter(Boolean).length;}
-function limit(v){var a=clean(v).split(/\s+/).filter(Boolean);return a.length<=100?a.join(" "):a.slice(0,100).join(" ").replace(/[;,.:\s]+$/,"")+".");}
-function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m];});}
-function section(title){
-  var hs=Array.from(document.querySelectorAll("h2"));
-  var h=hs.find(function(x){return norm(txt(x))===norm(title);});
-  return h&&h.closest(".print-card")||null;
-}
-function field(sec,label){
-  if(!sec)return null;
-  var ls=Array.from(sec.querySelectorAll("label"));
-  var l=ls.find(function(x){return norm(txt(x))===norm(label);});
-  return l&&l.parentElement&&l.parentElement.querySelector("input,select,textarea")||null;
-}
-function currentFields(){
-  var sec=section("1. Datos generales");
-  return {
-    code:clean(field(sec,"Código")&&field(sec,"Código").value),
-    amb:clean(field(sec,"Ambiente / Área")&&field(sec,"Ambiente / Área").value)
-  };
-}
-async function state(){
-  try{
-    var s=window.__GASV_STORAGE__;
-    if(!s||typeof s.getItem!=="function")return{fichas:[],projectData:{}};
-    return{
-      fichas:await s.getItem("fichas")||[],
-      projectData:await s.getItem("projectData")||{}
-    };
-  }catch(e){return{fichas:[],projectData:{}};}
-}
-function currentFicha(st){
-  var k=currentFields();
-  return (st.fichas||[]).find(function(f){return k.code&&clean(f.codigo)===k.code;}) ||
-         (st.fichas||[]).find(function(f){return k.amb&&clean(f.ambiente)===k.amb;}) || {};
-}
-function rowValues(a,key1,key2){
-  return Array.from(new Set((Array.isArray(a)?a:[]).map(function(r){return clean(r&&r[key1])||clean(r&&r[key2]);}).filter(Boolean)));
-}
-function diagnosis(st){
-  var f=currentFicha(st),p=Array.isArray(f.pat)?f.pat.filter(Boolean):[],q=Array.isArray(f.cuan)?f.cuan.filter(Boolean):[],out=[];
-  if(clean(f.diagestado))out.push("El estado general registrado es "+clean(f.diagestado).toLowerCase()+".");
-  if(p.length){
-    var el=rowValues(p,"elemento",""),pa=rowValues(p,"patologia",""),sv=rowValues(p,"severidad","");
-    var s="Se registran "+p.length+" patología"+(p.length===1?"":"s");
-    if(el.length)s+=" en "+el.slice(0,3).join(", ");
-    if(pa.length)s+="; corresponden a "+pa.slice(0,3).join(", ").toLowerCase();
-    out.push(s+".");
-    if(sv.length)out.push("Las severidades consignadas son "+sv.slice(0,4).join(", ").toLowerCase()+".");
-    var iv=rowValues(p,"intervencion","");if(iv.length)out.push("Las intervenciones registradas incluyen "+iv.slice(0,3).join(", ").toLowerCase()+".");
-  }else out.push("No existen registros de patologías en la ficha.");
-  if(q.length)out.push("Se registran "+q.length+" actividades de cuantificación.");
-  if(clean(f.interv))out.push("La intervención general seleccionada es "+clean(f.interv).toLowerCase()+".");
-  return limit(out.join(" "));
-}
-function dimensional(){
-  var sec=section("2. Levantamiento dimensional"),f=currentFields(),out=[];
-  var geo=clean(field(sec,"Tipo de geometría")&&field(sec,"Tipo de geometría").value);
-  var l=clean(field(sec,"Largo (m)")&&field(sec,"Largo (m)").value);
-  var a=clean(field(sec,"Ancho (m)")&&field(sec,"Ancho (m)").value);
-  var h=clean(field(sec,"Altura libre (m)")&&field(sec,"Altura libre (m)").value);
-  var ar=clean(field(sec,"Área registrada (m²)")&&field(sec,"Área registrada (m²)").value);
-  var ad=clean(field(sec,"Área del ambiente (m²)")&&field(sec,"Área del ambiente (m²)").value);
-  var per=clean(field(sec,"Perímetro calculado (m)")&&field(sec,"Perímetro calculado (m)").value);
-  var est=clean(field(sec,"Estado general")&&field(sec,"Estado general").value);
-  if(geo)out.push("El ambiente presenta una geometría "+(norm(geo)==="irregular"?"irregular":"regular"));
-  if(norm(geo)==="irregular"&&ad)out.push("con un área registrada de "+ad+" m²");
-  if(norm(geo)!=="irregular"&&l&&a)out.push("con dimensiones registradas de "+l+" m de largo por "+a+" m de ancho");
-  if(h)out.push("altura libre de "+h+" m");
-  if(ar)out.push("área de "+ar+" m²");
-  if(per)out.push("perímetro de "+per+" m");
-  var t=out.length?out.join(", ")+".":"";
-  if(est)t+=(t?" ":"")+"Estado general: "+est.toLowerCase()+".";
-  return limit(t);
-}
-function general(st){
-  var f=currentFicha(st),p=Array.isArray(f.pat)?f.pat.filter(Boolean):[],q=Array.isArray(f.cuan)?f.cuan.filter(Boolean):[],cons=Array.isArray(f.cons)?f.cons.filter(Boolean):[],eq=Array.isArray(f.equip)?f.equip.filter(Boolean):[],inst=[].concat(f.elec||[],f.hidro||[]).filter(Boolean),parts=[];
-  var ar=f.geometria==="irregular"?clean(f.areaDirecta):(clean(f.largo)&&clean(f.ancho)?(Number(f.largo)*Number(f.ancho)).toFixed(2):"");
-  if(ar)parts.push("área registrada de "+ar+" m²");
-  if(cons.length||eq.length||inst.length)parts.push((cons.length+eq.length+inst.length)+" registros de elementos e instalaciones");
-  if(p.length)parts.push(p.length+" patologías o deficiencias registradas");
-  if(q.length)parts.push(q.length+" actividades de cuantificación");
-  if(Array.isArray(f.fotos)&&f.fotos.length)parts.push(f.fotos.length+" fotografías");
-  var t=parts.length?"La ficha registra "+parts.join(", ")+".":"La ficha contiene los registros disponibles del ambiente.";
-  if(clean(f.diagestado))t+=" El estado general consignado es "+clean(f.diagestado).toLowerCase()+".";
-  return limit(t+" La síntesis corresponde exclusivamente a los datos registrados en la ficha.");
-}
-function setValue(el,v){
-  var setter=Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,"value")&&Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype,"value").set;
-  setter?setter.call(el,v):el.value=v;
-  el.dispatchEvent(new Event("input",{bubbles:true}));
-  el.dispatchEvent(new Event("change",{bubbles:true}));
-}
-function copy(v){
-  if(navigator.clipboard&&navigator.clipboard.writeText)return navigator.clipboard.writeText(v).then(function(){return true;}).catch(function(){return false;});
-  return Promise.resolve(false);
-}
-function mount(sec,title,kind,label){
-  if(!sec)return;
-  var ta=label?field(sec,label):null;
-  if(!ta)ta=Array.from(sec.querySelectorAll("textarea")).pop();
-  if(!ta)return;
-  Array.from(sec.querySelectorAll(".gasv-writing-assistant")).forEach(function(x){x.style.display="none";});
-  var host=ta.parentElement;
-  if(!host)return;
-  var wrap=host.querySelector('[data-gasv-force-kind="'+kind+'"]');
-  if(!wrap){
-    wrap=document.createElement("div");
-    wrap.className="gasv-force-assistant";
-    wrap.setAttribute("data-gasv-force-kind",kind);
-    wrap.innerHTML='<div class="gfa-top"><div><span class="gfa-title">'+esc(title)+'</span><span class="gfa-count" data-gfa-count>0 / 100 palabras</span></div><div class="gfa-actions"><button type="button" data-gfa-generate>Generar</button><button type="button" data-gfa-regenerate disabled>Regenerar</button><button type="button" data-gfa-copy disabled>Copiar</button><button type="button" data-gfa-clear>Limpiar</button></div></div><div class="gfa-status" data-gfa-status>0 / 100 palabras · ✓ Dentro del límite</div>';
-    ta.insertAdjacentElement("beforebegin",wrap);
-    var count=wrap.querySelector("[data-gfa-count]"),status=wrap.querySelector("[data-gfa-status]"),gen=wrap.querySelector("[data-gfa-generate]"),regen=wrap.querySelector("[data-gfa-regenerate]"),cp=wrap.querySelector("[data-gfa-copy]"),cl=wrap.querySelector("[data-gfa-clear]");
-    function update(){
-      var v=ta.value||"",w=words(v),over=w>100,has=clean(v)!=="";
-      count.textContent=w+" / 100 palabras";
-      status.textContent=over?"⚠ Excede 100 palabras":"✓ Dentro del límite";
-      status.className="gfa-status "+(over?"over":"ok");
-      regen.disabled=!has;cp.disabled=!has;
-    }
-    gen.addEventListener("click",async function(){
-      gen.disabled=true;
-      try{
-        var st=await state(),v=kind==="dim"?dimensional():kind==="diag"?diagnosis(st):general(st);
-        setValue(ta,v);
-      }finally{gen.disabled=false;update();}
-    });
-    regen.addEventListener("click",function(){if(!regen.disabled)gen.click();});
-    cp.addEventListener("click",async function(){if(!cp.disabled){var ok=await copy(ta.value);status.textContent=ok?"✓ Texto copiado.":"No fue posible copiar.";if(ok)setTimeout(update,1500);}});
-    cl.addEventListener("click",function(){setValue(ta,"");update();});
-    ta.addEventListener("input",update);
-  }
-  wrap.__gasvForceTextarea=ta;
-  wrap.style.display="";
-}
-function boot(){
-  mount(section("2. Levantamiento dimensional"),"Asistente de redacción técnica · Punto 2","dim","Observaciones");
-  mount(section("10. Diagnóstico preliminar"),"Asistente de redacción técnica · Punto 10","diag","Diagnóstico / criterio técnico");
-  mount(section("11. Observaciones generales"),"Asistente de redacción técnica · Punto 11","obs");
-}
-boot();
-var mo=new MutationObserver(function(){boot();});
-mo.observe(document.body,{childList:true,subtree:true});
-setInterval(boot,1000);
-})();
-</script>
 
 </body></html>`;
 
@@ -1009,76 +845,60 @@ setInterval(boot,1000);
     try{if(navigator.clipboard&&navigator.clipboard.writeText){await navigator.clipboard.writeText(value);return true;}}catch(e){}
     try{var ta=document.createElement('textarea');ta.value=value;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();var ok=document.execCommand('copy');ta.remove();return ok;}catch(e){return false;}
   }
-  function gasvAddAssistant(section,title,kind,fieldLabel){
+  function gasvAddAssistant(section,title,kind){
     if(!section)return;
-    var ta=null;
-    if(fieldLabel){
-      var lab=Array.from(section.querySelectorAll('label')).find(function(x){return gasvNormalize(textOf(x))===gasvNormalize(fieldLabel);});
-      ta=lab&&lab.parentElement&&lab.parentElement.querySelector('textarea');
-    }
-    if(!ta)ta=Array.from(section.querySelectorAll('textarea')).pop();
-    if(!ta)return;
+    const textarea=Array.from(section.querySelectorAll('textarea')).pop();
+    if(!textarea || textarea.dataset.gasvAssistantReady==='1')return;
+    textarea.dataset.gasvAssistantReady='1';
 
-    var key='gasv-assistant-'+kind;
-    var wrap=document.querySelector('[data-gasv-assistant="'+key+'"]');
-    if(!wrap){
-      wrap=document.createElement('div');
-      wrap.className='gasv-writing-assistant gasv-writing-floating print:hidden';
-      wrap.setAttribute('data-gasv-assistant',key);
-      wrap.innerHTML='<div class="gasv-writing-toolbar"><div><strong>'+esc(title)+'</strong><span data-gasv-words>0 / 100 palabras</span></div><div class="gasv-writing-actions"><button type="button" data-gasv-generate>Generar</button><button type="button" data-gasv-regenerate disabled>Regenerar</button><button type="button" data-gasv-copy disabled>Copiar</button><button type="button" data-gasv-clear>Limpiar</button></div></div><div class="gasv-writing-status" data-gasv-status><span data-gasv-status-main>0 / 100 palabras · ✓ Dentro del límite</span><span class="gasv-writing-source">Basado exclusivamente en los datos registrados en la ficha.</span></div>';
-      document.body.appendChild(wrap);
-    }
-    wrap.__gasvTextarea=ta;
+    const wrap=document.createElement('div');
+    wrap.className='gasv-writing-assistant print:hidden';
+    wrap.innerHTML=\`<div class="gasv-writing-toolbar"><div><strong>\${esc(title)}</strong><span data-gasv-words>0 / 100 palabras</span></div><div class="gasv-writing-actions"><button type="button" data-gasv-generate>Generar</button><button type="button" data-gasv-regenerate style="display:none">Regenerar</button><button type="button" data-gasv-clear>Limpiar</button></div></div><div class="gasv-writing-status" data-gasv-status>Generación basada únicamente en los datos registrados en la ficha.</div>\`;
 
-    var counter=qs('[data-gasv-words]',wrap),status=qs('[data-gasv-status-main]',wrap),gen=qs('[data-gasv-generate]',wrap),regen=qs('[data-gasv-regenerate]',wrap),copy=qs('[data-gasv-copy]',wrap),clear=qs('[data-gasv-clear]',wrap);
-    if(!wrap.dataset.bound){
-      wrap.dataset.bound='1';
-      function update(){
-        var el=wrap.__gasvTextarea||ta,w=gasvWords(el&&el.value||''),over=w>100,has=gasvClean(el&&el.value||'')!=='';
-        if(counter){counter.textContent=w+' / 100 palabras';counter.classList.toggle('over',over);}
-        if(status){status.textContent=over?'⚠ Excede 100 palabras':'✓ Dentro del límite';status.classList.toggle('over',over);status.classList.toggle('ok',!over);}
-        if(regen)regen.disabled=!has;
-        if(copy)copy.disabled=!has;
+    textarea.parentElement?.insertBefore(wrap,textarea);
+
+    const counter=qs('[data-gasv-words]',wrap);
+    const status=qs('[data-gasv-status]',wrap);
+    const update=()=>{
+      const w=gasvWords(textarea.value);
+      if(counter){
+        counter.textContent=\`\${w} / 100 palabras\`;
+        counter.classList.toggle('over',w>100);
       }
-      wrap.__gasvUpdate=update;
-      clear&&clear.addEventListener('click',function(){var el=wrap.__gasvTextarea;if(el)gasvSetValue(el,'');update();});
-      regen&&regen.addEventListener('click',function(){if(regen.disabled||!gen)return;gen.click();});
-      copy&&copy.addEventListener('click',async function(){if(copy.disabled)return;var el=wrap.__gasvTextarea;var ok=await gasvCopyText(el&&el.value||'');status.textContent=ok?'✓ Texto copiado al portapapeles.':'No fue posible copiar el texto.';if(ok)setTimeout(update,1800);});
-      gen&&gen.addEventListener('click',async function(){
-        var el=wrap.__gasvTextarea;if(!el)return;
-        gen.disabled=true;
-        try{
-          var ctx=await gasvCurrentFicha(),out=kind==='dim'?gasvDimensionalText(ctx):kind==='diag'?gasvDiagnosisText(ctx):gasvGeneralText(ctx);
-          if(!out){status.textContent='No hay datos suficientes registrados para generar una observación técnica.';return;}
-          gasvSetValue(el,out);
-        }finally{gen.disabled=false;update();}
-      });
-      ta.addEventListener('input',update);
-      update();
-    }
-    wrap.__gasvSection=section;
+      if(status){
+        status.classList.toggle('ok',w<=100);
+        status.classList.toggle('over',w>100);
+      }
+    };
 
-    function place(){
-      if(!document.body.contains(wrap)||!document.body.contains(ta))return;
-      var r=ta.getBoundingClientRect(),h=wrap.offsetHeight||58,w=Math.min(Math.max(300,r.width),700);
-      var left=Math.max(8,Math.min(window.innerWidth-w-8,r.left));
-      var top=r.top-h-6;
-      if(top<8)top=Math.min(window.innerHeight-8,r.bottom+6);
-      wrap.style.width=Math.max(280,w)+'px';
-      wrap.style.left=left+'px';
-      wrap.style.top=Math.max(8,top)+'px';
-    }
-    wrap.__gasvPlace=place;
-    place();
-    wrap.__gasvUpdate&&wrap.__gasvUpdate();
+    textarea.addEventListener('input',update);
+    update();
+
+    qs('[data-gasv-clear]',wrap)?.addEventListener('click',()=>{
+      gasvSetValue(textarea,'');
+      status.textContent='Texto eliminado. Puede escribirlo manualmente.';
+      update();
+    });
+
+    qs('[data-gasv-generate]',wrap)?.addEventListener('click',async()=>{
+      const ctx=await gasvCurrentFicha();
+      let txt='';
+      if(kind==='dim')txt=gasvDimensionalText(ctx);
+      else if(kind==='diag')txt=gasvDiagnosisText(ctx);
+      else txt=gasvGeneralText(ctx);
+      gasvSetValue(textarea,txt);
+      qs('[data-gasv-regenerate]',wrap).style.display='inline-flex';
+      status.textContent=txt?\`Texto generado con datos registrados · \${gasvWords(txt)} palabras.\`:'No hay datos suficientes para generar un texto técnico.';
+      update();
+    });
+
+    qs('[data-gasv-regenerate]',wrap)?.addEventListener('click',()=>qs('[data-gasv-generate]',wrap)?.click());
   }
-  function gasvRepositionAssistants(){
-    document.querySelectorAll('[data-gasv-assistant]').forEach(function(w){if(w.__gasvPlace)w.__gasvPlace();if(w.__gasvUpdate)w.__gasvUpdate();});
-  }
+
   function ensureWritingAssistants(){
-    gasvAddAssistant(gasvSection('2. Levantamiento dimensional'),'Asistente de redacción técnica · Punto 2','dim','Observaciones');
-    gasvAddAssistant(gasvSection('10. Diagnóstico preliminar'),'Asistente de redacción técnica · Punto 10','diag','Diagnóstico / criterio técnico');
-    gasvAddAssistant(gasvSection('11. Observaciones generales'),'Asistente de redacción técnica · Punto 11','obs');
+    gasvAddAssistant(gasvSection('2. Levantamiento dimensional'),'Asistente de observación dimensional','dim');
+    gasvAddAssistant(gasvSection('10. Diagnóstico preliminar'),'Asistente de diagnóstico técnico','diag');
+    gasvAddAssistant(gasvSection('11. Observaciones generales'),'Asistente de observaciones generales','obs');
   }
 
   var v4Pending=null,v4Dup=false,v4Panel=null,v4Life=false,v4VerKey="gasv_v4_versions";
