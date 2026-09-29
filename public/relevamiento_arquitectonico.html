@@ -240,48 +240,88 @@ Error generating stack: `+l.message+`
 }
 </style>
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
-    <style id="gasv-mobile-actions-menu-css">
+    <style id="gasv-mobile-command-menu-css">
 @media(max-width:768px){
-  .gasv-mobile-actions-menu-root{display:block!important;position:relative!important;width:100%!important;box-sizing:border-box!important;margin:0!important;padding:0 8px!important}
-  .gasv-mobile-actions-menu-button{
-    display:flex!important;align-items:center!important;justify-content:center!important;
-    width:100%!important;min-height:42px!important;padding:9px 14px!important;
-    border:1px solid rgba(255,255,255,.22)!important;border-radius:9px!important;
-    background:#2563eb!important;color:#fff!important;font-size:15px!important;
-    font-weight:800!important;letter-spacing:.2px!important;cursor:pointer!important;
-    box-shadow:0 3px 10px rgba(0,0,0,.14)!important;
+  .gasv-mob-cmd-header{
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:8px!important;
+    padding:8px 10px 10px!important;
+    box-sizing:border-box!important;
   }
-  .gasv-mobile-actions-menu-panel{
-    position:absolute!important;z-index:10050!important;top:calc(100% + 6px)!important;left:3%!important;
-    width:94%!important;max-width:420px!important;max-height:70vh!important;overflow:auto!important;
-    box-sizing:border-box!important;padding:8px!important;background:#fff!important;
-    border:1px solid #d7e0ea!important;border-radius:12px!important;
-    box-shadow:0 12px 30px rgba(15,23,42,.18)!important;
+  .gasv-mob-cmd-brand{
+    width:100%!important;
+    display:flex!important;
+    justify-content:center!important;
+    align-items:center!important;
   }
-  .gasv-mobile-actions-menu-panel[hidden]{display:none!important}
-  .gasv-mobile-actions-menu-item{
-    display:flex!important;align-items:center!important;justify-content:center!important;
-    width:100%!important;min-height:42px!important;margin:0 0 6px!important;
-    padding:8px 10px!important;box-sizing:border-box!important;border:0!important;
-    border-radius:8px!important;background:#eef2f7!important;color:#1f2937!important;
-    font-size:14px!important;font-weight:700!important;cursor:pointer!important;
+  .gasv-mob-cmd-actions{
+    display:none!important;
   }
-  .gasv-mobile-actions-menu-item:last-child{margin-bottom:0!important}
-  .gasv-mobile-actions-menu-item:hover,.gasv-mobile-actions-menu-item:focus{background:#dbeafe!important;color:#17365d!important;outline:none!important}
-  .gasv-mobile-actions-menu-item:focus-visible{outline:2px solid #2563eb!important;outline-offset:2px!important}
-  body.gasv-mobile-actions-open{overflow-x:hidden!important}
-  #root>div.gasv-real-mobile-topbar,
-  #root>div[data-gasv-real-mobile-toolbar="1"]{
-    padding-bottom:10px!important;
+  .gasv-mob-cmd-menu-wrap{
+    position:relative!important;
+    width:100%!important;
+    z-index:10060!important;
   }
-  #root .gasv-real-mobile-actions{display:none!important}
-  #root .gasv-toolbar-organized[data-gasv-mobile-toolbar="1"]{display:none!important}
-  #root .gasv-real-mobile-brand{
-    width:100%!important;justify-content:center!important;
+  .gasv-mob-cmd-menu-btn{
+    width:100%!important;
+    min-height:42px!important;
+    border:0!important;
+    border-radius:9px!important;
+    background:#2563eb!important;
+    color:#fff!important;
+    font-size:15px!important;
+    font-weight:800!important;
+    letter-spacing:.1px!important;
+    box-shadow:0 2px 8px rgba(15,23,42,.16)!important;
+    cursor:pointer!important;
+  }
+  .gasv-mob-cmd-panel{
+    position:absolute!important;
+    top:calc(100% + 6px)!important;
+    left:2.5%!important;
+    width:95%!important;
+    max-width:420px!important;
+    max-height:70vh!important;
+    overflow-y:auto!important;
+    padding:7px!important;
+    box-sizing:border-box!important;
+    background:#fff!important;
+    border:1px solid #dbe3ec!important;
+    border-radius:11px!important;
+    box-shadow:0 12px 28px rgba(15,23,42,.20)!important;
+  }
+  .gasv-mob-cmd-panel[hidden]{display:none!important}
+  .gasv-mob-cmd-item{
+    width:100%!important;
+    min-height:40px!important;
+    margin:0 0 5px!important;
+    padding:8px 10px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+    box-sizing:border-box!important;
+    border:0!important;
+    border-radius:7px!important;
+    background:#eef2f7!important;
+    color:#1f2937!important;
+    font-size:13px!important;
+    font-weight:700!important;
+    text-align:left!important;
+    cursor:pointer!important;
+  }
+  .gasv-mob-cmd-item:last-child{margin-bottom:0!important}
+  .gasv-mob-cmd-item:focus-visible{outline:2px solid #2563eb!important;outline-offset:2px!important}
+  .gasv-mob-cmd-backdrop{
+    position:fixed!important;
+    inset:0!important;
+    z-index:10040!important;
+    background:transparent!important;
   }
 }
 @media(min-width:769px){
-  .gasv-mobile-actions-menu-root{display:none!important}
+  .gasv-mob-cmd-menu-wrap,.gasv-mob-cmd-backdrop{display:none!important}
 }
 </style>
     <link rel="manifest" href="/manifest.webmanifest">
@@ -770,159 +810,185 @@ Error generating stack: `+l.message+`
       ${selected.map((f,i)=>fichaHtml(f,state,i,selected.length)).join('')}
       <div style="margin-top:14px;border-top:1px solid #17365d;padding-top:6px;font-size:7pt;color:#64748b">Documento generado por Relevamiento Arquitectónico GASV · Arq. Gabriel Saritama V. · ${esc(new Date().toLocaleString('es-EC'))}</div>
       </div>
-<script id="gasv-mobile-actions-menu-script">
+<script id="gasv-mobile-command-menu-script">
 (()=>{
   'use strict';
-  const ROOT_ID='__GASV_MOBILE_ACTIONS_MENU__';
-  if(window[ROOT_ID]) return;
-  window[ROOT_ID]=true;
-  const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  if(window.__GASV_MOBILE_COMMAND_MENU__) return;
+  window.__GASV_MOBILE_COMMAND_MENU__=true;
+
+  const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
   const wanted=[
     'Nuevo','Guardar','Fichas Guardadas','Reporte Consolidado','Trabajo de Campo',
     'Manual','Exportar CSV','Exportar proyecto','Importar proyecto','PDF / Imprimir','Exportar PDF'
   ];
   const rank=new Map(wanted.map((x,i)=>[norm(x),i]));
-  const labelOf=b=>String(b?.innerText||b?.textContent||'').replace(/\s+/g,' ').trim();
-  function getTop(){
-    const root=document.getElementById('root');
-    const candidates=root?Array.from(root.children):[];
-    return candidates.find(el=>String(el.className||'').includes('bg-[#17365d]'))||candidates.find(el=>el.querySelector?.('button'));
+
+  const label=b=>String(b?.innerText||b?.textContent||'').replace(/\s+/g,' ').trim();
+
+  function isMobile(){ return window.matchMedia ? window.matchMedia('(max-width:768px)').matches : window.innerWidth<=768; }
+
+  function findActionContainer(){
+    const buttons=Array.from(document.querySelectorAll('button')).filter(b=>{
+      const t=norm(label(b));
+      return wanted.some(x=>t===norm(x) || (x==='Fichas Guardadas'&&t.startsWith(norm(x))) || (x==='Reporte Consolidado'&&t.startsWith(norm(x))));
+    });
+    const counts=new Map();
+    for(const b of buttons){
+      const p=b.parentElement;
+      if(!p) continue;
+      const n=(counts.get(p)||0)+1;
+      counts.set(p,n);
+    }
+    let best=null,bestCount=0;
+    for(const [p,n] of counts){
+      if(n>bestCount && n>=4){best=p;bestCount=n;}
+    }
+    return best;
   }
-  function findActions(top){
-    if(!top) return null;
-    const candidates=Array.from(top.children||[]);
-    return candidates.find(el=>{
-      const bs=Array.from(el.querySelectorAll?.(':scope > button')||[]);
-      return bs.some(b=>rank.has(norm(labelOf(b))));
-    })||null;
+
+  function findHeader(container){
+    let el=container;
+    for(let i=0;i<6 && el;i++,el=el.parentElement){
+      const txt=norm(el.innerText||'');
+      if(txt.includes('relevamiento arquitectonico') && el.querySelector?.('button')) return el;
+    }
+    return container?.parentElement||null;
   }
-  function findOrCreate(top,actions){
-    let box=top.querySelector('.gasv-mobile-actions-menu-root');
+
+  function close(box){
+    if(!box) return;
+    const panel=box.querySelector('.gasv-mob-cmd-panel');
+    const btn=box.querySelector('.gasv-mob-cmd-menu-btn');
+    panel.hidden=true;
+    btn.setAttribute('aria-expanded','false');
+    btn.setAttribute('aria-label','Abrir menú de acciones');
+    box.classList.remove('open');
+    box.querySelector('.gasv-mob-cmd-backdrop')?.remove();
+  }
+
+  function build(){
+    if(!isMobile()) return;
+    const actions=findActionContainer();
+    if(!actions) return;
+    const header=findHeader(actions);
+    if(!header) return;
+
+    actions.classList.add('gasv-mob-cmd-actions');
+    header.classList.add('gasv-mob-cmd-header');
+    const brand=Array.from(header.children).find(x=>x!==actions && x.querySelector?.('img,h1'));
+    brand?.classList.add('gasv-mob-cmd-brand');
+
+    let box=header.querySelector('.gasv-mob-cmd-menu-wrap');
     if(!box){
       box=document.createElement('div');
-      box.className='gasv-mobile-actions-menu-root';
-      const menuButton=document.createElement('button');
-      menuButton.type='button';
-      menuButton.className='gasv-mobile-actions-menu-button';
-      menuButton.textContent='☰ MENÚ';
-      menuButton.setAttribute('aria-label','Abrir menú de acciones');
-      menuButton.setAttribute('aria-expanded','false');
-      menuButton.setAttribute('aria-controls','gasv-mobile-actions-menu-panel');
-      menuButton.setAttribute('aria-haspopup','menu');
+      box.className='gasv-mob-cmd-menu-wrap';
+      const btn=document.createElement('button');
+      btn.type='button';
+      btn.className='gasv-mob-cmd-menu-btn';
+      btn.textContent='☰ MENÚ';
+      btn.setAttribute('aria-label','Abrir menú de acciones');
+      btn.setAttribute('aria-expanded','false');
+      btn.setAttribute('aria-controls','gasv-mobile-command-panel');
+      btn.setAttribute('aria-haspopup','menu');
+
       const panel=document.createElement('div');
-      panel.id='gasv-mobile-actions-menu-panel';
-      panel.className='gasv-mobile-actions-menu-panel';
+      panel.id='gasv-mobile-command-panel';
+      panel.className='gasv-mob-cmd-panel';
       panel.hidden=true;
       panel.setAttribute('role','menu');
-      menuButton.addEventListener('click',e=>{
+
+      btn.addEventListener('click',e=>{
         e.stopPropagation();
-        const open=!box.classList.contains('is-open');
-        box.classList.toggle('is-open',open);
-        panel.hidden=!open;
-        menuButton.setAttribute('aria-expanded',String(open));
-        menuButton.setAttribute('aria-label',open?'Cerrar menú de acciones':'Abrir menú de acciones');
-        document.body.classList.toggle('gasv-mobile-actions-open',open);
-        if(open){
-          rebuild();
-          const first=panel.querySelector('button');
-          if(first) requestAnimationFrame(()=>first.focus());
+        const open=panel.hidden;
+        if(!open){ close(box); return; }
+        panel.hidden=false;
+        btn.setAttribute('aria-expanded','true');
+        btn.setAttribute('aria-label','Cerrar menú de acciones');
+        box.classList.add('open');
+        if(!box.querySelector('.gasv-mob-cmd-backdrop')){
+          const bd=document.createElement('div');
+          bd.className='gasv-mob-cmd-backdrop';
+          bd.addEventListener('click',()=>close(box),{once:true});
+          document.body.appendChild(bd);
+        }
+        rebuild(panel,actions,box);
+      });
+
+      btn.addEventListener('keydown',e=>{ if(e.key==='Escape') close(box); });
+      box.append(btn,panel);
+      header.appendChild(box);
+    }
+
+    rebuild(box.querySelector('.gasv-mob-cmd-panel'),actions,box);
+    actions.style.setProperty('display','none','important');
+  }
+
+  function rebuild(panel,actions,box){
+    if(!panel||!actions) return;
+    const originals=Array.from(actions.querySelectorAll(':scope > button'))
+      .filter(b=>{
+        const t=norm(label(b));
+        return wanted.some(x=>t===norm(x) || (x==='Fichas Guardadas'&&t.startsWith(norm(x))) || (x==='Reporte Consolidado'&&t.startsWith(norm(x))));
+      })
+      .sort((a,b)=>(rank.get(norm(label(a)))??99)-(rank.get(norm(label(b)))??99));
+
+    panel.innerHTML='';
+    const seen=new Set();
+
+    for(const original of originals){
+      const key=norm(label(original));
+      if(seen.has(key)) continue;
+      seen.add(key);
+      const item=document.createElement('button');
+      item.type='button';
+      item.className='gasv-mob-cmd-item';
+      item.setAttribute('role','menuitem');
+      item.setAttribute('tabindex','0');
+      item.innerHTML=original.innerHTML;
+      item.addEventListener('click',e=>{
+        e.preventDefault();
+        close(box);
+        original.click();
+      });
+      item.addEventListener('keydown',e=>{
+        if(e.key==='Enter'||e.key===' '){
+          e.preventDefault();
+          close(box);
+          original.click();
         }
       });
-      box.append(menuButton,panel);
-      top.appendChild(box);
-      document.addEventListener('click',e=>{
-        if(!box.contains(e.target)) close();
-      },true);
-      document.addEventListener('keydown',e=>{
-        if(e.key==='Escape') close();
-      },true);
-      window.addEventListener('resize',()=>{if(window.innerWidth>768)close()},{passive:true});
-      function close(){
-        box.classList.remove('is-open');
-        panel.hidden=true;
-        menuButton.setAttribute('aria-expanded','false');
-        menuButton.setAttribute('aria-label','Abrir menú de acciones');
-        document.body.classList.remove('gasv-mobile-actions-open');
-      }
-      box._gasvClose=close;
-      box._gasvRebuild=()=>rebuild();
-    }
-    function rebuild(){
-      const panel=box.querySelector('.gasv-mobile-actions-menu-panel');
-      if(!panel||!actions) return;
-      const originals=Array.from(actions.querySelectorAll(':scope > button'))
-        .filter(b=>rank.has(norm(labelOf(b))))
-        .sort((a,b)=>(rank.get(norm(labelOf(a)))??99)-(rank.get(norm(labelOf(b)))??99));
-      const seen=new Set();
-      panel.innerHTML='';
-      for(const original of originals){
-        const key=norm(labelOf(original));
-        if(seen.has(key)) continue;
-        seen.add(key);
-        const clone=original.cloneNode(true);
-        clone.removeAttribute('id');
-        clone.className='gasv-mobile-actions-menu-item';
-        clone.setAttribute('role','menuitem');
-        clone.setAttribute('tabindex','0');
-        clone.removeAttribute('data-gasv-mobile-field');
-        clone.addEventListener('click',e=>{
-          e.preventDefault();
-          const close=box._gasvClose;
-          close?.();
-          original.click();
-        });
-        clone.addEventListener('keydown',e=>{
-          if(e.key==='Enter'||e.key===' '){
-            e.preventDefault();
-            const close=box._gasvClose;
-            close?.();
-            original.click();
-          }
-        });
-        panel.appendChild(clone);
-      }
-    }
-    return box;
-  }
-  function apply(){
-    const mobile=window.innerWidth<=768;
-    const top=getTop();
-    if(!top) return;
-    const actions=findActions(top);
-    if(!actions) return;
-    const box=findOrCreate(top,actions);
-    if(!box) return;
-    if(mobile){
-      top.classList.add('gasv-real-mobile-topbar');
-      top.dataset.gasvMobileActionsMenu='1';
-      actions.style.setProperty('display','none','important');
-      const obsolete=top.querySelector('.gasv-real-mobile-actions');
-      if(obsolete) obsolete.style.setProperty('display','none','important');
-      box._gasvRebuild?.();
-    }else{
-      box._gasvClose?.();
-      delete top.dataset.gasvMobileActionsMenu;
-      actions.style.removeProperty('display');
-      const obsolete=top.querySelector('.gasv-real-mobile-actions');
-      if(obsolete) obsolete.style.removeProperty('display');
+      panel.appendChild(item);
     }
   }
+
   let timer=0;
-  const schedule=()=>{clearTimeout(timer);timer=setTimeout(apply,120)};
-  function boot(){
-    apply();
-    [250,700,1400,2500,4000].forEach(ms=>setTimeout(apply,ms));
-    const root=document.getElementById('root');
-    if(root){
-      const obs=new MutationObserver(schedule);
-      obs.observe(root,{childList:true,subtree:true});
-    }
-    window.addEventListener('resize',schedule,{passive:true});
-    document.addEventListener('click',e=>{
-      if(e.target.closest?.('button')) setTimeout(schedule,180);
-    },true);
+  function run(){
+    clearTimeout(timer);
+    timer=setTimeout(()=>{
+      try{
+        if(isMobile()) build();
+        else document.querySelector('.gasv-mob-cmd-menu-wrap')?.remove();
+      }catch(e){}
+    },120);
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+
+  function boot(){
+    run();
+    [300,800,1500,2500,4000].forEach(ms=>setTimeout(run,ms));
+    const obs=new MutationObserver(run);
+    obs.observe(document.body,{childList:true,subtree:true});
+    window.addEventListener('resize',run,{passive:true});
+    document.addEventListener('scroll',()=>{
+      const box=document.querySelector('.gasv-mob-cmd-menu-wrap.open');
+      if(box) close(box);
+    },{passive:true});
+    document.addEventListener('keydown',e=>{
+      if(e.key==='Escape') close(document.querySelector('.gasv-mob-cmd-menu-wrap'));
+    });
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot,{once:true});
+  else boot();
 })();
 </script>
 </body></html>`;
