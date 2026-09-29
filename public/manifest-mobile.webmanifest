@@ -2,8 +2,8 @@
   "name": "GASV · Relevamiento de Campo",
   "short_name": "GASV Campo",
   "description": "Aplicación móvil para levantamiento, diagnóstico, registro fotográfico y cuantificación arquitectónica en campo.",
-  "id": "/mobile_GASV_PWA_v2.html",
-  "start_url": "/mobile_GASV_PWA_v2.html",
+  "id": "/GASV_MOVIL.html",
+  "start_url": "/GASV_MOVIL.html",
   "scope": "/",
   "display": "standalone",
   "display_override": [
@@ -18,6 +18,12 @@
       "src": "/icon.svg",
       "sizes": "512x512",
       "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any"
     }
   ]
