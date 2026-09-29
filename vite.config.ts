@@ -52,7 +52,7 @@ export default defineConfig(() => {
         },
         workbox: {
           cleanupOutdatedCaches: true,
-          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,txt,woff,woff2}'],
           runtimeCaching: [
             {
               urlPattern: ({request}) => request.destination === 'document',
