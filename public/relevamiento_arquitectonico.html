@@ -682,6 +682,256 @@ Error generating stack: `+l.message+`
       ${selected.map((f,i)=>fichaHtml(f,state,i,selected.length)).join('')}
       <div style="margin-top:14px;border-top:1px solid #17365d;padding-top:6px;font-size:7pt;color:#64748b">Documento generado por Relevamiento Arquitectónico GASV · Arq. Gabriel Saritama V. · ${esc(new Date().toLocaleString('es-EC'))}</div>
       </div>
+<style id="gasv-field-mode-final-style">
+.gasv-field-final-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.42);z-index:99999;display:flex;align-items:flex-start;justify-content:center;padding:10px}
+.gasv-field-final-modal{width:min(720px,100%);max-height:calc(100dvh - 20px);overflow:auto;background:#fff;border-radius:16px;box-shadow:0 18px 55px rgba(0,0,0,.22);padding:14px}
+.gasv-field-final-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}
+.gasv-field-final-head h2{margin:0;font-size:19px;color:#17365d}
+.gasv-field-final-close{border:0;background:#e2e8f0;color:#334155;width:36px;height:36px;border-radius:10px;font-size:22px;cursor:pointer}
+.gasv-field-final-flow{padding:9px 10px;border-left:4px solid #17365d;background:#eff6ff;color:#1e3a5f;font-size:12px;margin-bottom:10px}
+.gasv-field-final-flow span{display:block;color:#64748b;margin-top:3px}
+.gasv-field-final-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.gasv-field-final-grid label{font-size:11px;font-weight:800;color:#475569}
+.gasv-field-final-grid input{display:block;width:100%;margin-top:4px;min-height:40px;padding:8px 10px;border:1px solid #cbd5e1;border-radius:9px;font-size:16px}
+.gasv-field-final-grid input[readonly]{background:#f8fafc;color:#334155}
+.gasv-field-final-status{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:9px;padding:8px 0}
+.gasv-field-final-status span{font-size:12px;color:#64748b}
+.gasv-field-final-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:8px}
+.gasv-field-final-actions button,.gasv-field-final-gps{min-height:42px;border:0;border-radius:9px;padding:9px 11px;font-size:13px;font-weight:800;cursor:pointer}
+.gasv-field-final-primary{background:#17365d;color:#fff}
+.gasv-field-final-neutral{background:#e2e8f0;color:#334155}
+.gasv-field-final-success{background:#16794b;color:#fff}
+.gasv-field-final-gps{display:flex;align-items:center;gap:8px;width:100%;background:#f8fafc;color:#334155;border:1px solid #cbd5e1}
+.gasv-field-final-gps button{border:0;background:#17365d;color:#fff;border-radius:8px;padding:8px 10px;font-weight:800}
+.gasv-field-final-hint{margin-top:8px;font-size:11px;color:#64748b}
+.gasv-field-final-toolbar{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:7px 11px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+@media(max-width:640px){
+  .gasv-field-final-backdrop{padding:6px}
+  .gasv-field-final-modal{max-height:calc(100dvh - 12px);border-radius:14px;padding:12px}
+  .gasv-field-final-grid{grid-template-columns:1fr 1fr}
+  .gasv-field-final-grid label:last-child{grid-column:1/-1}
+  .gasv-field-final-actions{grid-template-columns:1fr 1fr}
+  .gasv-field-final-actions button:first-child,.gasv-field-final-actions button:last-child{grid-column:1/-1}
+}
+@media(max-width:380px){
+  .gasv-field-final-grid{grid-template-columns:1fr}
+  .gasv-field-final-grid label:last-child{grid-column:auto}
+}
+@media print{.gasv-field-final-backdrop,.gasv-field-final-toolbar{display:none!important}}
+</style>
+<script id="gasv-field-mode-final">
+(function(){
+  'use strict';
+  if(window.__GASV_FIELD_FINAL__) return;
+  window.__GASV_FIELD_FINAL__=true;
+
+  function q(sel,root){return (root||document).querySelector(sel);}
+  function qa(sel,root){return Array.prototype.slice.call((root||document).querySelectorAll(sel));}
+  function text(el){return String(el&&el.textContent||'').trim();}
+  function norm(v){return String(v==null?'':v).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]});}
+  function nowLocal(){
+    var d=new Date(),p=function(n){return String(n).padStart(2,'0')};
+    return {date:d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate()),time:p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())};
+  }
+  function storage(){return window.__GASV_STORAGE__||null;}
+  async function readState(){
+    var st=storage();
+    if(!st) throw new Error('Almacenamiento de GASV no disponible.');
+    if(st.ready) await st.ready();
+    var fs=st.getItem('fichas'),p=st.getItem('projectData');
+    var vals=await Promise.all([fs,p]);
+    return {fichas:Array.isArray(vals[0])?vals[0]:[],projectData:vals[1]||{}};
+  }
+  function nextCode(fichas){
+    var max=0;
+    (fichas||[]).forEach(function(f){
+      var m=String(f&&f.codigo||'').trim().match(/^F-(\d+)$/i);
+      if(m) max=Math.max(max,parseInt(m[1],10)||0);
+      var n=String(f&&f.numeroFicha||'').trim().match(/^F-(\d+)$/i);
+      if(n) max=Math.max(max,parseInt(n[1],10)||0);
+    });
+    return 'F-'+String(max+1).padStart(3,'0');
+  }
+  function buttonByExactLabel(label){
+    var n=norm(label);
+    return qa('button').filter(function(b){return !b.closest('.gasv-field-final-modal')}).find(function(b){return norm(text(b))===n})||null;
+  }
+  function sectionByTitle(title){
+    var n=norm(title);
+    var h=qa('h2').find(function(x){return norm(text(x))===n});
+    return h&& (h.closest('.print-card')||h.parentElement||h);
+  }
+  function fieldByLabel(sec,label){
+    if(!sec)return null;
+    var n=norm(label);
+    var l=qa('label',sec).find(function(x){return norm(text(x))===n});
+    return l&&l.parentElement&&l.parentElement.querySelector('input,select,textarea');
+  }
+  function setValue(el,value){
+    if(!el)return false;
+    var proto=el instanceof HTMLSelectElement?HTMLSelectElement.prototype:el instanceof HTMLTextAreaElement?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;
+    var setter=Object.getOwnPropertyDescriptor(proto,'value');
+    if(setter&&setter.set)setter.set.call(el,String(value==null?'':value));else el.value=String(value==null?'':value);
+    el.dispatchEvent(new Event('input',{bubbles:true}));
+    el.dispatchEvent(new Event('change',{bubbles:true}));
+    return true;
+  }
+  function scrollSection(title,label){
+    var sec=sectionByTitle(title);
+    if(!sec)return false;
+    sec.scrollIntoView({behavior:'smooth',block:'start'});
+    if(label)setTimeout(function(){var f=fieldByLabel(sec,label);if(f)try{f.focus({preventScroll:true})}catch(_){f.focus()}},350);
+    return true;
+  }
+  function removeExisting(){
+    var old=q('.gasv-field-final-backdrop'); if(old) old.remove();
+  }
+  function openFieldMode(){
+    removeExisting();
+    readState().then(function(state){
+      var t=nowLocal(),code=nextCode(state.fichas);
+      var back=document.createElement('div');
+      back.className='gasv-field-final-backdrop';
+      back.innerHTML=
+        '<div class="gasv-field-final-modal" role="dialog" aria-modal="true" aria-label="Trabajo de Campo">'+
+          '<div class="gasv-field-final-head"><h2>Trabajo de Campo · GASV</h2><button type="button" class="gasv-field-final-close" data-close>×</button></div>'+
+          '<div class="gasv-field-final-flow"><strong>Nueva ficha → Medir → Fotografiar → Diagnosticar → Guardar</strong><span>Interfaz compacta para celular.</span></div>'+
+          '<div class="gasv-field-final-grid">'+
+            '<label>Número de ficha<input data-code value="'+esc(code)+'" readonly></label>'+
+            '<label>Fecha<input data-date type="date" value="'+esc(t.date)+'" readonly></label>'+
+            '<label>Hora<input data-time value="'+esc(t.time)+'" readonly></label>'+
+            '<label>Ambiente / Área<input data-amb placeholder="Ej. Aula 01" autocomplete="off"></label>'+
+          '</div>'+
+          '<div class="gasv-field-final-status">'+
+            '<div class="gasv-field-final-gps"><button type="button" data-gps>Obtener ubicación</button><span data-gps-status>GPS no registrado</span></div>'+
+          '</div>'+
+          '<div class="gasv-field-final-actions">'+
+            '<button type="button" class="gasv-field-final-primary" data-start>Iniciar nueva ficha</button>'+
+            '<button type="button" class="gasv-field-final-neutral" data-measure>Medir</button>'+
+            '<button type="button" class="gasv-field-final-neutral" data-photo>Fotografiar</button>'+
+            '<button type="button" class="gasv-field-final-neutral" data-diagnose>Diagnosticar</button>'+
+            '<button type="button" class="gasv-field-final-success" data-save>Guardar</button>'+
+          '</div>'+
+          '<div class="gasv-field-final-hint" data-hint>El número, fecha y hora se generan automáticamente.</div>'+
+        '</div>';
+      document.body.appendChild(back);
+
+      var gps=null,started=false,created=t;
+      var codeInput=q('[data-code]',back),ambInput=q('[data-amb]',back),hint=q('[data-hint]',back);
+      q('[data-close]',back).addEventListener('click',function(){back.remove()});
+      back.addEventListener('click',function(e){if(e.target===back)back.remove()});
+
+      q('[data-gps]',back).addEventListener('click',function(){
+        var status=q('[data-gps-status]',back);
+        if(!navigator.geolocation){status.textContent='GPS no disponible';return}
+        status.textContent='Solicitando ubicación…';
+        navigator.geolocation.getCurrentPosition(function(pos){
+          gps={lat:Number(pos.coords.latitude),lng:Number(pos.coords.longitude),accuracy:Number(pos.coords.accuracy||0),timestamp:new Date().toISOString()};
+          status.textContent='GPS registrado · '+gps.lat.toFixed(6)+', '+gps.lng.toFixed(6);
+        },function(err){
+          status.textContent='GPS no registrado · '+(err.code===1?'permiso denegado':err.code===2?'no disponible':'tiempo agotado');
+        },{enableHighAccuracy:true,timeout:12000,maximumAge:0});
+      });
+
+      q('[data-start]',back).addEventListener('click',async function(){
+        var amb=String(ambInput.value||'').trim();
+        if(!amb){alert('Ingrese Ambiente / Área antes de iniciar la ficha.');ambInput.focus();return}
+        var fresh=await readState(),freshCode=nextCode(fresh.fichas);
+        codeInput.value=freshCode;
+        if(!confirm('Crear '+freshCode+' para "'+amb+'"?'))return;
+        created=nowLocal();
+        var btn=buttonByExactLabel('Nuevo');
+        if(!btn){alert('No se encontró el botón Nuevo de GASV.');return}
+        btn.click();
+        setTimeout(function(){
+          var sec=sectionByTitle('1. Datos generales');
+          setValue(fieldByLabel(sec,'Código'),freshCode);
+          setValue(fieldByLabel(sec,'Ambiente / Área'),amb);
+          setValue(fieldByLabel(sec,'Fecha'),created.date);
+          setValue(fieldByLabel(sec,'Hora'),created.time);
+          started=true;
+          hint.textContent=freshCode+' creada · '+created.date+' · '+created.time;
+          scrollSection('2. Levantamiento dimensional','Largo (m)');
+        },300);
+      });
+
+      q('[data-measure]',back).addEventListener('click',function(){
+        if(!started){alert('Primero inicie la nueva ficha.');return}
+        scrollSection('2. Levantamiento dimensional','Largo (m)');
+      });
+
+      q('[data-photo]',back).addEventListener('click',function(){
+        if(!started){alert('Primero inicie la nueva ficha.');return}
+        var sec=sectionByTitle('9. Registro fotográfico');
+        var input=sec&&sec.querySelector('input[type="file"]');
+        if(input){input.setAttribute('capture','environment');input.click()}
+        else scrollSection('9. Registro fotográfico');
+      });
+
+      q('[data-diagnose]',back).addEventListener('click',function(){
+        if(!started){alert('Primero inicie la nueva ficha.');return}
+        scrollSection('10. Diagnóstico preliminar','Diagnóstico / criterio técnico');
+      });
+
+      q('[data-save]',back).addEventListener('click',async function(){
+        if(!started){alert('Primero inicie la nueva ficha.');return}
+        var btn=buttonByExactLabel('Guardar');
+        if(!btn){alert('No se encontró el botón Guardar de GASV.');return}
+        if(hint)hint.textContent='Guardando '+codeInput.value+'…';
+        btn.click();
+        var targetCode=String(codeInput.value||'').trim(),deadline=Date.now()+6000,saved=null;
+        while(Date.now()<deadline){
+          await new Promise(function(res){setTimeout(res,250)});
+          try{
+            var st=await readState();
+            saved=st.fichas.find(function(f){return String(f.codigo||'').trim()===targetCode})||st.fichas.find(function(f){return String(f.ambiente||'').trim()===String(ambInput.value||'').trim()});
+            if(saved)break;
+          }catch(_){}
+        }
+        if(!saved){if(hint)hint.textContent='No se pudo confirmar el guardado todavía. Revise Fichas Guardadas.';return}
+        try{
+          var current=await readState();
+          var meta=Object.assign({},saved,{numeroFicha:targetCode,fechaCreacion:saved.fechaCreacion||created.date,horaCreacion:saved.horaCreacion||created.time});
+          if(gps)meta.gps=gps;
+          await storage().setItem('fichas',current.fichas.map(function(f){return f.id===saved.id?meta:f}));
+          if(hint)hint.textContent=targetCode+' guardada correctamente.';
+          setTimeout(function(){back.remove()},450);
+        }catch(e){
+          if(hint)hint.textContent='Ficha guardada. No se pudo anexar metadatos adicionales.';
+        }
+      });
+    }).catch(function(e){alert(e.message||String(e))});
+  }
+
+  function installButton(){
+    var buttons=qa('button');
+    var existing=buttons.find(function(b){return norm(text(b))==='trabajo de campo'});
+    if(existing){
+      var clone=existing.cloneNode(true);
+      existing.replaceWith(clone);
+      clone.addEventListener('click',openFieldMode);
+      clone.classList.add('gasv-field-final-toolbar');
+      return true;
+    }
+    var nuevo=buttonByExactLabel('Nuevo');
+    if(!nuevo||!nuevo.parentElement)return false;
+    var parent=nuevo.parentElement;
+    var b=document.createElement('button');
+    b.type='button';b.textContent='Trabajo de Campo';b.className='gasv-field-final-toolbar';
+    b.addEventListener('click',openFieldMode);
+    parent.appendChild(b);
+    return true;
+  }
+
+  function boot(){
+    installButton();
+    setTimeout(installButton,500);
+    setTimeout(installButton,1500);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+</script>
 </body></html>`;
 
     const w=window.open('','_blank','width=1100,height=800');
