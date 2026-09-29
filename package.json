@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "vite build && cp public/relevamiento_arquitectonico.html dist/index.html",
+    "build": "node -e \"require(\u0027fs\u0027).writeFileSync(\u0027public/gasv-build.txt\u0027,new Date().toISOString())\" && vite build && cp public/relevamiento_arquitectonico.html dist/index.html",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
