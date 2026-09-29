@@ -27,10 +27,6 @@ import { PWAInstallButton } from './components/PWAInstallButton';
 import { DeviceSyncModal } from './components/DeviceSyncModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { GSARITAMA_LOGO_PNG } from './constants/logoData';
-import { GoogleDriveBackupModal } from './components/GoogleDriveBackupModal';
-import { GoogleDriveService, BackupPayload } from './services/googleDriveService';
-import { getAccessToken, initAuth } from './services/googleAuth';
-import { Cloud, CloudCheck, CloudUpload } from 'lucide-react';
 import {
   createEmptyFicha,
   exportCSV,
@@ -57,17 +53,8 @@ export default function App() {
   const [showManual, setShowManual] = useState(false);
   const [showConsolidated, setShowConsolidated] = useState(false);
   const [showSync, setShowSync] = useState(false);
-  const [showGDriveModal, setShowGDriveModal] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedAmbienteId, setSelectedAmbienteId] = useState<string | null>(null);
-
-  // Google Drive cloud backup states
-  const [gdriveToken, setGdriveToken] = useState<string | null>(null);
-  const [gdriveAutoStatus, setGdriveAutoStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
-  const [lastGdriveBackupTime, setLastGdriveBackupTime] = useState<string | null>(() => {
-    return localStorage.getItem('gdrive_last_backup_time');
-  });
-  const [gdriveAutoError, setGdriveAutoError] = useState<string | null>(null);
 
   // Auto-save & Status
   const [saveStatus, setSaveStatus] = useState('');
@@ -87,72 +74,7 @@ export default function App() {
     StorageService.getFichas().then(setFichas);
     StorageService.getCatalogos().then(setCatalogos);
 
-    // Initialize Google Auth state listener
-    const unsubscribe = initAuth((user, token) => {
-      setGdriveToken(token);
-    });
-    return () => unsubscribe();
   }, []);
-
-  // Trigger Google Drive auto-backup when fichas or project data are updated
-  const triggerGoogleDriveAutoBackup = useCallback(
-    async (currentFichas: Ficha[], currentProj: ProjectData, currentCats: CatalogosMap) => {
-      const isEnabled = localStorage.getItem('gdrive_auto_backup_enabled') !== 'false';
-      if (!isEnabled) return;
-
-      const token = gdriveToken || (await getAccessToken());
-      if (!token) {
-        // User not logged in to Google Drive
-        return;
-      }
-
-      setGdriveAutoStatus('syncing');
-      setGdriveAutoError(null);
-
-      try {
-        const payload: BackupPayload = {
-          version: '4.0',
-          app: 'Relevamiento Arquitectonico GSARITAMA',
-          timestamp: new Date().toISOString(),
-          projectData: currentProj,
-          catalogosPersonalizados: currentCats,
-          fichas: currentFichas,
-        };
-
-        await GoogleDriveService.uploadBackup(token, payload, false);
-        const now = new Date().toISOString();
-        setLastGdriveBackupTime(now);
-        localStorage.setItem('gdrive_last_backup_time', now);
-        setGdriveAutoStatus('synced');
-      } catch (err: any) {
-        console.error('Error in Google Drive auto-backup:', err);
-        setGdriveAutoStatus('error');
-        setGdriveAutoError(err.message || 'Error al respaldar en Drive');
-      }
-    },
-    [gdriveToken]
-  );
-
-  // Manual backup trigger helper for modal
-  const handleManualGDriveBackup = useCallback(async () => {
-    const token = gdriveToken || (await getAccessToken());
-    if (!token) throw new Error('No hay sesión de Google activa');
-
-    const payload: BackupPayload = {
-      version: '4.0',
-      app: 'Relevamiento Arquitectonico GSARITAMA',
-      timestamp: new Date().toISOString(),
-      projectData,
-      catalogosPersonalizados: catalogos,
-      fichas,
-    };
-
-    await GoogleDriveService.uploadBackup(token, payload, true);
-    const now = new Date().toISOString();
-    setLastGdriveBackupTime(now);
-    localStorage.setItem('gdrive_last_backup_time', now);
-    setGdriveAutoStatus('synced');
-  }, [gdriveToken, projectData, catalogos, fichas]);
 
   // Autosave ficha with debounce
   useEffect(() => {
@@ -175,8 +97,6 @@ export default function App() {
         setFichas(updatedFichas);
         setHasUnsavedChanges(false);
         setSaveStatus(`Guardado automático ${new Date().toLocaleTimeString('es-EC')}`);
-        // Auto-backup to Google Drive in background
-        triggerGoogleDriveAutoBackup(updatedFichas, projectData, catalogos);
       } catch (err) {
         console.error('Error in autosave:', err);
       }
@@ -289,7 +209,6 @@ export default function App() {
     setFichas(updated);
     setHasUnsavedChanges(false);
     setSaveStatus(`Guardado ${new Date().toLocaleTimeString('es-EC')}`);
-    triggerGoogleDriveAutoBackup(updated, projectData, catalogos);
     alert('Ficha guardada correctamente en el navegador.');
   };
 
@@ -1178,32 +1097,6 @@ export default function App() {
           />
         )}
 
-        {/* Google Drive Cloud Backup & Restore Modal */}
-        {showGDriveModal && (
-          <GoogleDriveBackupModal
-            isOpen={showGDriveModal}
-            onClose={() => setShowGDriveModal(false)}
-            fichas={fichas}
-            projectData={projectData}
-            catalogos={catalogos}
-            onRestoreBackup={async (newFichas, newProjectData, newCatalogos) => {
-              await StorageService.replaceFichas(newFichas);
-              setFichas(newFichas);
-              await StorageService.saveProjectData(newProjectData);
-              setProjectData(newProjectData);
-              await StorageService.saveCatalogos(newCatalogos);
-              setCatalogos(newCatalogos);
-              if (newFichas.length > 0) {
-                loadFicha(newFichas[0]);
-              } else {
-                loadFicha(createEmptyFicha());
-              }
-            }}
-            lastAutoBackupTime={lastGdriveBackupTime}
-            autoBackupStatus={gdriveAutoStatus}
-            autoBackupError={gdriveAutoError}
-            onManualBackupTrigger={handleManualGDriveBackup}
-          />
         )}
 
         {/* Offline Status Indicator */}
