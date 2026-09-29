@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
-    "build": "node -e \"require(\u0027fs\u0027).writeFileSync(\u0027public/gasv-build.txt\u0027,new Date().toISOString())\" && vite build && cp public/relevamiento_arquitectonico.html dist/index.html",
+    "build": "node -e \"require(\u0027fs\u0027).writeFileSync(\u0027public/gasv-build.txt\u0027,new Date().toISOString())\" && vite build && cp public/relevamiento_arquitectonico.html dist/index.html && node -e \"const fs=require(\u0027fs\u0027);const s=fs.readFileSync(\u0027dist/index.html\u0027,\u0027utf8\u0027);if(!s.includes(\u0027gasv-mobile-command-menu-script\u0027)||!s.includes(\u0027☰ MENÚ\u0027))throw new Error(\u0027GASV MOBILE MENU NOT PRESENT IN DIST\u0027);console.log(\u0027GASV final index verified: \u0027+s.length+\u0027 bytes\u0027)\"",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"
