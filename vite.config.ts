@@ -19,8 +19,8 @@ export default defineConfig(() => {
         ],
         manifest: {
           id: '/',
-          name: 'Relevamiento Arquitectónico',
-          short_name: 'Relevamiento',
+          name: 'Relevamiento Arquitectónico GASV · V4',
+          short_name: 'GASV V4',
           description:
             'Herramienta técnica de levantamiento, diagnóstico, registro fotográfico y cuantificación de proyectos arquitectónicos.',
           theme_color: '#17365d',
@@ -51,7 +51,20 @@ export default defineConfig(() => {
           ],
         },
         workbox: {
+          cleanupOutdatedCaches: true,
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
+          runtimeCaching: [
+            {
+              urlPattern: ({request}) => request.destination === 'document',
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'gasv-v4-pages',
+                networkTimeoutSeconds: 3,
+                expiration: {maxEntries: 20, maxAgeSeconds: 86400},
+                cacheableResponse: {statuses: [0, 200]},
+              },
+            },
+          ],
         },
         devOptions: {
           enabled: true,
