@@ -86,7 +86,7 @@
   </div>
 
   <!-- Mantiene la aplicación original intacta. -->
-  <iframe id="app-frame" title="Relevamiento Arquitectónico" src="./index.html"></iframe>
+  <iframe id="app-frame" title="Relevamiento Arquitectónico" src="./index.html?gasv_build=20260929_1911"></iframe>
 
   <script>
     (() => {
@@ -124,7 +124,7 @@
         installButton.addEventListener("click", () => alert("En Safari: pulsa Compartir → Añadir a pantalla de inicio → Añadir."), {once:true});
       }
       if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("./sw.js").catch(() => {});
+        navigator.serviceWorker.register("./sw.js").then((registration) => registration.update()).catch(() => {});
       }
 
       const mobileCss = `
