@@ -243,7 +243,7 @@ export function ManualModal({ onClose }: ManualModalProps) {
                   <li><strong>Requisito:</strong> necesita el Código o el Ambiente para autoguardarse.</li>
                   <li><strong>Aviso de salida:</strong> si intenta cerrar la pestaña con cambios pendientes, el navegador pide confirmación.</li>
                 </ul>
-                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded text-green-900">
+                <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded text-green-900 mb-4">
                   <strong>Exportar proyecto / Importar proyecto:</strong>
                   <p className="mt-2 text-sm">
                     <strong>Exportar proyecto</strong> descarga un archivo <code>.json</code> con todos los ambientes, los datos del proyecto y sus catálogos personalizados, nombrado con el bloque y sello de fecha y hora.
@@ -251,6 +251,19 @@ export function ManualModal({ onClose }: ManualModalProps) {
                   <p className="mt-2 text-sm">
                     <strong>Importar proyecto</strong> vuelve a cargar ese archivo: los ambientes se agregan o actualizan limpiamente. También acepta respaldos de la versión 3.1.
                   </p>
+                </div>
+
+                <div className="bg-sky-50 border-l-4 border-sky-500 p-4 rounded text-sky-900">
+                  <strong>Respaldo en la Nube con Google Drive:</strong>
+                  <p className="mt-2 text-sm">
+                    Al vincular su cuenta mediante el botón <strong>Google Drive</strong> en la barra superior:
+                  </p>
+                  <ul className="list-disc ml-5 mt-2 space-y-1 text-sm">
+                    <li>Se crea automáticamente la carpeta <code>Relevamiento_Arquitectonico_Backups</code> en su Google Drive.</li>
+                    <li>Cada vez que edite o guarde ambientes, se sube una copia de seguridad en segundo plano.</li>
+                    <li>Si borra la caché o el historial de su navegador, puede restaurar al instante todos sus ambientes directamente desde Google Drive con un solo clic.</li>
+                    <li>Puede además generar copias fechadas de respaldo en cualquier momento.</li>
+                  </ul>
                 </div>
               </section>
             )}
