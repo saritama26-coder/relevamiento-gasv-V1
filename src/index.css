@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+.gsv-print-value {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 9mm 8mm;
+  }
+  body {
+    background: #fff !important;
+    font-size: 8.5pt !important;
+  }
+  .print\:hidden {
+    display: none !important;
+  }
+  .print-page-break {
+    break-after: page;
+  }
+  .print\:break-before-page {
+    break-before: page;
+  }
+  .print-card {
+    box-shadow: none !important;
+    break-inside: auto !important;
+    border: 1px solid #bfc7d1 !important;
+    border-radius: 4px !important;
+    margin-bottom: 5px !important;
+    padding: 6px 8px !important;
+  }
+  .print-card h2 {
+    font-size: 10.5pt !important;
+    margin-bottom: 4px !important;
+    padding-bottom: 2px !important;
+    break-after: avoid !important;
+  }
+  .print-card h3 {
+    break-after: avoid !important;
+  }
+  .gap-3,
+  .gap-4,
+  .gap-6 {
+    gap: 3px 10px !important;
+  }
+  .mb-4,
+  .mb-5,
+  .mb-6,
+  .mb-8 {
+    margin-bottom: 4px !important;
+  }
+  label {
+    font-size: 7pt !important;
+    line-height: 1.1 !important;
+    color: #5b6472 !important;
+  }
+  input,
+  select,
+  textarea {
+    resize: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    color: #111 !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+  .gsv-print-value {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    min-height: 1em;
+    font-size: 8.5pt;
+    line-height: 1.2;
+    color: #111 !important;
+    display: block !important;
+  }
+  .print-card .gsv-print-value {
+    border-bottom: 0.3pt solid #e1e6ec;
+    padding-bottom: 1px;
+  }
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    font-size: 7.5pt !important;
+  }
+  thead {
+    display: table-header-group;
+  }
+  tr {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  th,
+  td {
+    border: 1px solid #bfc7d1 !important;
+    padding: 2px 3px !important;
+    vertical-align: top;
+  }
+  th {
+    background: #e9eef4 !important;
+    font-size: 7pt !important;
+  }
+  td > .gsv-print-value {
+    padding: 0 !important;
+    border: 0 !important;
+    font-size: 7.5pt;
+    line-height: 1.15;
+  }
+  img[alt="relevamiento"] {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 50mm !important;
+    object-fit: contain !important;
+    background: #fff !important;
+    border: 1px solid #e2e6ec !important;
+    border-radius: 2px !important;
+    margin-bottom: 3px !important;
+  }
+}
