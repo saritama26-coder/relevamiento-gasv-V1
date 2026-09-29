@@ -325,7 +325,7 @@ Error generating stack: `+l.message+`
 }
 </style>
     <link rel="manifest" href="/manifest.webmanifest">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="apple-touch-icon" href="/icon.svg">
     <meta name="gasv-version" content="4.0.0-20260929-field-2115">
     <script>
       window.GASV_BUILD="2026-09-29T21:15:00-05:00";
@@ -1497,7 +1497,7 @@ Error generating stack: `+l.message+`
     const body=issues.length?`<div class="gasv-v4-alert">⚠ Se encontraron ${issues.length} incidencias.</div><ul class="gasv-v4-issues">${issues.slice(0,150).map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:`<div class="gasv-v4-ok">✓ Integridad correcta. No se detectaron incidencias en las validaciones configuradas.</div>`;
     makeModal('Diagnóstico de integridad · GASV V4',body,'<button type="button" class="gasv-v4-btn gasv-v4-gray" data-v4-close>Cerrar</button>');
   }
-  function addToolbarButtons(){const probe=buttonByText('Nuevo');const toolbar=probe?.parentElement;if(!toolbar)return;const add=(label,cls,handler,afterText)=>{if(qsa('button',toolbar).some(b=>norm(tx(b))===norm(label)))return;const b=document.createElement('button');b.type='button';b.className=`gasv-v4-toolbar-btn ${cls}`;b.textContent=label;afterText?(()=>{const ref=qsa('button',toolbar).find(x=>norm(tx(x)).startsWith(norm(afterText)));ref?ref.insertAdjacentElement('afterend',b):toolbar.appendChild(b)})():toolbar.appendChild(b);b.addEventListener('click',handler)};add('Panel','gasv-v4-tb-panel',panel,'Reporte Consolidado');add('Trabajo de Campo','gasv-v4-tb-field',fieldMode,'Panel');add('Versiones','gasv-v4-tb-version',versions,'Trabajo de Campo');add('Integridad','gasv-v4-tb-integrity',integrity,'Versiones');const title=qsa('h1').find(x=>norm(tx(x)).includes('relevamiento arquitectonico'));if(title&&!title.dataset.gasvV4Title){title.dataset.gasvV4Title='1';const sub=title.parentElement?.querySelector('p');if(sub&&!norm(tx(sub)).includes('v4'))sub.textContent=(tx(sub)+' · V4').trim()}}
+  function addToolbarButtons(){const probe=buttonByText('Nuevo');const toolbar=probe?.parentElement;if(!toolbar)return;const add=(label,cls,handler,afterText)=>{if(qsa('button',toolbar).some(b=>norm(tx(b))===norm(label)))return;const b=document.createElement('button');b.type='button';b.className=`gasv-v4-toolbar-btn ${cls}`;b.textContent=label;afterText?(()=>{const ref=qsa('button',toolbar).find(x=>norm(tx(x)).startsWith(norm(afterText)));ref?ref.insertAdjacentElement('afterend',b):toolbar.appendChild(b)})():toolbar.appendChild(b);b.addEventListener('click',handler)};add('Trabajo de Campo','gasv-v4-tb-field',fieldMode,'Consolidado');const title=qsa('h1').find(x=>norm(tx(x)).includes('relevamiento arquitectonico'));if(title&&!title.dataset.gasvV4Title){title.dataset.gasvV4Title='1';const sub=title.parentElement?.querySelector('p');if(sub&&!norm(tx(sub)).includes('v4'))sub.textContent=(tx(sub)+' · V4').trim()}}
   function boot(){addToolbarButtons();setTimeout(addToolbarButtons,500);setTimeout(addToolbarButtons,1500)}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
