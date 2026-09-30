@@ -15,7 +15,7 @@
   "background_color": "#17365d",
   "icons": [
     {
-      "src": "/gasv-icon.svg",
+      "src": "/gasv-icon.svg?v=20260930-icon2",
       "sizes": "512x512",
       "type": "image/svg+xml",
       "purpose": "any"
