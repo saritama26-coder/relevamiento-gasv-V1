@@ -1263,46 +1263,44 @@ Error generating stack: `+l.message+`
 })();
 </script>
 <script id="gasv-mobile-command-menu-script">
-(()=>{
+(()=> {
   'use strict';
   if(window.__GASV_MOBILE_COMMAND_MENU__) return;
   window.__GASV_MOBILE_COMMAND_MENU__=true;
 
   const norm=v=>String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
-  const wanted=[
-    'Nuevo','Guardar','Fichas Guardadas','Reporte Consolidado','Trabajo de Campo',
-    'Manual','Exportar CSV','Exportar proyecto','Importar proyecto','PDF / Imprimir','Exportar PDF'
-  ];
+  const wanted=['Nuevo','Guardar','Fichas Guardadas','Reporte Consolidado','Trabajo de Campo','Manual','Exportar CSV','Exportar proyecto','Importar proyecto','PDF / Imprimir','Exportar PDF'];
   const rank=new Map(wanted.map((x,i)=>[norm(x),i]));
-
   const label=b=>String(b?.innerText||b?.textContent||'').replace(/\s+/g,' ').trim();
+  const isMobile=()=>window.matchMedia?window.matchMedia('(max-width:768px)').matches:window.innerWidth<=768;
 
-  function isMobile(){ return window.matchMedia ? window.matchMedia('(max-width:768px)').matches : window.innerWidth<=768; }
+  function matchesWanted(t,x){
+    const n=norm(t);
+    return n===norm(x) ||
+      (x==='Fichas Guardadas'&&n.startsWith(norm(x))) ||
+      (x==='Reporte Consolidado'&&n.startsWith(norm(x)));
+  }
 
   function findActionContainer(){
-    const buttons=Array.from(document.querySelectorAll('button')).filter(b=>{
-      const t=norm(label(b));
-      return wanted.some(x=>t===norm(x) || (x==='Fichas Guardadas'&&t.startsWith(norm(x))) || (x==='Reporte Consolidado'&&t.startsWith(norm(x))));
-    });
+    const buttons=Array.from(document.querySelectorAll('button')).filter(b=>wanted.some(x=>matchesWanted(label(b),x)));
     const counts=new Map();
     for(const b of buttons){
       const p=b.parentElement;
       if(!p) continue;
-      const n=(counts.get(p)||0)+1;
-      counts.set(p,n);
+      counts.set(p,(counts.get(p)||0)+1);
     }
     let best=null,bestCount=0;
     for(const [p,n] of counts){
-      if(n>bestCount && n>=4){best=p;bestCount=n;}
+      if(n>bestCount&&n>=4){best=p;bestCount=n;}
     }
     return best;
   }
 
   function findHeader(container){
     let el=container;
-    for(let i=0;i<6 && el;i++,el=el.parentElement){
+    for(let i=0;i<6&&el;i++,el=el.parentElement){
       const txt=norm(el.innerText||'');
-      if(txt.includes('relevamiento arquitectonico') && el.querySelector?.('button')) return el;
+      if(txt.includes('relevamiento arquitectonico')&&el.querySelector?.('button')) return el;
     }
     return container?.parentElement||null;
   }
@@ -1311,11 +1309,58 @@ Error generating stack: `+l.message+`
     if(!box) return;
     const panel=box.querySelector('.gasv-mob-cmd-panel');
     const btn=box.querySelector('.gasv-mob-cmd-menu-btn');
-    panel.hidden=true;
-    btn.setAttribute('aria-expanded','false');
-    btn.setAttribute('aria-label','Abrir menú de acciones');
+    if(panel) panel.hidden=true;
+    if(btn){
+      btn.setAttribute('aria-expanded','false');
+      btn.setAttribute('aria-label','Abrir menú de acciones');
+    }
     box.classList.remove('open');
     box.querySelector('.gasv-mob-cmd-backdrop')?.remove();
+  }
+
+  function collectOriginals(actions){
+    if(!actions) return [];
+    return Array.from(actions.querySelectorAll(':scope > button'))
+      .filter(b=>wanted.some(x=>matchesWanted(label(b),x)))
+      .sort((a,b)=>(rank.get(norm(label(a)))??99)-(rank.get(norm(label(b)))??99));
+  }
+
+  function sameElements(a,b){
+    if(!a||!b||a.length!==b.length) return false;
+    for(let i=0;i<a.length;i++) if(a[i]!==b[i]) return false;
+    return true;
+  }
+
+  function rebuild(panel,actions,box,force=false){
+    if(!panel||!actions) return;
+    const originals=collectOriginals(actions);
+    const old=box.__gasvOriginals||[];
+    if(!force && sameElements(originals,old) && panel.children.length) return;
+    box.__gasvOriginals=originals.slice();
+    panel.innerHTML='';
+    const seen=new Set();
+    for(const original of originals){
+      const key=norm(label(original));
+      if(seen.has(key)) continue;
+      seen.add(key);
+      const item=document.createElement('button');
+      item.type='button';
+      item.className='gasv-mob-cmd-item';
+      item.setAttribute('role','menuitem');
+      item.setAttribute('tabindex','0');
+      item.innerHTML=original.innerHTML;
+      const activate=e=>{
+        e.preventDefault();
+        close(box);
+        original.click();
+      };
+      item.addEventListener('click',activate);
+      item.addEventListener('keydown',e=>{
+        if(e.key==='Enter'||e.key===' '){activate(e);}
+        else if(e.key==='Escape'){close(box);}
+      });
+      panel.appendChild(item);
+    }
   }
 
   function build(){
@@ -1327,10 +1372,11 @@ Error generating stack: `+l.message+`
 
     actions.classList.add('gasv-mob-cmd-actions');
     header.classList.add('gasv-mob-cmd-header');
-    const brand=Array.from(header.children).find(x=>x!==actions && x.querySelector?.('img,h1'));
+    const brand=Array.from(header.children).find(x=>x!==actions&&x.querySelector?.('img,h1'));
     brand?.classList.add('gasv-mob-cmd-brand');
 
     let box=header.querySelector('.gasv-mob-cmd-menu-wrap');
+    let created=false;
     if(!box){
       box=document.createElement('div');
       box.className='gasv-mob-cmd-menu-wrap';
@@ -1351,66 +1397,23 @@ Error generating stack: `+l.message+`
 
       btn.addEventListener('click',e=>{
         e.stopPropagation();
-        const open=panel.hidden;
-        if(!open){ close(box); return; }
+        const opening=panel.hidden;
+        if(!opening){close(box);return;}
         panel.hidden=false;
         btn.setAttribute('aria-expanded','true');
         btn.setAttribute('aria-label','Cerrar menú de acciones');
         box.classList.add('open');
-        if(!box.querySelector('.gasv-mob-cmd-backdrop')){
-          const bd=document.createElement('div');
-          bd.className='gasv-mob-cmd-backdrop';
-          bd.addEventListener('click',()=>close(box),{once:true});
-          document.body.appendChild(bd);
-        }
-        rebuild(panel,actions,box);
+        rebuild(panel,actions,box,true);
       });
 
-      btn.addEventListener('keydown',e=>{ if(e.key==='Escape') close(box); });
+      btn.addEventListener('keydown',e=>{if(e.key==='Escape')close(box);});
       box.append(btn,panel);
       header.appendChild(box);
+      created=true;
     }
 
-    rebuild(box.querySelector('.gasv-mob-cmd-panel'),actions,box);
+    rebuild(box.querySelector('.gasv-mob-cmd-panel'),actions,box,created);
     actions.style.setProperty('display','none','important');
-  }
-
-  function rebuild(panel,actions,box){
-    if(!panel||!actions) return;
-    const originals=Array.from(actions.querySelectorAll(':scope > button'))
-      .filter(b=>{
-        const t=norm(label(b));
-        return wanted.some(x=>t===norm(x) || (x==='Fichas Guardadas'&&t.startsWith(norm(x))) || (x==='Reporte Consolidado'&&t.startsWith(norm(x))));
-      })
-      .sort((a,b)=>(rank.get(norm(label(a)))??99)-(rank.get(norm(label(b)))??99));
-
-    panel.innerHTML='';
-    const seen=new Set();
-
-    for(const original of originals){
-      const key=norm(label(original));
-      if(seen.has(key)) continue;
-      seen.add(key);
-      const item=document.createElement('button');
-      item.type='button';
-      item.className='gasv-mob-cmd-item';
-      item.setAttribute('role','menuitem');
-      item.setAttribute('tabindex','0');
-      item.innerHTML=original.innerHTML;
-      item.addEventListener('click',e=>{
-        e.preventDefault();
-        close(box);
-        original.click();
-      });
-      item.addEventListener('keydown',e=>{
-        if(e.key==='Enter'||e.key===' '){
-          e.preventDefault();
-          close(box);
-          original.click();
-        }
-      });
-      panel.appendChild(item);
-    }
   }
 
   let timer=0;
@@ -1418,17 +1421,21 @@ Error generating stack: `+l.message+`
     clearTimeout(timer);
     timer=setTimeout(()=>{
       try{
-        if(isMobile()) build();
-        else document.querySelector('.gasv-mob-cmd-menu-wrap')?.remove();
-      }catch(e){}
-    },120);
+        if(isMobile()){
+          build();
+        }else{
+          const box=document.querySelector('.gasv-mob-cmd-menu-wrap');
+          if(box) close(box);
+          document.querySelector('.gasv-mob-cmd-menu-wrap')?.remove();
+        }
+      }catch(e){console.error('GASV mobile menu:',e);}
+    },80);
   }
 
   function boot(){
     run();
     [300,800,1500,2500,4000].forEach(ms=>setTimeout(run,ms));
-    const obs=new MutationObserver(run);
-    obs.observe(document.body,{childList:true,subtree:true});
+    setInterval(run,3000);
     window.addEventListener('resize',run,{passive:true});
     document.addEventListener('scroll',()=>{
       const box=document.querySelector('.gasv-mob-cmd-menu-wrap.open');
