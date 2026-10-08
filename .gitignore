@@ -6,3 +6,7 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Credenciales/configuración local de Google clasp
+.clasprc.json
+.clasp.json
