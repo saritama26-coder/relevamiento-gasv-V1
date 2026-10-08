@@ -1,0 +1,71 @@
+name: Sincronizar PROFORMA GASV con Google Apps Script
+
+on:
+  push:
+    branches:
+      - proforma-gasv
+    paths:
+      - "proforma-gasv/**"
+      - ".github/workflows/sync-proforma-gasv.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: proforma-gasv-apps-script
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    name: Sincronizar código fuente
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Preparar credenciales privadas
+        shell: bash
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+          CLASP_JSON: ${{ secrets.CLASP_JSON }}
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${CLASPRC_JSON:-}" ]]; then
+            echo "::error::Falta el secreto CLASPRC_JSON. Sigue README-PROFORMA-GASV.md."
+            exit 1
+          fi
+          if [[ -z "${CLASP_JSON:-}" ]]; then
+            echo "::error::Falta el secreto CLASP_JSON. Sigue README-PROFORMA-GASV.md."
+            exit 1
+          fi
+
+          printf '%s' "$CLASPRC_JSON" > "$HOME/.clasprc.json"
+          chmod 600 "$HOME/.clasprc.json"
+          printf '%s' "$CLASP_JSON" > .clasp.json
+
+          node <<'NODE'
+          const fs = require('node:fs');
+          const file = '.clasp.json';
+          const cfg = JSON.parse(fs.readFileSync(file, 'utf8'));
+          if (!cfg.scriptId || typeof cfg.scriptId !== 'string') {
+            throw new Error('CLASP_JSON debe incluir un scriptId válido.');
+          }
+          // Aísla el despliegue: solo se envía la carpeta PROFORMA GASV.
+          cfg.rootDir = 'proforma-gasv';
+          fs.writeFileSync(file, JSON.stringify(cfg, null, 2));
+          for (const name of ['Codigo.gs', 'Index.html']) {
+            if (!fs.existsSync('proforma-gasv/' + name)) {
+              throw new Error('Falta el archivo proforma-gasv/' + name);
+            }
+          }
+          NODE
+
+      - name: Enviar código a Google Apps Script
+        run: npx --yes @google/clasp@3 push --force
