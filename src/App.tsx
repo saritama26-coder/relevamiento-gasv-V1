@@ -160,7 +160,7 @@ export default function App() {
       isFirstMount.current = false;
       return;
     }
-    if (!activeFicha.codigo && !activeFicha.ambiente) {
+    if (!String(activeFicha.codigo || '').trim() && !String(activeFicha.ambiente || '').trim()) {
       setSaveStatus('Ingrese Código o Ambiente para autoguardar');
       return;
     }
@@ -279,8 +279,10 @@ export default function App() {
     StorageService.saveProjectData(updated);
   };
 
+  const isFormValid = Boolean(String(activeFicha.codigo || '').trim() || String(activeFicha.ambiente || '').trim());
+
   const handleManualSave = async () => {
-    if (!activeFicha.codigo && !activeFicha.ambiente) {
+    if (!String(activeFicha.codigo || '').trim() && !String(activeFicha.ambiente || '').trim()) {
       alert('Ingrese Código o Ambiente para guardar.');
       return;
     }
@@ -467,13 +469,22 @@ export default function App() {
           <div className="flex items-center justify-between gap-2 sm:gap-4 max-w-7xl mx-auto">
             {/* Left: Architect Details & Title */}
             <div className="flex items-center space-x-2.5 sm:space-x-4 min-w-0 flex-1">
-              {/* Logo Oficial sin recortar: fondo blanco original, marco nítido completo */}
-              <div className="bg-white p-1 rounded-sm shadow-xs shrink-0 flex items-center justify-center border border-slate-300">
-                <img
-                  src={GSARITAMA_LOGO_PNG}
-                  alt="GSARITAMA ARQ."
-                  className="h-8 sm:h-11 w-auto max-w-[140px] sm:max-w-[200px] object-contain block select-none"
-                />
+              {/* Icono GASV seleccionado: diseño arquitectónico de la derecha */}
+              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                <div className="bg-white p-0.5 rounded-lg shadow-xs shrink-0 flex items-center justify-center border border-slate-300">
+                  <img
+                    src="./gasv-icon-right.png"
+                    alt="Icono GASV - Relevamiento Arquitectónico"
+                    className="h-9 w-9 sm:h-12 sm:w-12 object-contain rounded-md block select-none"
+                  />
+                </div>
+                <div className="hidden sm:flex bg-white p-1 rounded-sm shadow-xs shrink-0 items-center justify-center border border-slate-300">
+                  <img
+                    src={GSARITAMA_LOGO_PNG}
+                    alt="GSARITAMA ARQ."
+                    className="h-11 w-auto max-w-[180px] object-contain block select-none"
+                  />
+                </div>
               </div>
 
               <div className="min-w-0 border-l border-white/30 pl-2.5 sm:pl-3.5">
@@ -543,8 +554,13 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleManualSave}
-                    className="flex items-center px-2.5 xl:px-3 py-1.5 bg-[#16794b] hover:bg-green-600 rounded text-xs xl:text-sm font-semibold transition-colors shadow-xs"
-                    title="Guardar cambios"
+                    disabled={!isFormValid}
+                    className={`flex items-center px-2.5 xl:px-3 py-1.5 rounded text-xs xl:text-sm font-semibold transition-all shadow-xs ${
+                      isFormValid
+                        ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
+                        : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50 shadow-none'
+                    }`}
+                    title={isFormValid ? 'Guardar cambios' : 'Complete Código o Ambiente para habilitar Guardar'}
                   >
                     <Save size={15} className="mr-1 shrink-0" /> Guardar
                   </button>
@@ -619,7 +635,13 @@ export default function App() {
               <button
                 type="button"
                 onClick={handleManualSave}
-                className="lg:hidden flex items-center px-2.5 py-1.5 bg-[#16794b] hover:bg-green-600 rounded text-xs font-semibold transition-colors shadow-xs"
+                disabled={!isFormValid}
+                className={`lg:hidden flex items-center px-2.5 py-1.5 rounded text-xs font-semibold transition-all shadow-xs ${
+                  isFormValid
+                    ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
+                    : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50 shadow-none'
+                }`}
+                title={isFormValid ? 'Guardar cambios' : 'Complete Código o Ambiente para habilitar Guardar'}
               >
                 <Save size={14} className="mr-1 shrink-0" />
                 <span>Guardar</span>
@@ -657,10 +679,17 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => {
+                      if (!isFormValid) return;
                       handleManualSave();
                       setMobileMenuOpen(false);
                     }}
-                    className="flex items-center justify-center p-2 bg-[#16794b] hover:bg-green-600 rounded font-semibold text-center"
+                    disabled={!isFormValid}
+                    className={`flex items-center justify-center p-2 rounded font-semibold text-center transition-all ${
+                      isFormValid
+                        ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
+                        : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50'
+                    }`}
+                    title={isFormValid ? 'Guardar cambios' : 'Complete Código o Ambiente para habilitar Guardar'}
                   >
                     <Save size={15} className="mr-1.5 shrink-0" /> Guardar
                   </button>
