@@ -42,7 +42,7 @@ export function ManualModal({ onClose }: ManualModalProps) {
             </div>
             <div className="border-l border-white/30 pl-3">
               <h2 className="text-base sm:text-lg font-bold">Manual Detallado de Uso</h2>
-              <p className="text-[11px] text-sky-200">Arq. Gabriel Saritama V., Mgs</p>
+              <p className="text-[11px] text-sky-200">Arq. Gabriel Saritama Veira</p>
             </div>
           </div>
           <button

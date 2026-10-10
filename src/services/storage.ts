@@ -51,22 +51,26 @@ export const StorageService = {
   async getProjectData(): Promise<ProjectData> {
     try {
       const data = await store.getItem<ProjectData>('projectData');
-      return (
-        data || {
-          proyecto: '',
-          ubicacion: '',
-          bloque: '',
-          profesional: 'Arq. Gabriel Saritama V., Mgs',
-          contacto: 'saritama26@gmail.com',
+      if (data) {
+        if (!data.profesional || data.profesional === 'Arq. Gabriel Saritama V., Mgs' || data.profesional.includes('Saritama V.')) {
+          data.profesional = 'Arq. Gabriel Saritama Veira';
         }
-      );
+        return data;
+      }
+      return {
+        proyecto: '',
+        ubicacion: '',
+        bloque: '',
+        profesional: 'Arq. Gabriel Saritama Veira',
+        contacto: 'saritama26@gmail.com',
+      };
     } catch (e) {
       console.error('Error getting project data:', e);
       return {
         proyecto: '',
         ubicacion: '',
         bloque: '',
-        profesional: 'Arq. Gabriel Saritama V., Mgs',
+        profesional: 'Arq. Gabriel Saritama Veira',
         contacto: 'saritama26@gmail.com',
       };
     }

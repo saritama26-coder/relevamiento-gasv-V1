@@ -189,7 +189,7 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
           proyecto: '',
           ubicacion: '',
           bloque: '',
-          profesional: 'Arq. Gabriel Saritama V., Mgs',
+          profesional: 'Arq. Gabriel Saritama Veira',
           contacto: 'saritama26@gmail.com',
         },
         payload.catalogosPersonalizados || {}

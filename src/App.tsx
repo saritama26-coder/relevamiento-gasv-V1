@@ -482,7 +482,7 @@ export default function App() {
                 </h1>
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
                   <span className="text-[11px] sm:text-xs font-semibold text-sky-300 truncate">
-                    {projectData.profesional || 'Arq. Gabriel Saritama V., Mgs'}
+                    {projectData.profesional || 'Arq. Gabriel Saritama Veira'}
                   </span>
                   <span className="hidden sm:inline text-sky-400/50 text-xs">•</span>
                   <span className="text-[10px] sm:text-xs text-slate-300 font-mono hidden sm:inline truncate">
@@ -794,7 +794,7 @@ export default function App() {
             </div>
             <div className="text-right text-[10pt] leading-tight text-slate-800">
               <div className="font-semibold text-slate-900">
-                {projectData.profesional || 'Arq. Gabriel Saritama V., Mgs'}
+                {projectData.profesional || 'Arq. Gabriel Saritama Veira'}
               </div>
               <div className="text-xs text-slate-600 font-mono">
                 {projectData.contacto || 'saritama26@gmail.com'}
@@ -810,7 +810,7 @@ export default function App() {
               </h2>
               <span className="text-xs text-slate-500 font-medium">
                 Profesional a cargo:{' '}
-                <strong className="text-slate-800">{projectData.profesional || 'Arq. Gabriel Saritama V., Mgs'}</strong>
+                <strong className="text-slate-800">{projectData.profesional || 'Arq. Gabriel Saritama Veira'}</strong>
               </span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
@@ -845,7 +845,7 @@ export default function App() {
                 <label className="block text-xs font-bold text-gray-500 mb-1">Profesional Responsable</label>
                 <input
                   className="w-full p-2 border rounded text-xs sm:text-sm font-semibold text-slate-800 bg-slate-50"
-                  value={projectData.profesional || 'Arq. Gabriel Saritama V., Mgs'}
+                  value={projectData.profesional || 'Arq. Gabriel Saritama Veira'}
                   onChange={(e) => handleUpdateProjectData('profesional', e.target.value)}
                 />
               </div>
