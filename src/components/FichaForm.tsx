@@ -221,7 +221,7 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
             <label className="text-xs font-bold text-gray-500">Responsable</label>
             <input
               className="w-full p-2 border rounded text-xs sm:text-sm"
-              value={ficha.responsable || projectData.profesional || 'Arq. Gabriel Saritama V., Mgs'}
+              value={ficha.responsable || projectData.profesional || 'Arq. Gabriel Saritama Veira'}
               onChange={(e) => onChange({ responsable: e.target.value })}
             />
           </div>
@@ -698,7 +698,7 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
               <label className="text-xs font-bold text-gray-500">Responsable</label>
               <input
                 className="w-full p-2 border rounded"
-                value={ficha.fir1 || projectData.profesional || 'Arq. Gabriel Saritama V., Mgs'}
+                value={ficha.fir1 || projectData.profesional || 'Arq. Gabriel Saritama Veira'}
                 onChange={(e) => onChange({ fir1: e.target.value })}
               />
             </div>

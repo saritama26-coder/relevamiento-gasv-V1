@@ -1,7 +1,7 @@
 # Relevamiento Arquitectónico
 
 > **Herramienta técnica de levantamiento, diagnóstico, registro fotográfico y cuantificación de proyectos arquitectónicos.**  
-> Diseñada para el **Arq. Gabriel Saritama V., Mgs**.
+> Diseñada para el **Arq. Gabriel Saritama Veira**.
 
 [![CI Build & Test](https://github.com/saritama26/relevamiento-arquitectonico/actions/workflows/ci.yml/badge.svg)](https://github.com/saritama26/relevamiento-arquitectonico/actions)
 [![React](https://img.shields.io/badge/React-19.0-61dafb.svg?style=flat&logo=react)](https://react.dev/)

@@ -135,7 +135,7 @@ export function ConsolidatedReport({ fichas, projectData, onClose }: Consolidate
             </div>
             <div className="text-right text-sm leading-tight text-slate-700">
               <div className="font-bold text-slate-900 text-base">
-                {projectData.profesional || 'Arq. Gabriel Saritama V., Mgs'}
+                {projectData.profesional || 'Arq. Gabriel Saritama Veira'}
               </div>
               <div className="text-slate-600 font-medium">Arquitecto</div>
               <div className="text-xs text-slate-500 font-mono mt-0.5">
