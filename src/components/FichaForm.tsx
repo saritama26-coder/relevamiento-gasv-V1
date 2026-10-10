@@ -28,7 +28,8 @@ interface FichaFormProps {
 
 export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
   const { listas } = useCatalogos();
-  const identificationMissing = !String(ficha.codigo || '').trim() && !String(ficha.ambiente || '').trim();
+  const codigoMissing = !String(ficha.codigo || '').trim();
+  const ambienteMissing = !String(ficha.ambiente || '').trim();
 
   const [asistente, setAsistente] = useState({
     elemento: '',
@@ -197,11 +198,11 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
             <label className="text-xs font-bold text-gray-500">Ambiente / Área</label>
             <input
               className={`w-full p-2 border rounded text-xs sm:text-sm transition-all ${
-                identificationMissing
+                ambienteMissing
                   ? 'border-2 border-red-500 bg-red-50/40 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-600'
                   : 'border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
               }`}
-              aria-invalid={identificationMissing}
+              aria-invalid={ambienteMissing}
               placeholder="Ej. Sala de Estar, Dormitorio..."
               value={ficha.ambiente}
               onChange={(e) => onChange({ ambiente: e.target.value })}
@@ -211,20 +212,15 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
             <label className="text-xs font-bold text-gray-500">Código</label>
             <input
               className={`w-full p-2 border rounded text-xs sm:text-sm transition-all ${
-                identificationMissing
+                codigoMissing
                   ? 'border-2 border-red-500 bg-red-50/40 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-600'
                   : 'border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
               }`}
-              aria-invalid={identificationMissing}
+              aria-invalid={codigoMissing}
               placeholder="Ej. A-01, LAB-02..."
               value={ficha.codigo}
               onChange={(e) => onChange({ codigo: e.target.value })}
             />
-            {identificationMissing && (
-              <p className="mt-1 text-[11px] text-red-600 font-semibold" role="alert">
-                Complete Código o Ambiente para habilitar Guardar.
-              </p>
-            )}
           </div>
           <div>
             <label className="text-xs font-bold text-gray-500">Fecha</label>
