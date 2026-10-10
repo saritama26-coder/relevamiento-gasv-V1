@@ -161,7 +161,7 @@ export default function App() {
       return;
     }
     if (!String(activeFicha.codigo || '').trim() || !String(activeFicha.ambiente || '').trim()) {
-      setSaveStatus('Ingrese Código o Ambiente para autoguardar');
+      setSaveStatus('');
       return;
     }
 
