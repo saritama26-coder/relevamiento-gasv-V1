@@ -160,7 +160,7 @@ export default function App() {
       isFirstMount.current = false;
       return;
     }
-    if (!String(activeFicha.codigo || '').trim() && !String(activeFicha.ambiente || '').trim()) {
+    if (!String(activeFicha.codigo || '').trim() || !String(activeFicha.ambiente || '').trim()) {
       setSaveStatus('Ingrese Código o Ambiente para autoguardar');
       return;
     }
@@ -279,11 +279,10 @@ export default function App() {
     StorageService.saveProjectData(updated);
   };
 
-  const isFormValid = Boolean(String(activeFicha.codigo || '').trim() || String(activeFicha.ambiente || '').trim());
+  const isFormValid = Boolean(String(activeFicha.codigo || '').trim() && String(activeFicha.ambiente || '').trim());
 
   const handleManualSave = async () => {
-    if (!String(activeFicha.codigo || '').trim() && !String(activeFicha.ambiente || '').trim()) {
-      alert('Ingrese Código o Ambiente para guardar.');
+    if (!String(activeFicha.codigo || '').trim() || !String(activeFicha.ambiente || '').trim()) {
       return;
     }
     await StorageService.saveFicha(activeFicha);
@@ -560,7 +559,7 @@ export default function App() {
                         ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
                         : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50 shadow-none'
                     }`}
-                    title={isFormValid ? 'Guardar cambios' : 'Complete Código o Ambiente para habilitar Guardar'}
+                    title={isFormValid ? 'Guardar cambios' : 'Complete Código y Ambiente para habilitar Guardar'}
                   >
                     <Save size={15} className="mr-1 shrink-0" /> Guardar
                   </button>
@@ -641,7 +640,7 @@ export default function App() {
                     ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
                     : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50 shadow-none'
                 }`}
-                title={isFormValid ? 'Guardar cambios' : 'Complete Código o Ambiente para habilitar Guardar'}
+                title={isFormValid ? 'Guardar cambios' : 'Complete Código y Ambiente para habilitar Guardar'}
               >
                 <Save size={14} className="mr-1 shrink-0" />
                 <span>Guardar</span>
@@ -689,7 +688,7 @@ export default function App() {
                         ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
                         : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50'
                     }`}
-                    title={isFormValid ? 'Guardar cambios' : 'Complete Código o Ambiente para habilitar Guardar'}
+                    title={isFormValid ? 'Guardar cambios' : 'Complete Código y Ambiente para habilitar Guardar'}
                   >
                     <Save size={15} className="mr-1.5 shrink-0" /> Guardar
                   </button>
