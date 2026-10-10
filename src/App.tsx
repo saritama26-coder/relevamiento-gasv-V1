@@ -279,10 +279,10 @@ export default function App() {
     StorageService.saveProjectData(updated);
   };
 
-  const isFormValid = Boolean(activeFicha.codigo?.trim() && activeFicha.ambiente?.trim());
+  const isFormValid = Boolean(String(activeFicha.codigo || '').trim() || String(activeFicha.ambiente || '').trim());
 
   const handleManualSave = async () => {
-    if (!activeFicha.codigo?.trim() || !activeFicha.ambiente?.trim()) {
+    if (!String(activeFicha.codigo || '').trim() && !String(activeFicha.ambiente || '').trim()) {
       return;
     }
     await StorageService.saveFicha(activeFicha);
@@ -472,7 +472,7 @@ export default function App() {
               <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                 <div className="bg-white p-0.5 rounded-lg shadow-xs shrink-0 flex items-center justify-center border border-slate-300">
                   <img
-                    src="/gasv-icon-right.png"
+                    src="./gasv-icon-right.png"
                     alt="Icono GASV - Relevamiento Arquitectónico"
                     className="h-9 w-9 sm:h-12 sm:w-12 object-contain rounded-md block select-none"
                   />
@@ -562,7 +562,7 @@ export default function App() {
                     title={
                       isFormValid
                         ? 'Guardar cambios'
-                        : 'Complete los campos obligatorios (Código y Ambiente) para guardar'
+                        : 'Complete Código o Ambiente para habilitar Guardar'
                     }
                   >
                     <Save size={15} className="mr-1 shrink-0" /> Guardar
@@ -647,7 +647,7 @@ export default function App() {
                 title={
                   isFormValid
                     ? 'Guardar cambios'
-                    : 'Complete los campos obligatorios (Código y Ambiente) para guardar'
+                    : 'Complete Código o Ambiente para habilitar Guardar'
                 }
               >
                 <Save size={14} className="mr-1 shrink-0" />
@@ -699,7 +699,7 @@ export default function App() {
                     title={
                       isFormValid
                         ? 'Guardar cambios'
-                        : 'Complete los campos obligatorios (Código y Ambiente) para guardar'
+                        : 'Complete Código o Ambiente para habilitar Guardar'
                     }
                   >
                     <Save size={15} className="mr-1.5 shrink-0" /> Guardar
