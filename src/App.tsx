@@ -279,9 +279,10 @@ export default function App() {
     StorageService.saveProjectData(updated);
   };
 
+  const isFormValid = Boolean(activeFicha.codigo?.trim() && activeFicha.ambiente?.trim());
+
   const handleManualSave = async () => {
-    if (!activeFicha.codigo && !activeFicha.ambiente) {
-      alert('Ingrese Código o Ambiente para guardar.');
+    if (!activeFicha.codigo?.trim() || !activeFicha.ambiente?.trim()) {
       return;
     }
     await StorageService.saveFicha(activeFicha);
@@ -543,8 +544,17 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleManualSave}
-                    className="flex items-center px-2.5 xl:px-3 py-1.5 bg-[#16794b] hover:bg-green-600 rounded text-xs xl:text-sm font-semibold transition-colors shadow-xs"
-                    title="Guardar cambios"
+                    disabled={!isFormValid}
+                    className={`flex items-center px-2.5 xl:px-3 py-1.5 rounded text-xs xl:text-sm font-semibold transition-all shadow-xs ${
+                      isFormValid
+                        ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
+                        : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50 shadow-none'
+                    }`}
+                    title={
+                      isFormValid
+                        ? 'Guardar cambios'
+                        : 'Complete los campos obligatorios (Código y Ambiente) para guardar'
+                    }
                   >
                     <Save size={15} className="mr-1 shrink-0" /> Guardar
                   </button>
@@ -619,7 +629,17 @@ export default function App() {
               <button
                 type="button"
                 onClick={handleManualSave}
-                className="lg:hidden flex items-center px-2.5 py-1.5 bg-[#16794b] hover:bg-green-600 rounded text-xs font-semibold transition-colors shadow-xs"
+                disabled={!isFormValid}
+                className={`lg:hidden flex items-center px-2.5 py-1.5 rounded text-xs font-semibold transition-all shadow-xs ${
+                  isFormValid
+                    ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
+                    : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50 shadow-none'
+                }`}
+                title={
+                  isFormValid
+                    ? 'Guardar cambios'
+                    : 'Complete los campos obligatorios (Código y Ambiente) para guardar'
+                }
               >
                 <Save size={14} className="mr-1 shrink-0" />
                 <span>Guardar</span>
@@ -657,10 +677,21 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => {
+                      if (!isFormValid) return;
                       handleManualSave();
                       setMobileMenuOpen(false);
                     }}
-                    className="flex items-center justify-center p-2 bg-[#16794b] hover:bg-green-600 rounded font-semibold text-center"
+                    disabled={!isFormValid}
+                    className={`flex items-center justify-center p-2 rounded font-semibold text-center transition-all ${
+                      isFormValid
+                        ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
+                        : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50'
+                    }`}
+                    title={
+                      isFormValid
+                        ? 'Guardar cambios'
+                        : 'Complete los campos obligatorios (Código y Ambiente) para guardar'
+                    }
                   >
                     <Save size={15} className="mr-1.5 shrink-0" /> Guardar
                   </button>

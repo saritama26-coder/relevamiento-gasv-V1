@@ -193,17 +193,45 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
             />
           </div>
           <div>
-            <label className="text-xs font-bold text-gray-500">Ambiente / Área</label>
+            <label className="text-xs font-bold text-gray-500 flex items-center justify-between">
+              <span>
+                Ambiente / Área <span className="text-red-500 font-bold">*</span>
+              </span>
+              {!ficha.ambiente?.trim() && (
+                <span className="text-[10px] text-red-600 font-semibold bg-red-50 border border-red-200 px-1.5 py-0.5 rounded">
+                  Requerido
+                </span>
+              )}
+            </label>
             <input
-              className="w-full p-2 border rounded text-xs sm:text-sm"
+              className={`w-full p-2 border rounded text-xs sm:text-sm transition-all ${
+                !ficha.ambiente?.trim()
+                  ? 'border-2 border-red-500 bg-red-50/40 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-600'
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+              }`}
+              placeholder="Ej. Sala de Estar, Dormitorio..."
               value={ficha.ambiente}
               onChange={(e) => onChange({ ambiente: e.target.value })}
             />
           </div>
           <div>
-            <label className="text-xs font-bold text-gray-500">Código</label>
+            <label className="text-xs font-bold text-gray-500 flex items-center justify-between">
+              <span>
+                Código <span className="text-red-500 font-bold">*</span>
+              </span>
+              {!ficha.codigo?.trim() && (
+                <span className="text-[10px] text-red-600 font-semibold bg-red-50 border border-red-200 px-1.5 py-0.5 rounded">
+                  Requerido
+                </span>
+              )}
+            </label>
             <input
-              className="w-full p-2 border rounded text-xs sm:text-sm"
+              className={`w-full p-2 border rounded text-xs sm:text-sm transition-all ${
+                !ficha.codigo?.trim()
+                  ? 'border-2 border-red-500 bg-red-50/40 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-400 focus:border-red-600'
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+              }`}
+              placeholder="Ej. A-01, LAB-02..."
               value={ficha.codigo}
               onChange={(e) => onChange({ codigo: e.target.value })}
             />
