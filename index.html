@@ -290,6 +290,57 @@ Error generating stack: `+l.message+`
   .gasv-mob-cmd-menu-wrap,.gasv-mob-cmd-backdrop{display:none!important}
 }
 </style>
+    <style id="gasv-mobile-compact-header-css">
+/* Ajuste compacto exclusivo para la cabecera móvil; no afecta escritorio. */
+@media (max-width: 768px) {
+  .gasv-mob-cmd-header {
+    gap: 5px !important;
+    padding: 5px 8px 7px !important;
+  }
+  .gasv-mob-cmd-brand {
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    min-width: 0 !important;
+  }
+  .gasv-mob-cmd-brand > * {
+    margin-left: 0 !important;
+    min-width: 0 !important;
+  }
+  .gasv-mob-cmd-brand > img {
+    height: 34px !important;
+    width: auto !important;
+    max-width: 44% !important;
+    object-fit: contain !important;
+    flex: 0 1 auto !important;
+  }
+  .gasv-mob-cmd-brand > div {
+    flex: 1 1 0 !important;
+    padding-left: 8px !important;
+    border-left-width: 1px !important;
+  }
+  .gasv-mob-cmd-brand h1 {
+    margin: 0 !important;
+    font-size: 15px !important;
+    line-height: 1.13 !important;
+    letter-spacing: .01em !important;
+  }
+  .gasv-mob-cmd-brand p {
+    margin-top: 3px !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+  }
+  .gasv-mob-cmd-menu-btn {
+    min-height: 36px !important;
+    padding: 6px 8px !important;
+    border-radius: 8px !important;
+    font-size: 13px !important;
+  }
+}
+@media (max-width: 390px) {
+  .gasv-mob-cmd-brand > img { max-width: 40% !important; }
+  .gasv-mob-cmd-brand h1 { font-size: 14px !important; }
+}
+</style>
     <meta name="gasv-version" content="4.0.0-20260929-field-2115">
     <script>
       window.GASV_BUILD="2026-09-29T21:15:00-05:00";
