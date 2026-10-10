@@ -33,7 +33,7 @@ export default defineConfig(() => {
           icons: [
             {
               src: './gasv-icon-right.png',
-              sizes: '192x192',
+              sizes: '768x768',
               type: 'image/png',
               purpose: 'any',
             },
