@@ -470,7 +470,7 @@ export default function App() {
             {/* Left: Architect Details & Title */}
             <div className="flex items-center space-x-2.5 sm:space-x-4 min-w-0 flex-1">
               {/* Icono GASV seleccionado: diseño arquitectónico de la derecha */}
-              <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              <div className="gasv-mobile-icon-lockup flex items-center gap-2 sm:gap-3 shrink-0">
                 <div className="bg-white p-0.5 rounded-lg shadow-xs shrink-0 flex items-center justify-center border border-slate-300">
                   <img
                     src="./gasv-icon-right.png"
