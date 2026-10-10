@@ -160,8 +160,8 @@ export default function App() {
       isFirstMount.current = false;
       return;
     }
-    if (!activeFicha.codigo && !activeFicha.ambiente) {
-      setSaveStatus('Ingrese Código o Ambiente para autoguardar');
+    if (!String(activeFicha.codigo || '').trim() || !String(activeFicha.ambiente || '').trim()) {
+      setSaveStatus('');
       return;
     }
 
