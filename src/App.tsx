@@ -279,10 +279,10 @@ export default function App() {
     StorageService.saveProjectData(updated);
   };
 
-  const isFormValid = Boolean(String(activeFicha.codigo || '').trim() || String(activeFicha.ambiente || '').trim());
+  const isFormValid = Boolean(String(activeFicha.codigo || '').trim() && String(activeFicha.ambiente || '').trim());
 
   const handleManualSave = async () => {
-    if (!String(activeFicha.codigo || '').trim() && !String(activeFicha.ambiente || '').trim()) {
+    if (!String(activeFicha.codigo || '').trim() || !String(activeFicha.ambiente || '').trim()) {
       return;
     }
     await StorageService.saveFicha(activeFicha);
@@ -562,7 +562,7 @@ export default function App() {
                     title={
                       isFormValid
                         ? 'Guardar cambios'
-                        : 'Complete Código o Ambiente para habilitar Guardar'
+                        : 'Complete Código y Ambiente para habilitar Guardar'
                     }
                   >
                     <Save size={15} className="mr-1 shrink-0" /> Guardar
@@ -647,7 +647,7 @@ export default function App() {
                 title={
                   isFormValid
                     ? 'Guardar cambios'
-                    : 'Complete Código o Ambiente para habilitar Guardar'
+                    : 'Complete Código y Ambiente para habilitar Guardar'
                 }
               >
                 <Save size={14} className="mr-1 shrink-0" />
@@ -699,7 +699,7 @@ export default function App() {
                     title={
                       isFormValid
                         ? 'Guardar cambios'
-                        : 'Complete Código o Ambiente para habilitar Guardar'
+                        : 'Complete Código y Ambiente para habilitar Guardar'
                     }
                   >
                     <Save size={15} className="mr-1.5 shrink-0" /> Guardar
