@@ -14,6 +14,7 @@ export default defineConfig(() => {
         includeAssets: [
           'apple-touch-icon.png',
           'icon.svg',
+          'gasv-icon-right.png',
           'pwa-192x192.png',
           'pwa-512x512.png',
         ],
@@ -31,22 +32,10 @@ export default defineConfig(() => {
           scope: '/',
           icons: [
             {
-              src: '/pwa-192x192.png',
-              sizes: '192x192',
+              src: './gasv-icon-right.png',
+              sizes: '768x768',
               type: 'image/png',
               purpose: 'any',
-            },
-            {
-              src: '/pwa-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any',
-            },
-            {
-              src: '/pwa-maskable-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'maskable',
             },
           ],
         },
