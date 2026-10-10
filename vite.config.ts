@@ -16,6 +16,7 @@ export default defineConfig(() => {
           'icon.svg',
           'pwa-192x192.png',
           'pwa-512x512.png',
+          'gasv-icon-right.png',
         ],
         manifest: {
           id: '/',
@@ -31,22 +32,10 @@ export default defineConfig(() => {
           scope: '/',
           icons: [
             {
-              src: '/pwa-192x192.png',
+              src: './gasv-icon-right.png',
               sizes: '192x192',
               type: 'image/png',
               purpose: 'any',
-            },
-            {
-              src: '/pwa-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'any',
-            },
-            {
-              src: '/pwa-maskable-512x512.png',
-              sizes: '512x512',
-              type: 'image/png',
-              purpose: 'maskable',
             },
           ],
         },
