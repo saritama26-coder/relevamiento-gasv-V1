@@ -1437,7 +1437,7 @@ Error generating stack: `+l.message+`
       item.setAttribute('role','menuitem');
       item.setAttribute('tabindex','0');
       item.innerHTML=original.innerHTML;
-      if(key===norm('Guardar')){item.disabled=!!original.disabled;item.setAttribute('aria-disabled',String(!!original.disabled));item.title=original.title||'Complete Código y Ambiente para habilitar Guardar';}
+      if(key===norm('Guardar')){item.disabled=!!original.disabled;item.setAttribute('aria-disabled',String(!!original.disabled));item.title=original.title||'Guardar ficha';}
       item.addEventListener('click',e=>{
         e.preventDefault();
         close(box);
