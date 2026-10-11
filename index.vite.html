@@ -7,6 +7,20 @@
     <meta name="description" content="Relevamiento Arquitectónico GASV: levantamiento técnico, diagnóstico, registro fotográfico y cuantificación de proyectos." />
     <title>Relevamiento Arquitectónico GASV</title>
     <link rel="icon" type="image/png" href="./gasv-logo.png" />
+    <script>
+      // Desregistrar service workers previos en desarrollo para evitar conflictos de caché y pantalla en blanco
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+          for (var i = 0; i < registrations.length; i++) {
+            registrations[i].unregister();
+          }
+        });
+      }
+      window.Gsv2d = function(v) {
+        var n = parseFloat(String(v == null ? "" : v).replace(",", "."));
+        return isNaN(n) ? v : n.toFixed(2);
+      };
+    </script>
   </head>
   <body>
     <div id="root"></div>

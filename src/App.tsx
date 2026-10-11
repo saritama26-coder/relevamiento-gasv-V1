@@ -64,7 +64,13 @@ export default function App() {
   // Google Drive cloud backup states
   const [gdriveAutoStatus, setGdriveAutoStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
   const [lastGdriveBackupTime, setLastGdriveBackupTime] = useState<string | null>(() => {
-    return localStorage.getItem('gdrive_last_backup_time');
+    try {
+      return typeof window !== 'undefined' && window.localStorage
+        ? localStorage.getItem('gdrive_last_backup_time')
+        : null;
+    } catch {
+      return null;
+    }
   });
   const [gdriveAutoError, setGdriveAutoError] = useState<string | null>(null);
 
@@ -92,7 +98,12 @@ export default function App() {
   // Trigger Google Drive auto-backup when fichas or project data are updated
   const triggerGoogleDriveAutoBackup = useCallback(
     async (currentFichas: Ficha[], currentProj: ProjectData, currentCats: CatalogosMap) => {
-      const isEnabled = localStorage.getItem('gdrive_auto_backup_enabled') !== 'false';
+      let isEnabled = true;
+      try {
+        isEnabled = localStorage.getItem('gdrive_auto_backup_enabled') !== 'false';
+      } catch {
+        isEnabled = false;
+      }
       if (!isEnabled) return;
 
       const token = await getAccessToken();
@@ -121,7 +132,11 @@ export default function App() {
         await GoogleDriveService.uploadBackup(token, payload, false);
         const now = new Date().toISOString();
         setLastGdriveBackupTime(now);
-        localStorage.setItem('gdrive_last_backup_time', now);
+        try {
+          localStorage.setItem('gdrive_last_backup_time', now);
+        } catch {
+          // ignore in sandboxed environments
+        }
         setGdriveAutoStatus('synced');
       } catch (err: any) {
         console.error('Error in Google Drive auto-backup:', err);
@@ -149,7 +164,11 @@ export default function App() {
     await GoogleDriveService.uploadBackup(token, payload, true);
     const now = new Date().toISOString();
     setLastGdriveBackupTime(now);
-    localStorage.setItem('gdrive_last_backup_time', now);
+    try {
+      localStorage.setItem('gdrive_last_backup_time', now);
+    } catch {
+      // ignore
+    }
     setGdriveAutoStatus('synced');
   }, [projectData, catalogos, fichas]);
 
@@ -479,7 +498,7 @@ export default function App() {
             <div className="flex items-center space-x-2.5 sm:space-x-3.5 shrink-0">
               <div className="gasv-mobile-icon-lockup flex items-center shrink-0">
                 <img
-                  src={`${import.meta.env.BASE_URL}gasv-logo.png`}
+                  src={`${(import.meta.env.BASE_URL || '/').replace(/\/$/, '')}/gasv-logo.png`}
                   alt="GSARITAMA ARQ."
                   className="h-9 sm:h-11 w-auto max-w-[160px] sm:max-w-[190px] object-contain block select-none"
                 />

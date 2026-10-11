@@ -68,7 +68,13 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [autoBackupEnabled, setAutoBackupEnabled] = useState<boolean>(() => {
-    return localStorage.getItem('gdrive_auto_backup_enabled') !== 'false';
+    try {
+      return typeof window !== 'undefined' && window.localStorage
+        ? localStorage.getItem('gdrive_auto_backup_enabled') !== 'false'
+        : true;
+    } catch {
+      return true;
+    }
   });
 
   // Reflect the lifetime of the in-memory OAuth token in the UI.
@@ -91,7 +97,11 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
 
   const handleToggleAutoBackup = async (enabled: boolean) => {
     setAutoBackupEnabled(enabled);
-    localStorage.setItem('gdrive_auto_backup_enabled', enabled ? 'true' : 'false');
+    try {
+      localStorage.setItem('gdrive_auto_backup_enabled', enabled ? 'true' : 'false');
+    } catch {
+      // ignore in sandboxed environments
+    }
     setErrorMessage(null);
     setSuccessMessage(null);
     if (!enabled) {

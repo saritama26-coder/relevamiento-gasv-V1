@@ -25,7 +25,8 @@ export default defineConfig(({ command }) => {
             ) {
               try {
                 const template = fs.readFileSync(path.resolve(process.cwd(), 'index.vite.html'), 'utf-8');
-                const html = await server.transformIndexHtml(req.url || '/relevamiento-gasv-V1/', template);
+                const targetUrl = isDevServer ? (req.url || '/') : (req.url || '/relevamiento-gasv-V1/');
+                const html = await server.transformIndexHtml(targetUrl, template);
                 res.setHeader('Content-Type', 'text/html; charset=utf-8');
                 return res.end(html);
               } catch (e) {
