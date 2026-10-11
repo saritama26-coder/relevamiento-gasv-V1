@@ -11,6 +11,24 @@ export default defineConfig(({ command }) => {
     // AI Studio previews the app from '/', while GitHub Pages serves it from the repository path.
     base: isDevServer ? '/' : '/relevamiento-gasv-V1/',
     plugins: [
+      {
+        name: 'stale-html-proxy-fallback',
+        enforce: 'pre',
+        configureServer(server) {
+          server.middlewares.use((req, res, next) => {
+            if (req.url && req.url.includes('html-proxy')) {
+              res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+              return res.end('export default {};');
+            }
+            next();
+          });
+        },
+        load(id) {
+          if (id.includes('html-proxy')) {
+            return 'export default {};';
+          }
+        },
+      },
       react(),
       tailwindcss(),
       VitePWA({
