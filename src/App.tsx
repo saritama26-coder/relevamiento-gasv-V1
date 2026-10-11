@@ -474,9 +474,9 @@ export default function App() {
       <div className="min-h-screen bg-gray-100 text-gray-900 font-sans pb-10">
         {/* Top Sticky Navigation Bar */}
         <header className="bg-[#17365d] text-white px-3 sm:px-5 py-2.5 sm:py-3 shadow-md print:hidden sticky top-0 z-50">
-          <div className="flex items-center justify-between gap-2 sm:gap-4 max-w-7xl mx-auto">
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 sm:gap-x-4 max-w-7xl mx-auto">
             {/* Left: Architect Details & Title */}
-            <div className="flex items-center space-x-2.5 sm:space-x-4 min-w-0 flex-1">
+            <div className="flex items-center space-x-2.5 sm:space-x-4 min-w-0 flex-[1_1_260px]">
               <div className="gasv-mobile-icon-lockup flex items-center shrink-0">
                 <img
                   src={`${import.meta.env.BASE_URL}gasv-logo.png`}
@@ -502,7 +502,7 @@ export default function App() {
             </div>
 
             {/* Right: Actions and Controls organized by functional groups */}
-            <div className="flex items-center space-x-1.5 sm:space-x-3 shrink-0">
+            <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 min-w-0 flex-[2_1_650px]">
               <PWAInstallButton />
 
               {/* Botón sincronización Móvil & PC (accesible rápido) */}
@@ -550,7 +550,7 @@ export default function App() {
               </button>
 
               {/* Desktop Groups (Visible from lg: 1024px) */}
-              <div className="hidden lg:flex items-center gap-2">
+              <div className="hidden lg:flex flex-wrap items-center justify-end gap-2 min-w-0">
                 {/* GRUPO 1: Acciones principales: [Nuevo] | [Guardar] */}
                 <div className="flex items-center bg-black/20 p-0.5 rounded-md border border-white/10 space-x-1">
                   <button
