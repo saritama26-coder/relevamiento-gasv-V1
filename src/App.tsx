@@ -28,7 +28,7 @@ import { DeviceSyncModal } from './components/DeviceSyncModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
 import { GoogleDriveBackupModal } from './components/GoogleDriveBackupModal';
 import { GoogleDriveService, BackupPayload } from './services/googleDriveService';
-import { getAccessToken, initAuth } from './services/googleAuth';
+import { getAccessToken } from './services/googleAuth';
 import { Cloud, CloudCheck, CloudUpload } from 'lucide-react';
 import {
   createEmptyFicha,
@@ -61,7 +61,6 @@ export default function App() {
   const [selectedAmbienteId, setSelectedAmbienteId] = useState<string | null>(null);
 
   // Google Drive cloud backup states
-  const [gdriveToken, setGdriveToken] = useState<string | null>(null);
   const [gdriveAutoStatus, setGdriveAutoStatus] = useState<'idle' | 'syncing' | 'synced' | 'error'>('idle');
   const [lastGdriveBackupTime, setLastGdriveBackupTime] = useState<string | null>(() => {
     return localStorage.getItem('gdrive_last_backup_time');
@@ -87,11 +86,6 @@ export default function App() {
     StorageService.getFichas().then(setFichas);
     StorageService.getCatalogos().then(setCatalogos);
 
-    // Initialize Google Auth state listener
-    const unsubscribe = initAuth((user, token) => {
-      setGdriveToken(token);
-    });
-    return () => unsubscribe();
   }, []);
 
   // Trigger Google Drive auto-backup when fichas or project data are updated
@@ -102,7 +96,11 @@ export default function App() {
 
       const token = await getAccessToken();
       if (!token) {
-        // User not logged in to Google Drive
+        // Do not misreport a missing/expired OAuth token as a successful backup.
+        if (lastGdriveBackupTime) {
+          setGdriveAutoStatus('error');
+          setGdriveAutoError('Vuelve a autorizar Google Drive para continuar con los respaldos.');
+        }
         return;
       }
 
@@ -130,7 +128,7 @@ export default function App() {
         setGdriveAutoError(err.message || 'Error al respaldar en Drive');
       }
     },
-    [gdriveToken]
+    [lastGdriveBackupTime]
   );
 
   // Manual backup trigger helper for modal
@@ -152,7 +150,7 @@ export default function App() {
     setLastGdriveBackupTime(now);
     localStorage.setItem('gdrive_last_backup_time', now);
     setGdriveAutoStatus('synced');
-  }, [gdriveToken, projectData, catalogos, fichas]);
+  }, [projectData, catalogos, fichas]);
 
   // Autosave ficha with debounce
   useEffect(() => {
