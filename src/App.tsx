@@ -509,7 +509,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setShowSync(true)}
-                className="flex items-center px-2 sm:px-2.5 py-1.5 bg-sky-600/80 hover:bg-sky-500 text-white rounded text-xs font-semibold transition-colors"
+                className="lg:hidden flex items-center px-2 sm:px-2.5 py-1.5 bg-sky-600/80 hover:bg-sky-500 text-white rounded text-xs font-semibold transition-colors"
                 title="Vincular con Celular o Computadora"
               >
                 <ArrowRightLeft size={14} className="sm:mr-1 shrink-0" />
@@ -520,7 +520,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setShowGDriveModal(true)}
-                className={`flex items-center px-2 sm:px-2.5 py-1.5 rounded text-xs font-semibold transition-colors shadow-xs ${
+                className={`lg:hidden flex items-center px-2 sm:px-2.5 py-1.5 rounded text-xs font-semibold transition-colors shadow-xs ${
                   gdriveAutoStatus === 'synced'
                     ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white'
                     : gdriveAutoStatus === 'syncing'
@@ -618,6 +618,50 @@ export default function App() {
                   >
                     <Upload size={14} className="mr-1 shrink-0" /> Importar
                   </button>
+              {/* Botón sincronización Móvil & PC (accesible rápido) */}
+              <button
+                type="button"
+                onClick={() => setShowSync(true)}
+                className="hidden lg:flex items-center px-2 sm:px-2.5 py-1.5 bg-sky-600/80 hover:bg-sky-500 text-white rounded text-xs font-semibold transition-colors"
+                title="Vincular con Celular o Computadora"
+              >
+                <ArrowRightLeft size={14} className="sm:mr-1 shrink-0" />
+                <span className="hidden xl:inline">Sincronizar</span>
+              </button>
+
+              {/* Botón Respaldo en la Nube (Google Drive) */}
+              <button
+                type="button"
+                onClick={() => setShowGDriveModal(true)}
+                className={`hidden lg:flex items-center px-2 sm:px-2.5 py-1.5 rounded text-xs font-semibold transition-colors shadow-xs ${
+                  gdriveAutoStatus === 'synced'
+                    ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white'
+                    : gdriveAutoStatus === 'syncing'
+                    ? 'bg-amber-600/90 hover:bg-amber-500 text-white animate-pulse'
+                    : gdriveAutoStatus === 'error'
+                    ? 'bg-rose-600/90 hover:bg-rose-500 text-white'
+                    : 'bg-[#1e5282] hover:bg-sky-600 text-white'
+                }`}
+                title={gdriveAutoStatus === 'synced'
+                  ? `Google Drive: respaldo confirmado${lastGdriveBackupTime ? ` — ${new Date(lastGdriveBackupTime).toLocaleString('es-EC')}` : ''}`
+                  : gdriveAutoStatus === 'syncing'
+                  ? 'Google Drive: sincronizando datos'
+                  : gdriveAutoStatus === 'error'
+                  ? `Google Drive: error de respaldo — ${gdriveAutoError || 'revise la conexión'}`
+                  : navigator.onLine
+                  ? 'Google Drive: configure o revise el respaldo'
+                  : 'Sin conexión: respaldo en espera'}
+              >
+                {gdriveAutoStatus === 'synced' ? (
+                  <CloudCheck size={15} className="sm:mr-1 shrink-0 text-emerald-200" />
+                ) : gdriveAutoStatus === 'syncing' ? (
+                  <CloudUpload size={15} className="sm:mr-1 shrink-0 animate-bounce" />
+                ) : (
+                  <Cloud size={15} className="sm:mr-1 shrink-0" />
+                )}
+                <span className="hidden md:inline">{gdriveAutoStatus === 'synced' ? 'Drive guardado' : gdriveAutoStatus === 'syncing' ? 'Sincronizando…' : gdriveAutoStatus === 'error' ? 'Error Drive' : 'Google Drive'}</span>
+              </button>
+
                   <button
                     type="button"
                     onClick={handleExportProject}
