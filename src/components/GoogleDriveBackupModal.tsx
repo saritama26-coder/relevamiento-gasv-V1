@@ -42,6 +42,7 @@ interface GoogleDriveBackupModalProps {
   autoBackupStatus: 'idle' | 'syncing' | 'synced' | 'error';
   autoBackupError: string | null;
   onManualBackupTrigger: () => Promise<void>;
+  onAutomaticBackupTrigger: () => Promise<void>;
 }
 
 export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
@@ -55,6 +56,7 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
   autoBackupStatus,
   autoBackupError,
   onManualBackupTrigger,
+  onAutomaticBackupTrigger,
 }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
@@ -80,9 +82,21 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
     return () => unsubscribe();
   }, []);
 
-  const handleToggleAutoBackup = (enabled: boolean) => {
+  const handleToggleAutoBackup = async (enabled: boolean) => {
     setAutoBackupEnabled(enabled);
     localStorage.setItem('gdrive_auto_backup_enabled', enabled ? 'true' : 'false');
+    setErrorMessage(null);
+    if (!enabled) {
+      setSuccessMessage('El respaldo automático quedó pausado. Tus fichas locales no se modificarán.');
+      return;
+    }
+    const currentToken = await getAccessToken();
+    if (!currentToken) {
+      setSuccessMessage('Respaldo automático activado. Autoriza Google Drive para iniciar la primera copia.');
+      return;
+    }
+    await onAutomaticBackupTrigger();
+    await loadBackups(currentToken);
   };
 
   const loadBackups = async (accessToken: string) => {
@@ -97,7 +111,7 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
     }
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (): Promise<string | null> => {
     setIsLoggingIn(true);
     setErrorMessage(null);
     try {
@@ -106,12 +120,16 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
         setUser(res.user);
         setToken(res.accessToken);
         setSuccessMessage('Sesión iniciada con éxito. Google Drive vinculado.');
-        loadBackups(res.accessToken);
+        if (autoBackupEnabled) await onAutomaticBackupTrigger();
+        await loadBackups(res.accessToken);
+        return res.accessToken;
       }
+      return null;
     } catch (e: any) {
       setErrorMessage(
         e.message || 'Error al iniciar sesión con Google. Intente nuevamente.'
       );
+      return null;
     } finally {
       setIsLoggingIn(false);
     }
@@ -130,13 +148,10 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
   };
 
   const handleCreateManualBackup = async () => {
-    if (!token && !user) {
-      await handleLogin();
-      return;
-    }
-    const currentToken = token || (await getAccessToken());
+    let currentToken = await getAccessToken();
+    if (!currentToken) currentToken = await handleLogin();
     if (!currentToken) {
-      setErrorMessage('No hay sesión activa de Google Drive.');
+      setErrorMessage('Autoriza Google Drive para continuar con el respaldo.');
       return;
     }
 
@@ -165,9 +180,10 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
       return;
     }
 
-    const currentToken = token || (await getAccessToken());
+    let currentToken = await getAccessToken();
+    if (!currentToken) currentToken = await handleLogin();
     if (!currentToken) {
-      setErrorMessage('Sesión no disponible para descargar respaldo.');
+      setErrorMessage('Autoriza Google Drive para descargar el respaldo.');
       return;
     }
 
@@ -269,14 +285,16 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
                   </div>
                   <div className="text-xs text-slate-500">
                     {user
-                      ? `Conectado como: ${user.email}`
+                      ? token
+                        ? `Conectado como: ${user.email}`
+                        : `Cuenta ${user.email} detectada; renueva el permiso de Drive para continuar.`
                       : 'Vincula tu cuenta para activar la copia automática en tu Google Drive'}
                   </div>
                 </div>
               </div>
 
               <div>
-                {user ? (
+                {user && token ? (
                   <button
                     onClick={handleLogout}
                     className="inline-flex items-center space-x-1.5 px-3 py-1.5 border border-slate-300 text-slate-700 hover:bg-slate-100 rounded-lg text-xs font-medium transition-colors"
@@ -308,7 +326,7 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
                         d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"
                       />
                     </svg>
-                    <span>{isLoggingIn ? 'Conectando...' : 'Vincular Google Drive'}</span>
+                    <span>{isLoggingIn ? 'Conectando...' : user ? 'Renovar acceso a Drive' : 'Vincular Google Drive'}</span>
                   </button>
                 )}
               </div>
