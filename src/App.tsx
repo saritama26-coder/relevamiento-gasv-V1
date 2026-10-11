@@ -492,20 +492,20 @@ export default function App() {
     <CatalogProvider personalizados={catalogos} agregar={handleAddCatalogos}>
       <div className="min-h-screen bg-gray-100 text-gray-900 font-sans pb-10">
         {/* Top Sticky Navigation Bar */}
-        <header className="bg-[#17365d] text-white px-3 sm:px-5 py-2.5 sm:py-3 shadow-md print:hidden sticky top-0 z-50">
-          <div className="flex items-center justify-between gap-3 sm:gap-4 max-w-7xl mx-auto">
+        <header className="bg-[#17365d] text-white px-3 sm:px-5 py-2.5 sm:py-3 shadow-md print:hidden sticky top-0 z-50 overflow-x-clip">
+          <div className="flex w-full min-w-0 items-center justify-between gap-2 sm:gap-4 max-w-7xl mx-auto">
             {/* Left: Architect Details & Title */}
-            <div className="flex items-center space-x-2.5 sm:space-x-3.5 shrink-0">
+            <div className="flex min-w-0 flex-1 lg:flex-none items-center space-x-2 sm:space-x-3.5">
               <div className="gasv-mobile-icon-lockup flex items-center shrink-0">
                 <img
                   src={`${(import.meta.env?.BASE_URL || '/').replace(/\/$/, '')}/gasv-logo.png`}
                   alt="GSARITAMA ARQ."
-                  className="h-9 sm:h-11 w-auto max-w-[160px] sm:max-w-[190px] object-contain block select-none"
+                  className="h-8 sm:h-11 w-auto max-w-[92px] sm:max-w-[190px] object-contain block select-none"
                 />
               </div>
 
-              <div className="border-l border-white/30 pl-2.5 sm:pl-3.5 shrink-0">
-                <h1 className="text-xs sm:text-sm lg:text-base font-bold tracking-wider leading-tight text-white uppercase whitespace-nowrap">
+              <div className="min-w-0 flex-1 lg:flex-none border-l border-white/30 pl-2 sm:pl-3.5">
+                <h1 className="text-[9px] sm:text-sm lg:text-base font-bold tracking-[0.04em] sm:tracking-wider leading-tight text-white uppercase whitespace-nowrap">
                   RELEVAMIENTO ARQUITECTÓNICO
                 </h1>
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
@@ -683,7 +683,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-2 bg-slate-700 hover:bg-slate-600 text-white rounded transition-colors"
+                className="flex h-9 w-9 shrink-0 items-center justify-center p-0 bg-slate-700 hover:bg-slate-600 text-white rounded transition-colors"
                 aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
                 aria-expanded={mobileMenuOpen}
               >
