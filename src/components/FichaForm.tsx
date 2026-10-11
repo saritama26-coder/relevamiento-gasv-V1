@@ -82,7 +82,7 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
     const closing = 'La redacción resume exclusivamente los datos registrados y no sustituye la verificación técnica en campo.';
     const orderedFacts = variant % 3 === 1 ? [...facts].reverse() : variant % 3 === 2 ? facts.filter((_, index) => index % 2 === 0).concat(facts.filter((_, index) => index % 2 === 1)) : facts;
     const fullText = [openings[variant % 3], ...orderedFacts, closing].join(' ');
-    return fullText.trim().split(/\\s+/).slice(0, 100).join(' ');
+    return fullText.trim().split(/\s+/).slice(0, 100).join(' ');
   };
 
   const handleGenerateObservation = (regenerate = false) => {
