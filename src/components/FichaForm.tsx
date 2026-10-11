@@ -32,57 +32,113 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
   const ambienteMissing = !String(ficha.ambiente || '').trim();
   const [observationVariant, setObservationVariant] = useState(0);
 
-  // Offline technical drafting: only uses information already recorded in this ficha.
+  // Redacción técnica asistida, basada únicamente en los datos registrados en la ficha.
+  // El código identificador se excluye deliberadamente del texto generado.
   const buildObservationDraft = (variant: number): string => {
     const identity = [
       ficha.ambiente ? `ambiente ${ficha.ambiente}` : '',
-      ficha.codigo ? `código ${ficha.codigo}` : '',
       ficha.bloque ? `bloque ${ficha.bloque}` : '',
     ].filter(Boolean).join(', ');
 
     const facts: string[] = [];
+    if (ficha.geometria) {
+      facts.push(`Configuración geométrica registrada: ${ficha.geometria === 'irregular' ? 'irregular' : 'regular'}.`);
+    }
+
     const dimensions = [
-      ficha.largo ? `largo ${ficha.largo} m` : '',
+      ficha.largo ? `longitud ${ficha.largo} m` : '',
       ficha.ancho ? `ancho ${ficha.ancho} m` : '',
       ficha.altura ? `altura libre ${ficha.altura} m` : '',
     ].filter(Boolean);
-    if (dimensions.length) facts.push(`Dimensiones anotadas: ${dimensions.join(', ')}.`);
+    if (dimensions.length) facts.push(`Levantamiento dimensional: ${dimensions.join(', ')}.`);
 
     const area = calculateArea(ficha);
     const perimeter = calculatePerimeter(ficha);
-    if (area > 0) facts.push(`Área calculada: ${area.toFixed(2)} m².`);
+    if (area > 0) facts.push(`Superficie calculada: ${area.toFixed(2)} m².`);
     if (perimeter > 0) facts.push(`Perímetro calculado: ${perimeter.toFixed(2)} m.`);
 
     const state = ficha.estadoDimensional || ficha.diagestado;
-    if (state) facts.push(`Estado general registrado: ${state}.`);
-    if (ficha.interv) facts.push(`Intervención recomendada: ${ficha.interv}.`);
+    if (state) facts.push(`Estado general consignado: ${state}.`);
+    if (ficha.interv) facts.push(`Criterio de intervención registrado: ${ficha.interv}.`);
 
-    const elements = [
-      ...(Array.isArray(ficha.cons) ? ficha.cons.map((row) => row.elemento || row.descripcion) : []),
-      ...(Array.isArray(ficha.equip) ? ficha.equip.map((row) => row.elemento || row.descripcion) : []),
-      ...(Array.isArray(ficha.elec) ? ficha.elec.map((row) => row.elemento) : []),
-      ...(Array.isArray(ficha.hidro) ? ficha.hidro.map((row) => row.elemento) : []),
-    ].map((value) => String(value || '').trim()).filter(Boolean);
-    if (elements.length) facts.push(`Elementos consignados: ${Array.from(new Set(elements)).slice(0, 4).join(', ')}.`);
+    const describeRows = (
+      title: string,
+      rows: any[],
+      fields: string[],
+      limit = 3,
+    ) => {
+      const descriptions = (Array.isArray(rows) ? rows : [])
+        .map((row) => {
+          const element = String(row.elemento || row.descripcion || 'Elemento no especificado').trim();
+          const details = fields
+            .map((field) => {
+              const rawValue = String(row[field] ?? '').trim();
+              if (!rawValue) return '';
+              const labels: Record<string, string> = {
+                descripcion: 'descripción',
+                dimension: 'dimensión',
+                cantidad: 'cantidad',
+                unidad: 'unidad',
+                estado: 'estado',
+                observacion: 'observación',
+              };
+              return `${labels[field] || field}: ${rawValue}`;
+            })
+            .filter(Boolean);
+          if (!element || element === 'Elemento no especificado') return '';
+          return details.length ? `${element} (${details.join(', ')})` : element;
+        })
+        .filter(Boolean)
+        .slice(0, limit);
+      if (descriptions.length) facts.push(`${title}: ${descriptions.join('; ')}.`);
+    };
+
+    describeRows('Elementos constructivos y acabados', ficha.cons, [
+      'descripcion', 'dimension', 'cantidad', 'unidad', 'estado', 'observacion',
+    ], 3);
+    describeRows('Aparatos y equipamiento', ficha.equip, [
+      'descripcion', 'cantidad', 'unidad', 'estado', 'observacion',
+    ], 3);
+    describeRows('Instalaciones eléctricas', ficha.elec, [
+      'cantidad', 'unidad', 'estado', 'observacion',
+    ], 3);
+    describeRows('Instalaciones hidrosanitarias', ficha.hidro, [
+      'cantidad', 'unidad', 'estado', 'observacion',
+    ], 3);
 
     const pathologies = (Array.isArray(ficha.pat) ? ficha.pat : [])
       .filter((row) => row.elemento || row.patologia)
-      .map((row) => `${row.elemento || 'Elemento'}${row.patologia ? `: ${row.patologia}` : ''}${row.ubicacion ? ` (${row.ubicacion})` : ''}`)
-      .slice(0, 3);
-    if (pathologies.length) facts.push(`Patologías registradas: ${pathologies.join('; ')}.`);
+      .map((row) => {
+        const details = [
+          row.patologia ? `patología: ${row.patologia}` : '',
+          row.ubicacion ? `ubicación: ${row.ubicacion}` : '',
+          row.cantidad ? `cantidad afectada: ${row.cantidad}` : '',
+          row.unidad ? `unidad: ${row.unidad}` : '',
+          row.severidad ? `severidad: ${row.severidad}` : '',
+          row.intervencion ? `intervención recomendada: ${row.intervencion}` : '',
+        ].filter(Boolean);
+        return `${row.elemento || 'Elemento afectado'}${details.length ? ` (${details.join(', ')})` : ''}`;
+      })
+      .slice(0, 4);
+    if (pathologies.length) facts.push(`Patologías y deficiencias registradas: ${pathologies.join('; ')}.`);
+
     if (Array.isArray(ficha.fotos) && ficha.fotos.length) {
-      facts.push(`Registro fotográfico: ${ficha.fotos.length} fotografía(s).`);
+      facts.push(`Registro fotográfico asociado: ${ficha.fotos.length} fotografía(s).`);
     }
 
     const openings = [
-      `Observación técnica del ${identity || 'ambiente sin identificación consignada'}.`,
-      `En la ficha correspondiente al ${identity || 'ambiente sin identificación consignada'}, se registran los siguientes datos.`,
-      `Resumen del relevamiento: ${identity || 'ambiente sin identificación consignada'}.`,
+      `En la inspección arquitectónica del ${identity || 'ambiente evaluado'}, se registran los siguientes aspectos técnicos.`,
+      `El relevamiento del ${identity || 'ambiente evaluado'} consigna las condiciones dimensionales y los componentes descritos a continuación.`,
+      `La evaluación visual del ${identity || 'ambiente evaluado'} se resume a partir de los datos incorporados en la ficha.`,
     ];
-    const closing = 'La redacción resume exclusivamente los datos registrados y no sustituye la verificación técnica en campo.';
-    const orderedFacts = variant % 3 === 1 ? [...facts].reverse() : variant % 3 === 2 ? facts.filter((_, index) => index % 2 === 0).concat(facts.filter((_, index) => index % 2 === 1)) : facts;
+    const closing = 'La descripción se limita a la información registrada y debe contrastarse con la inspección técnica en sitio.';
+    const orderedFacts = variant % 3 === 1
+      ? [...facts].reverse()
+      : variant % 3 === 2
+        ? facts.filter((_, index) => index % 2 === 0).concat(facts.filter((_, index) => index % 2 === 1))
+        : facts;
     const fullText = [openings[variant % 3], ...orderedFacts, closing].join(' ');
-    return fullText.trim().split(/\s+/).slice(0, 100).join(' ');
+    return fullText.trim().split(/\\s+/).slice(0, 200).join(' ');
   };
 
   const handleGenerateObservation = (regenerate = false) => {
@@ -750,7 +806,7 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
               <h3 className="text-sm font-bold text-blue-900">Asistente de redacción técnica</h3>
             </div>
             <p className="text-xs text-slate-600 mb-3">
-              Genera una propuesta de hasta 100 palabras usando únicamente dimensiones, estado, intervención, elementos, patologías y fotografías ya registrados. Revisa el texto antes de guardar.
+              Genera una observación técnica de hasta 200 palabras con terminología arquitectónica, basada únicamente en dimensiones, estado, intervención, elementos, patologías y fotografías registradas. Omite el código de la ficha. Revisa el texto antes de guardar.
             </p>
             <div className="flex flex-wrap gap-2">
               <button type="button" onClick={() => handleGenerateObservation(false)} className="inline-flex items-center gap-1.5 rounded bg-blue-700 hover:bg-blue-600 px-3 py-2 text-xs font-semibold text-white">
