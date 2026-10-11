@@ -26,6 +26,7 @@ import { ConsolidatedReport } from './components/ConsolidatedReport';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { DeviceSyncModal } from './components/DeviceSyncModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
+import { GSARITAMA_LOGO_PNG } from './constants/logoData';
 import { GoogleDriveBackupModal } from './components/GoogleDriveBackupModal';
 import { GoogleDriveService, BackupPayload } from './services/googleDriveService';
 import { getAccessToken } from './services/googleAuth';
