@@ -26,7 +26,6 @@ import { ConsolidatedReport } from './components/ConsolidatedReport';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { DeviceSyncModal } from './components/DeviceSyncModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
-import { GSARITAMA_LOGO_PNG } from './constants/logoData';
 import { GoogleDriveBackupModal } from './components/GoogleDriveBackupModal';
 import { GoogleDriveService, BackupPayload } from './services/googleDriveService';
 import { getAccessToken, initAuth } from './services/googleAuth';
@@ -80,6 +79,7 @@ export default function App() {
 
   const isFirstMount = useRef(true);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const projectBackupTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load initial data
   useEffect(() => {
@@ -100,7 +100,7 @@ export default function App() {
       const isEnabled = localStorage.getItem('gdrive_auto_backup_enabled') !== 'false';
       if (!isEnabled) return;
 
-      const token = gdriveToken || (await getAccessToken());
+      const token = await getAccessToken();
       if (!token) {
         // User not logged in to Google Drive
         return;
@@ -135,8 +135,8 @@ export default function App() {
 
   // Manual backup trigger helper for modal
   const handleManualGDriveBackup = useCallback(async () => {
-    const token = gdriveToken || (await getAccessToken());
-    if (!token) throw new Error('No hay sesión de Google activa');
+    const token = await getAccessToken();
+    if (!token) throw new Error('Autoriza nuevamente Google Drive para crear el respaldo.');
 
     const payload: BackupPayload = {
       version: '4.0',
@@ -271,12 +271,22 @@ export default function App() {
     });
     setCatalogos(updated);
     await StorageService.saveCatalogos(updated);
+    const currentFichas = await StorageService.getFichas();
+    triggerGoogleDriveAutoBackup(currentFichas, projectData, updated);
   };
 
   const handleUpdateProjectData = (field: keyof ProjectData, val: string) => {
     const updated = { ...projectData, [field]: val };
     setProjectData(updated);
-    StorageService.saveProjectData(updated);
+    void StorageService.saveProjectData(updated);
+    if (projectBackupTimer.current) clearTimeout(projectBackupTimer.current);
+    projectBackupTimer.current = setTimeout(async () => {
+      const [currentFichas, currentCatalogos] = await Promise.all([
+        StorageService.getFichas(),
+        StorageService.getCatalogos(),
+      ]);
+      triggerGoogleDriveAutoBackup(currentFichas, updated, currentCatalogos);
+    }, 2500);
   };
 
   const isFormValid = Boolean(String(activeFicha.codigo || '').trim() && String(activeFicha.ambiente || '').trim());
@@ -468,22 +478,12 @@ export default function App() {
           <div className="flex items-center justify-between gap-2 sm:gap-4 max-w-7xl mx-auto">
             {/* Left: Architect Details & Title */}
             <div className="flex items-center space-x-2.5 sm:space-x-4 min-w-0 flex-1">
-              {/* Icono GASV seleccionado: diseño arquitectónico de la derecha */}
-              <div className="gasv-mobile-icon-lockup flex items-center gap-2 sm:gap-3 shrink-0">
-                <div className="bg-white p-0.5 rounded-lg shadow-xs shrink-0 flex items-center justify-center border border-slate-300">
-                  <img
-                    src="./gasv-icon-right.png"
-                    alt="Icono GASV - Relevamiento Arquitectónico"
-                    className="h-9 w-9 sm:h-12 sm:w-12 object-contain rounded-md block select-none"
-                  />
-                </div>
-                <div className="hidden sm:flex bg-white p-1 rounded-sm shadow-xs shrink-0 items-center justify-center border border-slate-300">
-                  <img
-                    src={GSARITAMA_LOGO_PNG}
-                    alt="GSARITAMA ARQ."
-                    className="h-11 w-auto max-w-[180px] object-contain block select-none"
-                  />
-                </div>
+              <div className="gasv-mobile-icon-lockup flex items-center shrink-0">
+                <img
+                  src={`${import.meta.env.BASE_URL}gasv-logo.png`}
+                  alt="GSARITAMA ARQ."
+                  className="h-9 sm:h-11 w-auto max-w-[190px] object-contain block select-none"
+                />
               </div>
 
               <div className="min-w-0 border-l border-white/30 pl-2.5 sm:pl-3.5">
@@ -528,10 +528,20 @@ export default function App() {
                     ? 'bg-amber-600/90 hover:bg-amber-500 text-white animate-pulse'
                     : 'bg-[#1e5282] hover:bg-sky-600 text-white'
                 }`}
-                title="Respaldo automático en Google Drive"
+                title={gdriveAutoStatus === 'synced'
+                  ? `Google Drive: respaldo confirmado${lastGdriveBackupTime ? ` — ${new Date(lastGdriveBackupTime).toLocaleString('es-EC')}` : ''}`
+                  : gdriveAutoStatus === 'syncing'
+                  ? 'Google Drive: sincronizando datos'
+                  : gdriveAutoStatus === 'error'
+                  ? `Google Drive: error de respaldo — ${gdriveAutoError || 'revise la conexión'}`
+                  : navigator.onLine
+                  ? 'Google Drive: configure o revise el respaldo'
+                  : 'Sin conexión: respaldo en espera'}
               >
                 {gdriveAutoStatus === 'synced' ? (
                   <CloudCheck size={15} className="sm:mr-1 shrink-0 text-emerald-200" />
+                ) : gdriveAutoStatus === 'syncing' ? (
+                  <CloudUpload size={15} className="sm:mr-1 shrink-0 animate-bounce" />
                 ) : (
                   <Cloud size={15} className="sm:mr-1 shrink-0" />
                 )}
@@ -1243,6 +1253,7 @@ export default function App() {
             autoBackupStatus={gdriveAutoStatus}
             autoBackupError={gdriveAutoError}
             onManualBackupTrigger={handleManualGDriveBackup}
+            onAutomaticBackupTrigger={() => triggerGoogleDriveAutoBackup(fichas, projectData, catalogos)}
           />
         )}
 
