@@ -11,10 +11,10 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 2px;
+  padding: 0;
   background-color: #17365d;
-  border: 1px solid rgba(255, 255, 255, 0.32);
-  border-radius: 2px;
+  border: 0;
+  border-radius: 0;
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
@@ -142,10 +142,10 @@
     flex: 0 0 auto !important;
     width: 50mm !important;
     height: 12mm !important;
-    padding: 1mm !important;
+    padding: 0 !important;
     box-sizing: border-box !important;
     background-color: #17365d !important;
-    border: 0.4mm solid #17365d !important;
+    border: 0 !important;
     border-radius: 0 !important;
     print-color-adjust: exact !important;
     -webkit-print-color-adjust: exact !important;
