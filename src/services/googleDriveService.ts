@@ -66,7 +66,8 @@ export const GoogleDriveService = {
   },
 
   /**
-   * Uploads project backup to Google Drive
+   * Uploads project backup to Google Drive using resumable upload.
+   * Resumable uploads support large JSON files containing embedded photos.
    */
   async uploadBackup(
     accessToken: string,
@@ -78,13 +79,11 @@ export const GoogleDriveService = {
     const projectName = payload.projectData.proyecto
       ? payload.projectData.proyecto.replace(/[^a-zA-Z0-9_-]/g, '_')
       : 'sin_nombre';
-    
-    // Fixed name for the latest auto-backup or timestamped for manual backups
+
     const fileName = isManual
       ? `${BACKUP_FILE_PREFIX}${projectName}_manual_${dateStr}.json`
       : `${BACKUP_FILE_PREFIX}${projectName}_autobackup.json`;
 
-    // Check if latest auto-backup exists to update it or create new
     let existingFileId: string | null = null;
     if (!isManual) {
       const q = encodeURIComponent(
@@ -93,70 +92,65 @@ export const GoogleDriveService = {
       const searchRes = await fetch(`${DRIVE_API_URL}/files?q=${q}&fields=files(id,name)`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
-      if (searchRes.ok) {
-        const found = await searchRes.json();
-        if (found.files && found.files.length > 0) {
-          existingFileId = found.files[0].id;
-        }
+      if (!searchRes.ok) {
+        const err = await searchRes.text();
+        throw new Error(`Error al buscar el respaldo automático en Drive: ${err}`);
       }
+      const found = await searchRes.json();
+      if (found.files?.length) existingFileId = found.files[0].id;
     }
 
-    const fileContent = JSON.stringify(payload, null, 2);
+    const fileContent = JSON.stringify(payload);
     const blob = new Blob([fileContent], { type: 'application/json' });
+    const metadata: Record<string, unknown> = {
+      name: fileName,
+      mimeType: 'application/json',
+    };
+    if (!existingFileId) metadata.parents = [folderId];
 
-    if (existingFileId) {
-      // Update existing file content & metadata
-      const updateRes = await fetch(
-        `${DRIVE_UPLOAD_URL}/files/${existingFileId}?uploadType=media`,
-        {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            'Content-Type': 'application/json',
-          },
-          body: blob,
-        }
-      );
+    const target = existingFileId
+      ? `${DRIVE_UPLOAD_URL}/files/${existingFileId}`
+      : `${DRIVE_UPLOAD_URL}/files`;
 
-      if (!updateRes.ok) {
-        const err = await updateRes.text();
-        throw new Error(`Error al actualizar respaldo en Drive: ${err}`);
+    const initiateRes = await fetch(
+      `${target}?uploadType=resumable&fields=id,name,modifiedTime,size`,
+      {
+        method: existingFileId ? 'PATCH' : 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json; charset=UTF-8',
+          'X-Upload-Content-Type': 'application/json',
+          'X-Upload-Content-Length': String(blob.size),
+        },
+        body: JSON.stringify(metadata),
       }
+    );
 
-      return await updateRes.json();
-    } else {
-      // Multipart upload to create new file with parent folder
-      const metadata = {
-        name: fileName,
-        mimeType: 'application/json',
-        parents: [folderId],
-      };
-
-      const form = new FormData();
-      form.append(
-        'metadata',
-        new Blob([JSON.stringify(metadata)], { type: 'application/json' })
-      );
-      form.append('file', blob);
-
-      const createRes = await fetch(
-        `${DRIVE_UPLOAD_URL}/files?uploadType=multipart&fields=id,name,modifiedTime,size`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: form,
-        }
-      );
-
-      if (!createRes.ok) {
-        const err = await createRes.text();
-        throw new Error(`Error al subir respaldo a Drive: ${err}`);
-      }
-
-      return await createRes.json();
+    if (!initiateRes.ok) {
+      const err = await initiateRes.text();
+      throw new Error(`Error al preparar el respaldo en Drive: ${err}`);
     }
+
+    const uploadUrl = initiateRes.headers.get('Location');
+    if (!uploadUrl) {
+      throw new Error('Google Drive no devolvió la dirección para cargar el respaldo.');
+    }
+
+    const uploadRes = await fetch(uploadUrl, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: blob,
+    });
+
+    if (!uploadRes.ok) {
+      const err = await uploadRes.text();
+      throw new Error(`Error al subir el respaldo a Drive: ${err}`);
+    }
+
+    return await uploadRes.json();
   },
 
   /**
