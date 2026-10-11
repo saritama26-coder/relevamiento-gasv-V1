@@ -762,7 +762,7 @@ export default function App() {
               <img
                 src={GSARITAMA_LOGO_PNG}
                 alt="GSARITAMA ARQ."
-                className="h-12 w-auto object-contain block"
+                className="report-document-logo h-12 w-[220px] shrink-0 object-contain object-center block"
               />
               <div className="font-bold text-[#17365d] text-lg uppercase tracking-wide">
                 FICHA DE RELEVAMIENTO ARQUITECTÓNICO
