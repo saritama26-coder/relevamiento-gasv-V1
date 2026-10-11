@@ -61,6 +61,31 @@ export const googleSignIn = async (): Promise<{ user: User; accessToken: string 
     return { user: result.user, accessToken: cachedAccessToken };
   } catch (error: any) {
     console.error('Error al iniciar sesión con Google:', error);
+
+    // Give a specific, actionable message for Firebase Authentication domain configuration.
+    // The allowlist is managed in Firebase Console, not in this source file.
+    if (error?.code === 'auth/unauthorized-domain') {
+      const host = typeof window !== 'undefined' ? window.location.hostname : '';
+      const domainHint = host
+        ? ` El dominio actual es: ${host}.`
+        : '';
+      const actionableError = new Error(
+        'Firebase bloqueó el inicio de sesión porque este dominio no está autorizado.' +
+        domainHint +
+        ' En Firebase Console, abra Authentication > Settings > Authorized domains y agregue el dominio de la aplicación. Para la versión publicada, agregue saritama26-coder.github.io (sin https:// ni rutas). Luego vuelva a cargar la aplicación e intente vincular Google Drive otra vez.'
+      );
+      (actionableError as any).code = error.code;
+      throw actionableError;
+    }
+
+    if (error?.code === 'auth/operation-not-allowed') {
+      const actionableError = new Error(
+        'El proveedor Google no está habilitado en Firebase. En Firebase Console, abra Authentication > Sign-in method y habilite Google.'
+      );
+      (actionableError as any).code = error.code;
+      throw actionableError;
+    }
+
     throw error;
   } finally {
     isSigningIn = false;
