@@ -71,6 +71,13 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
     return localStorage.getItem('gdrive_auto_backup_enabled') !== 'false';
   });
 
+  // Reflect the lifetime of the in-memory OAuth token in the UI.
+  useEffect(() => {
+    if (!token) return;
+    const timer = window.setTimeout(() => setToken(null), 50 * 60 * 1000);
+    return () => window.clearTimeout(timer);
+  }, [token]);
+
   useEffect(() => {
     const unsubscribe = initAuth((currentUser, currentToken) => {
       setUser(currentUser);
