@@ -811,10 +811,10 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
         </div>
       </div>
 
-      {/* 13. Resumen de la ficha */}
+      {/* 12. Resumen de la ficha */}
       <div className="print-card bg-white p-6 rounded-lg shadow-sm border border-gray-200">
         <h2 className="text-xl font-semibold text-blue-900 mb-4 border-b pb-2 print:text-lg">
-          13. Resumen de la ficha
+          12. Resumen de la ficha
         </h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 print:grid-cols-4">
           {[
