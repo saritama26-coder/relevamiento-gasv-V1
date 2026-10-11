@@ -678,218 +678,64 @@ export default function App() {
               </div>
             </div>
 
-            {/* Right Mobile: Quick actions and Hamburger (< 1024px) */}
-            <div className="flex lg:hidden items-center justify-end gap-1.5 sm:gap-2 shrink-0">
-              {/* Botón sincronización Móvil */}
-              <button
-                type="button"
-                onClick={() => setShowSync(true)}
-                className="flex items-center px-2 sm:px-2.5 py-1.5 bg-sky-600/80 hover:bg-sky-500 text-white rounded text-xs font-semibold transition-colors"
-                title="Vincular con Celular o Computadora"
-              >
-                <ArrowRightLeft size={14} className="sm:mr-1 shrink-0" />
-                <span className="hidden sm:inline">Sincronizar</span>
-              </button>
-
-              {/* Botón Respaldo en la Nube (Google Drive) */}
-              <button
-                type="button"
-                onClick={() => setShowGDriveModal(true)}
-                className={`flex items-center px-2 sm:px-2.5 py-1.5 rounded text-xs font-semibold transition-colors shadow-xs ${
-                  gdriveAutoStatus === 'synced'
-                    ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white'
-                    : gdriveAutoStatus === 'syncing'
-                    ? 'bg-amber-600/90 hover:bg-amber-500 text-white animate-pulse'
-                    : gdriveAutoStatus === 'error'
-                    ? 'bg-rose-600/90 hover:bg-rose-500 text-white'
-                    : 'bg-[#1e5282] hover:bg-sky-600 text-white'
-                }`}
-                title={
-                  gdriveAutoStatus === 'synced'
-                    ? 'Google Drive: respaldo confirmado'
-                    : gdriveAutoStatus === 'syncing'
-                    ? 'Google Drive: sincronizando datos'
-                    : gdriveAutoStatus === 'error'
-                    ? 'Google Drive: error de respaldo'
-                    : 'Google Drive'
-                }
-              >
-                {gdriveAutoStatus === 'synced' ? (
-                  <CloudCheck size={14} className="sm:mr-1 shrink-0 text-emerald-200" />
-                ) : gdriveAutoStatus === 'syncing' ? (
-                  <CloudUpload size={14} className="sm:mr-1 shrink-0 animate-bounce" />
-                ) : (
-                  <Cloud size={14} className="sm:mr-1 shrink-0" />
-                )}
-                <span className="hidden sm:inline">Drive</span>
-              </button>
-
-              {/* Mobile Quick Action: Guardar */}
-              <button
-                type="button"
-                onClick={handleManualSave}
-                disabled={!isFormValid}
-                className={`flex items-center px-2.5 py-1.5 rounded text-xs font-semibold transition-all shadow-xs ${
-                  isFormValid
-                    ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
-                    : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50 shadow-none'
-                }`}
-                title={
-                  isFormValid
-                    ? 'Guardar cambios'
-                    : 'Complete Código y Ambiente para habilitar Guardar'
-                }
-              >
-                <Save size={14} className="mr-1 shrink-0" />
-                <span>Guardar</span>
-              </button>
-
-              {/* Mobile hamburger toggle (shows below 1024px) */}
+            {/* Encabezado móvil: mantener únicamente el acceso al menú */}
+            <div className="flex lg:hidden items-center justify-end shrink-0">
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded transition-colors"
-                aria-label="Abrir menú"
+                className="p-2 bg-slate-700 hover:bg-slate-600 text-white rounded transition-colors"
+                aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+                aria-expanded={mobileMenuOpen}
               >
                 {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
               </button>
             </div>
           </div>
 
-          {/* Mobile Collapsible Dropdown Menu (lg:hidden) */}
+          {/* Menú móvil anterior en formato de lista: todas las acciones dentro */}
           {mobileMenuOpen && (
-            <div className="lg:hidden mt-3 pt-3 border-t border-white/20 space-y-3 text-xs">
-              {/* Sección Acciones principales */}
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-sky-300 mb-1">Acciones principales</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleNuevoAmbiente();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center justify-center p-2 bg-[#286b9e] hover:bg-blue-600 rounded font-semibold text-center"
-                  >
-                    <Plus size={15} className="mr-1.5 shrink-0" /> Nuevo
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!isFormValid) return;
-                      handleManualSave();
-                      setMobileMenuOpen(false);
-                    }}
-                    disabled={!isFormValid}
-                    className={`flex items-center justify-center p-2 rounded font-semibold text-center transition-all ${
-                      isFormValid
-                        ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
-                        : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50'
-                    }`}
-                    title={
-                      isFormValid
-                        ? 'Guardar cambios'
-                        : 'Complete Código y Ambiente para habilitar Guardar'
-                    }
-                  >
-                    <Save size={15} className="mr-1.5 shrink-0" /> Guardar
-                  </button>
-                </div>
-              </div>
+            <div className="lg:hidden mt-3 pt-3 border-t border-white/20 text-sm space-y-1.5">
+              <p className="px-2 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-sky-300">Acciones principales</p>
+              <button type="button" onClick={() => { handleNuevoAmbiente(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-left font-semibold bg-[#286b9e] hover:bg-blue-600">
+                <Plus size={17} className="shrink-0" /> Nuevo ambiente
+              </button>
+              <button type="button" onClick={() => { if (!isFormValid) return; handleManualSave(); setMobileMenuOpen(false); }} disabled={!isFormValid} title={isFormValid ? "Guardar cambios" : "Complete Código y Ambiente para habilitar Guardar"} className={`w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-left font-semibold transition-colors ${isFormValid ? "bg-[#16794b] hover:bg-green-600 text-white" : "bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-60"}`}>
+                <Save size={17} className="shrink-0" /> Guardar
+              </button>
 
-              {/* Sección Navegación */}
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-sky-300 mb-1">Navegación</p>
-                <div className="grid grid-cols-3 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowDrawer(true);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center justify-center p-2 bg-slate-700 hover:bg-slate-600 rounded font-semibold text-center"
-                  >
-                    <LayoutList size={14} className="mr-1 shrink-0" /> Ambientes ({fichas.length})
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowConsolidated(true);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center justify-center p-2 bg-indigo-700 hover:bg-indigo-600 rounded font-semibold text-center"
-                  >
-                    <Layers size={14} className="mr-1 shrink-0" /> Consolidado
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowManual(true);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center justify-center p-2 bg-slate-700 hover:bg-slate-600 rounded font-semibold text-center"
-                  >
-                    <BookOpen size={14} className="mr-1 shrink-0" /> Manual
-                  </button>
-                </div>
-              </div>
+              <p className="px-2 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-sky-300">Navegación</p>
+              <button type="button" onClick={() => { setShowDrawer(true); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-left font-semibold bg-slate-700 hover:bg-slate-600">
+                <LayoutList size={17} className="shrink-0" /> Ambientes ({fichas.length})
+              </button>
+              <button type="button" onClick={() => { setShowConsolidated(true); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-left font-semibold bg-indigo-700 hover:bg-indigo-600">
+                <Layers size={17} className="shrink-0" /> Consolidado
+              </button>
+              <button type="button" onClick={() => { setShowManual(true); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-left font-semibold bg-slate-700 hover:bg-slate-600">
+                <BookOpen size={17} className="shrink-0" /> Manual
+              </button>
 
-              {/* Sección Gestión y exportación */}
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-sky-300 mb-1">Gestión y exportación</p>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      fileInputRef.current?.click();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center justify-center p-2 bg-slate-700 hover:bg-slate-600 rounded font-semibold text-center"
-                  >
-                    <Upload size={14} className="mr-1.5 shrink-0" /> Importar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleExportProject();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center justify-center p-2 bg-slate-700 hover:bg-slate-600 rounded font-semibold text-center"
-                  >
-                    <Download size={14} className="mr-1.5 shrink-0" /> Exportar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      exportCSV(fichas, projectData);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center justify-center p-2 bg-slate-700 hover:bg-slate-600 rounded font-semibold text-center"
-                  >
-                    <FileDown size={14} className="mr-1.5 shrink-0" /> CSV
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      window.print();
-                      setMobileMenuOpen(false);
-                    }}
-                    className="flex items-center justify-center p-2 bg-slate-700 hover:bg-slate-600 rounded font-semibold text-center"
-                  >
-                    <Printer size={14} className="mr-1.5 shrink-0" /> PDF
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowGDriveModal(true);
-                      setMobileMenuOpen(false);
-                    }}
-                    className="col-span-2 flex items-center justify-center p-2 bg-sky-700 hover:bg-sky-600 rounded font-semibold text-center text-white"
-                  >
-                    <Cloud size={14} className="mr-1.5 shrink-0" /> Respaldo Google Drive
-                  </button>
-                </div>
-              </div>
+              <p className="px-2 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-sky-300">Sincronización y respaldos</p>
+              <button type="button" onClick={() => { setShowSync(true); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-left font-semibold bg-sky-600/90 hover:bg-sky-500">
+                <ArrowRightLeft size={17} className="shrink-0" /> Sincronizar con celular o computadora
+              </button>
+              <button type="button" onClick={() => { setShowGDriveModal(true); setMobileMenuOpen(false); }} className={`w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-left font-semibold ${gdriveAutoStatus === "synced" ? "bg-emerald-700 hover:bg-emerald-600" : gdriveAutoStatus === "syncing" ? "bg-amber-700 hover:bg-amber-600" : gdriveAutoStatus === "error" ? "bg-rose-700 hover:bg-rose-600" : "bg-[#1e5282] hover:bg-sky-600"}`}>
+                {gdriveAutoStatus === "synced" ? <CloudCheck size={17} className="shrink-0" /> : gdriveAutoStatus === "syncing" ? <CloudUpload size={17} className="shrink-0 animate-pulse" /> : <Cloud size={17} className="shrink-0" />}
+                {gdriveAutoStatus === "synced" ? "Google Drive · Respaldo guardado" : gdriveAutoStatus === "syncing" ? "Google Drive · Sincronizando…" : gdriveAutoStatus === "error" ? "Google Drive · Revisar error" : "Google Drive · Copia de seguridad"}
+              </button>
+
+              <p className="px-2 pt-3 pb-1 text-[10px] font-bold uppercase tracking-wider text-sky-300">Importación y exportación</p>
+              <button type="button" onClick={() => { fileInputRef.current?.click(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-left font-semibold bg-slate-700 hover:bg-slate-600">
+                <Upload size={17} className="shrink-0" /> Importar respaldo
+              </button>
+              <button type="button" onClick={() => { handleExportProject(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-left font-semibold bg-slate-700 hover:bg-slate-600">
+                <Download size={17} className="shrink-0" /> Exportar respaldo
+              </button>
+              <button type="button" onClick={() => { exportCSV(fichas, projectData); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-left font-semibold bg-slate-700 hover:bg-slate-600">
+                <FileDown size={17} className="shrink-0" /> Exportar CSV
+              </button>
+              <button type="button" onClick={() => { window.print(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 rounded-md px-3 py-2.5 text-left font-semibold bg-slate-700 hover:bg-slate-600">
+                <Printer size={17} className="shrink-0" /> Imprimir / Guardar PDF
+              </button>
             </div>
           )}
 
