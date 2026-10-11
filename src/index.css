@@ -108,6 +108,20 @@
     font-size: 7.5pt;
     line-height: 1.15;
   }
+  .report-document-logo {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: 50mm !important;
+    height: 12mm !important;
+    max-width: 50mm !important;
+    max-height: 12mm !important;
+    object-fit: contain !important;
+    object-position: center !important;
+    overflow: visible !important;
+    background: #fff !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+  }
   img[alt="relevamiento"] {
     width: 100% !important;
     height: auto !important;
