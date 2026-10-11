@@ -25,5 +25,8 @@ jobs:
     - name: Type check & Lint
       run: npm run lint
 
+    - name: Prepare React/Vite entry point
+      run: cp index.vite.html index.html
+
     - name: Build production bundle
       run: npm run build
