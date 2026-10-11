@@ -51,7 +51,7 @@ export function migrateLegacyObservations(ficha: Ficha): Ficha {
   const diagnosticState = String(ficha.diagestado || '').trim();
 
   const normalize = (value: string) =>
-    value.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/\\s+/g, ' ').trim().toLowerCase();
+    value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim().toLowerCase();
 
   const hasLegacyText = Boolean(dimensionalText || diagnosticText);
   const statusesDiffer = Boolean(
@@ -71,7 +71,7 @@ export function migrateLegacyObservations(ficha: Ficha): Ficha {
     const key = normalize(text);
     if (seen.has(key)) return;
     seen.add(key);
-    blocks.push(`${label}:\\n${text}`);
+    blocks.push(`${label}:\n${text}`);
   };
 
   // If two old status fields conflict, preserve both values in the migrated
@@ -79,7 +79,7 @@ export function migrateLegacyObservations(ficha: Ficha): Ficha {
   if (statusesDiffer) {
     addBlock(
       'ESTADOS REGISTRADOS ANTES DE LA CONSOLIDACIÓN',
-      `Estado del levantamiento dimensional: ${dimensionalState}.\\nEstado del diagnóstico preliminar: ${diagnosticState}.`
+      `Estado del levantamiento dimensional: ${dimensionalState}.\nEstado del diagnóstico preliminar: ${diagnosticState}.`
     );
   }
 
@@ -109,7 +109,7 @@ export function migrateLegacyObservations(ficha: Ficha): Ficha {
   const shouldCombineGeneralText = hasLegacyText || statusesDiffer;
   return {
     ...ficha,
-    ...(shouldCombineGeneralText ? { obs: blocks.join('\\n\\n') } : {}),
+    ...(shouldCombineGeneralText ? { obs: blocks.join('\n\n') } : {}),
     obsdim: '',
     diag: '',
     estadoDimensional: canonicalState,
