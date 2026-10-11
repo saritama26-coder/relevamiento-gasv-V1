@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ChevronUp, ChevronDown, BookmarkPlus, Trash } from 'lucide-react';
 import { useCatalogos } from '../context/CatalogContext';
 
@@ -22,6 +22,130 @@ function isCustomValue(listas: Record<string, string[]>, listId: string, val: an
   if (!str) return false;
   const list = listas[listId] || [];
   return !list.some((item) => item.toLowerCase() === str.toLowerCase());
+}
+
+interface CatalogInputProps {
+  value: string;
+  options: string[];
+  onChange: (value: string) => void;
+  className: string;
+}
+
+/**
+ * Editable text field with a visible dropdown button.
+ * Unlike the browser's native datalist, this opens the full catalog on demand
+ * and still allows custom values to be typed.
+ */
+function CatalogInput({ value, options, onChange, className }: CatalogInputProps) {
+  const [open, setOpen] = useState(false);
+  const [filter, setFilter] = useState('');
+  const [menuStyle, setMenuStyle] = useState<React.CSSProperties | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  const positionMenu = () => {
+    const rect = inputRef.current?.getBoundingClientRect();
+    if (!rect || typeof window === 'undefined') return;
+    const maxHeight = Math.min(260, Math.max(100, window.innerHeight - 24));
+    const estimatedHeight = Math.min(Math.max(options.length * 34 + 8, 44), maxHeight);
+    const above = window.innerHeight - rect.bottom < estimatedHeight && rect.top > estimatedHeight;
+    const top = above
+      ? Math.max(8, rect.top - estimatedHeight - 4)
+      : Math.min(rect.bottom + 3, window.innerHeight - estimatedHeight - 8);
+    const width = Math.min(Math.max(rect.width, 180), window.innerWidth - 16);
+    const left = Math.max(8, Math.min(rect.left, window.innerWidth - width - 8));
+    setMenuStyle({ position: 'fixed', top, left, width, maxHeight, zIndex: 10000 });
+  };
+
+  const openMenu = (resetFilter = false) => {
+    if (resetFilter) setFilter('');
+    positionMenu();
+    setOpen(true);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const handleOutsideClick = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (!wrapperRef.current?.contains(target) && !menuRef.current?.contains(target)) {
+        setOpen(false);
+      }
+    };
+    const closeForViewportChange = () => setOpen(false);
+    document.addEventListener('mousedown', handleOutsideClick);
+    window.addEventListener('resize', closeForViewportChange);
+    window.addEventListener('scroll', closeForViewportChange, true);
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+      window.removeEventListener('resize', closeForViewportChange);
+      window.removeEventListener('scroll', closeForViewportChange, true);
+    };
+  }, [open]);
+
+  const filteredOptions = options.filter((option) =>
+    !filter.trim() || option.toLocaleLowerCase('es').includes(filter.trim().toLocaleLowerCase('es'))
+  );
+
+  return (
+    <>
+      <div ref={wrapperRef} className="relative flex w-full min-w-0 items-center">
+        <input
+          ref={inputRef}
+          type="text"
+          autoComplete="off"
+          className={className + ' pr-7'}
+          value={value ?? ''}
+          onFocus={() => openMenu(true)}
+          onChange={(event) => {
+            const nextValue = event.target.value;
+            onChange(nextValue);
+            setFilter(nextValue);
+            positionMenu();
+            setOpen(true);
+          }}
+        />
+        <button
+          type="button"
+          aria-label="Mostrar lista de opciones"
+          title="Mostrar lista de opciones"
+          className="absolute right-0 top-0 flex h-full w-7 items-center justify-center text-slate-500 hover:bg-blue-50 hover:text-blue-700 rounded-r"
+          onMouseDown={(event) => event.preventDefault()}
+          onClick={() => openMenu(true)}
+        >
+          <ChevronDown size={15} />
+        </button>
+      </div>
+      {open && menuStyle && (
+        <div
+          ref={menuRef}
+          style={menuStyle}
+          className="fixed overflow-y-auto rounded-md border border-slate-300 bg-white py-1 shadow-xl print:hidden"
+          onMouseDown={(event) => event.stopPropagation()}
+        >
+          {filteredOptions.length > 0 ? filteredOptions.map((option) => (
+            <button
+              type="button"
+              key={option}
+              className="block w-full px-3 py-2 text-left text-sm text-slate-800 hover:bg-blue-50 focus:bg-blue-50 focus:outline-none"
+              onClick={() => {
+                onChange(option);
+                setFilter('');
+                setOpen(false);
+                inputRef.current?.focus();
+              }}
+            >
+              {option}
+            </button>
+          )) : (
+            <div className="px-3 py-2 text-xs text-slate-500">
+              Sin coincidencias. Puede conservar el texto escrito.
+            </div>
+          )}
+        </div>
+      )}
+    </>
+  );
 }
 
 export function DataTable({ columns, data, onChange }: DataTableProps) {
@@ -151,10 +275,16 @@ export function DataTable({ columns, data, onChange }: DataTableProps) {
                             </option>
                           ))}
                         </select>
+                      ) : col.dataListId ? (
+                        <CatalogInput
+                          value={String(val)}
+                          options={listas[col.dataListId] || []}
+                          onChange={(nextValue) => handleUpdate(idx, col.key, nextValue)}
+                          className="w-full min-w-0 p-2 bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white rounded-lg text-xs"
+                        />
                       ) : (
                         <input
                           type={col.type}
-                          list={col.dataListId}
                           step={isQty ? '0.01' : undefined}
                           className="w-full p-2 bg-slate-50 border border-slate-200 focus:border-blue-500 focus:bg-white rounded-lg text-xs"
                           value={val}
@@ -241,10 +371,16 @@ export function DataTable({ columns, data, onChange }: DataTableProps) {
                               </option>
                             ))}
                           </select>
+                        ) : col.dataListId ? (
+                          <CatalogInput
+                            value={String(val)}
+                            options={listas[col.dataListId] || []}
+                            onChange={(nextValue) => handleUpdate(idx, col.key, nextValue)}
+                            className="w-full min-w-0 p-1 bg-transparent border-0 focus:ring-1 focus:ring-blue-500 rounded text-sm print:text-[10px]"
+                          />
                         ) : (
                           <input
                             type={col.type}
-                            list={col.dataListId}
                             step={isQty ? '0.01' : undefined}
                             className="w-full p-1 bg-transparent border-0 focus:ring-1 focus:ring-blue-500 rounded text-sm print:text-[10px]"
                             value={displayVal}
