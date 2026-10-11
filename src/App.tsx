@@ -466,7 +466,7 @@ export default function App() {
     const c: Record<string, number> = { Bueno: 0, Regular: 0, Malo: 0, Crítico: 0 };
     fichas.forEach((f) => {
       area += calculateArea(f);
-      const st = f.diagestado || 'Regular';
+      const st = f.estadoDimensional || f.diagestado || 'Regular';
       if (c[st] !== undefined) c[st]++;
     });
     return { area, c };
@@ -950,7 +950,7 @@ export default function App() {
                       <td className="p-1.5 border border-gray-300">{item.bloque || projectData.bloque}</td>
                       <td className="p-1.5 border border-gray-300">{item.nivel}</td>
                       <td className="p-1.5 border border-gray-300 text-right">{calculateArea(item).toFixed(2)}</td>
-                      <td className="p-1.5 border border-gray-300">{item.diagestado}</td>
+                      <td className="p-1.5 border border-gray-300">{item.estadoDimensional || item.diagestado}</td>
                     </tr>
                   ))}
                   {fichas.length === 0 && (
@@ -1164,13 +1164,14 @@ export default function App() {
             catalogos={catalogos}
             onRestoreBackup={async (newFichas, newProjectData, newCatalogos) => {
               await StorageService.replaceFichas(newFichas);
-              setFichas(newFichas);
+              const restoredFichas = await StorageService.getFichas();
+              setFichas(restoredFichas);
               await StorageService.saveProjectData(newProjectData);
               setProjectData(newProjectData);
               await StorageService.saveCatalogos(newCatalogos);
               setCatalogos(newCatalogos);
-              if (newFichas.length > 0) {
-                loadFicha(newFichas[0]);
+              if (restoredFichas.length > 0) {
+                loadFicha(restoredFichas[0]);
               } else {
                 loadFicha(createEmptyFicha());
               }
