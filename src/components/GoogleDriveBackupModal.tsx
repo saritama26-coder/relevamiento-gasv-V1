@@ -319,7 +319,7 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
                   </button>
                 ) : (
                   <button
-                    onClick={handleLogin}
+                    onClick={() => handleLogin()}
                     disabled={isLoggingIn}
                     className="inline-flex items-center space-x-2 px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 rounded-lg font-medium shadow-xs transition-all text-xs disabled:opacity-50"
                   >
