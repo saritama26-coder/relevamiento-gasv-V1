@@ -525,6 +525,8 @@ export default function App() {
                     ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white'
                     : gdriveAutoStatus === 'syncing'
                     ? 'bg-amber-600/90 hover:bg-amber-500 text-white animate-pulse'
+                    : gdriveAutoStatus === 'error'
+                    ? 'bg-rose-600/90 hover:bg-rose-500 text-white'
                     : 'bg-[#1e5282] hover:bg-sky-600 text-white'
                 }`}
                 title={gdriveAutoStatus === 'synced'
@@ -544,7 +546,7 @@ export default function App() {
                 ) : (
                   <Cloud size={15} className="sm:mr-1 shrink-0" />
                 )}
-                <span className="hidden md:inline">Google Drive</span>
+                <span className="hidden md:inline">{gdriveAutoStatus === 'synced' ? 'Drive guardado' : gdriveAutoStatus === 'syncing' ? 'Sincronizando…' : gdriveAutoStatus === 'error' ? 'Error Drive' : 'Google Drive'}</span>
               </button>
 
               {/* Desktop Groups (Visible from lg: 1024px) */}
