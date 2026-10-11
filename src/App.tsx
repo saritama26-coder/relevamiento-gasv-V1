@@ -474,84 +474,37 @@ export default function App() {
       <div className="min-h-screen bg-gray-100 text-gray-900 font-sans pb-10">
         {/* Top Sticky Navigation Bar */}
         <header className="bg-[#17365d] text-white px-3 sm:px-5 py-2.5 sm:py-3 shadow-md print:hidden sticky top-0 z-50">
-          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 sm:gap-x-4 max-w-7xl mx-auto">
+          <div className="flex items-center justify-between gap-3 sm:gap-4 max-w-7xl mx-auto">
             {/* Left: Architect Details & Title */}
-            <div className="flex items-center space-x-2.5 sm:space-x-4 min-w-0 flex-[0_1_520px]">
+            <div className="flex items-center space-x-2.5 sm:space-x-3.5 shrink-0">
               <div className="gasv-mobile-icon-lockup flex items-center shrink-0">
                 <img
                   src={`${import.meta.env.BASE_URL}gasv-logo.png`}
                   alt="GSARITAMA ARQ."
-                  className="h-9 sm:h-11 w-auto max-w-[190px] object-contain block select-none"
+                  className="h-9 sm:h-11 w-auto max-w-[160px] sm:max-w-[190px] object-contain block select-none"
                 />
               </div>
 
-              <div className="min-w-0 sm:min-w-[290px] border-l border-white/30 pl-2.5 sm:pl-3.5">
-                <h1 className="text-xs sm:text-base font-bold tracking-wider leading-tight text-white uppercase truncate sm:overflow-visible sm:text-clip">
+              <div className="border-l border-white/30 pl-2.5 sm:pl-3.5 shrink-0">
+                <h1 className="text-xs sm:text-sm lg:text-base font-bold tracking-wider leading-tight text-white uppercase whitespace-nowrap">
                   RELEVAMIENTO ARQUITECTÓNICO
                 </h1>
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
-                  <span className="text-[11px] sm:text-xs font-semibold text-sky-300 truncate">
+                  <span className="text-[11px] sm:text-xs font-semibold text-sky-300 whitespace-nowrap">
                     {projectData.profesional || 'Arq. Gabriel Saritama Veira'}
                   </span>
                   <span className="hidden sm:inline text-sky-400/50 text-xs">•</span>
-                  <span className="text-[10px] sm:text-xs text-slate-300 font-mono hidden sm:inline truncate">
+                  <span className="text-[10px] sm:text-xs text-slate-300 font-mono hidden sm:inline whitespace-nowrap">
                     {projectData.contacto || 'saritama26@gmail.com'}
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Right: Actions and Controls organized by functional groups */}
-            <div className="flex flex-wrap items-center justify-end gap-1.5 sm:gap-2 min-w-0 flex-[2_1_650px]">
-              <PWAInstallButton />
-
-              {/* Botón sincronización Móvil & PC (accesible rápido) */}
-              <button
-                type="button"
-                onClick={() => setShowSync(true)}
-                className="lg:hidden flex items-center px-2 sm:px-2.5 py-1.5 bg-sky-600/80 hover:bg-sky-500 text-white rounded text-xs font-semibold transition-colors"
-                title="Vincular con Celular o Computadora"
-              >
-                <ArrowRightLeft size={14} className="sm:mr-1 shrink-0" />
-                <span className="hidden xl:inline">Sincronizar</span>
-              </button>
-
-              {/* Botón Respaldo en la Nube (Google Drive) */}
-              <button
-                type="button"
-                onClick={() => setShowGDriveModal(true)}
-                className={`lg:hidden flex items-center px-2 sm:px-2.5 py-1.5 rounded text-xs font-semibold transition-colors shadow-xs ${
-                  gdriveAutoStatus === 'synced'
-                    ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white'
-                    : gdriveAutoStatus === 'syncing'
-                    ? 'bg-amber-600/90 hover:bg-amber-500 text-white animate-pulse'
-                    : gdriveAutoStatus === 'error'
-                    ? 'bg-rose-600/90 hover:bg-rose-500 text-white'
-                    : 'bg-[#1e5282] hover:bg-sky-600 text-white'
-                }`}
-                title={gdriveAutoStatus === 'synced'
-                  ? `Google Drive: respaldo confirmado${lastGdriveBackupTime ? ` — ${new Date(lastGdriveBackupTime).toLocaleString('es-EC')}` : ''}`
-                  : gdriveAutoStatus === 'syncing'
-                  ? 'Google Drive: sincronizando datos'
-                  : gdriveAutoStatus === 'error'
-                  ? `Google Drive: error de respaldo — ${gdriveAutoError || 'revise la conexión'}`
-                  : navigator.onLine
-                  ? 'Google Drive: configure o revise el respaldo'
-                  : 'Sin conexión: respaldo en espera'}
-              >
-                {gdriveAutoStatus === 'synced' ? (
-                  <CloudCheck size={15} className="sm:mr-1 shrink-0 text-emerald-200" />
-                ) : gdriveAutoStatus === 'syncing' ? (
-                  <CloudUpload size={15} className="sm:mr-1 shrink-0 animate-bounce" />
-                ) : (
-                  <Cloud size={15} className="sm:mr-1 shrink-0" />
-                )}
-                <span className="hidden md:inline">{gdriveAutoStatus === 'synced' ? 'Drive guardado' : gdriveAutoStatus === 'syncing' ? 'Sincronizando…' : gdriveAutoStatus === 'error' ? 'Error Drive' : 'Google Drive'}</span>
-              </button>
-
-              {/* Desktop Groups (Visible from lg: 1024px) */}
-              <div className="hidden lg:flex flex-col items-end gap-2 min-w-0 w-full">
-                <div className="flex items-center justify-end gap-2 w-full">
+            {/* Desktop Controls (Visible from lg: 1024px) - Exactly 2 rows */}
+            <div className="hidden lg:flex flex-col items-end gap-1.5 shrink-0">
+              {/* FILA 1: Acciones principales y navegación: [Nuevo] [Guardar] | [Ambientes] [Consolidado] [Manual] */}
+              <div className="flex items-center justify-end gap-1.5 xl:gap-2">
                 {/* GRUPO 1: Acciones principales: [Nuevo] | [Guardar] */}
                 <div className="flex items-center bg-black/20 p-0.5 rounded-md border border-white/10 space-x-1">
                   <button
@@ -586,32 +539,34 @@ export default function App() {
                   <button
                     type="button"
                     onClick={() => setShowDrawer(true)}
-                    className="flex items-center px-2.5 xl:px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded text-xs xl:text-sm font-semibold transition-colors"
+                    className="flex items-center px-2 xl:px-2.5 py-1.5 bg-slate-700 hover:bg-slate-600 rounded text-xs xl:text-sm font-semibold transition-colors"
                     title="Listado y selección de ambientes registrados"
                   >
-                    <LayoutList size={15} className="mr-1 shrink-0" /> Ambientes ({fichas.length})
+                    <LayoutList size={14} className="mr-1 shrink-0" /> Ambientes ({fichas.length})
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowConsolidated(true)}
-                    className="flex items-center px-2.5 xl:px-3 py-1.5 bg-indigo-700 hover:bg-indigo-600 rounded text-xs xl:text-sm font-semibold transition-colors"
+                    className="flex items-center px-2 xl:px-2.5 py-1.5 bg-indigo-700 hover:bg-indigo-600 rounded text-xs xl:text-sm font-semibold transition-colors"
                     title="Ver reporte consolidado con cómputos y fotos"
                   >
-                    <Layers size={15} className="mr-1 shrink-0" /> Consolidado
+                    <Layers size={14} className="mr-1 shrink-0" /> Consolidado
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowManual(true)}
-                    className="flex items-center px-2.5 xl:px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded text-xs xl:text-sm font-semibold transition-colors"
+                    className="flex items-center px-2 xl:px-2.5 py-1.5 bg-slate-700 hover:bg-slate-600 rounded text-xs xl:text-sm font-semibold transition-colors"
                     title="Manual de uso detallado"
                   >
-                    <BookOpen size={15} className="mr-1 shrink-0" /> Manual
+                    <BookOpen size={14} className="mr-1 shrink-0" /> Manual
                   </button>
                 </div>
 
-                </div>
-                <div className="flex items-center justify-end gap-2 w-full">
-                {/* GRUPO 3: Gestión y exportación: [Importar] | [Exportar] | [CSV] | [PDF] | [Bajar .HTML] */}
+                <PWAInstallButton />
+              </div>
+
+              {/* FILA 2: Gestión, sincronización y exportación: [Importar] [Sincronizar] [Google Drive] [Exportar] [CSV] [PDF] */}
+              <div className="flex items-center justify-end gap-1.5 xl:gap-2">
                 <div className="flex items-center bg-black/20 p-0.5 rounded-md border border-white/10 space-x-1">
                   <button
                     type="button"
@@ -621,49 +576,60 @@ export default function App() {
                   >
                     <Upload size={14} className="mr-1 shrink-0" /> Importar
                   </button>
-              {/* Botón sincronización Móvil & PC (accesible rápido) */}
-              <button
-                type="button"
-                onClick={() => setShowSync(true)}
-                className="hidden lg:flex items-center px-2 sm:px-2.5 py-1.5 bg-sky-600/80 hover:bg-sky-500 text-white rounded text-xs font-semibold transition-colors"
-                title="Vincular con Celular o Computadora"
-              >
-                <ArrowRightLeft size={14} className="sm:mr-1 shrink-0" />
-                <span className="hidden xl:inline">Sincronizar</span>
-              </button>
 
-              {/* Botón Respaldo en la Nube (Google Drive) */}
-              <button
-                type="button"
-                onClick={() => setShowGDriveModal(true)}
-                className={`hidden lg:flex items-center px-2 sm:px-2.5 py-1.5 rounded text-xs font-semibold transition-colors shadow-xs ${
-                  gdriveAutoStatus === 'synced'
-                    ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white'
-                    : gdriveAutoStatus === 'syncing'
-                    ? 'bg-amber-600/90 hover:bg-amber-500 text-white animate-pulse'
-                    : gdriveAutoStatus === 'error'
-                    ? 'bg-rose-600/90 hover:bg-rose-500 text-white'
-                    : 'bg-[#1e5282] hover:bg-sky-600 text-white'
-                }`}
-                title={gdriveAutoStatus === 'synced'
-                  ? `Google Drive: respaldo confirmado${lastGdriveBackupTime ? ` — ${new Date(lastGdriveBackupTime).toLocaleString('es-EC')}` : ''}`
-                  : gdriveAutoStatus === 'syncing'
-                  ? 'Google Drive: sincronizando datos'
-                  : gdriveAutoStatus === 'error'
-                  ? `Google Drive: error de respaldo — ${gdriveAutoError || 'revise la conexión'}`
-                  : navigator.onLine
-                  ? 'Google Drive: configure o revise el respaldo'
-                  : 'Sin conexión: respaldo en espera'}
-              >
-                {gdriveAutoStatus === 'synced' ? (
-                  <CloudCheck size={15} className="sm:mr-1 shrink-0 text-emerald-200" />
-                ) : gdriveAutoStatus === 'syncing' ? (
-                  <CloudUpload size={15} className="sm:mr-1 shrink-0 animate-bounce" />
-                ) : (
-                  <Cloud size={15} className="sm:mr-1 shrink-0" />
-                )}
-                <span className="hidden md:inline">{gdriveAutoStatus === 'synced' ? 'Drive guardado' : gdriveAutoStatus === 'syncing' ? 'Sincronizando…' : gdriveAutoStatus === 'error' ? 'Error Drive' : 'Google Drive'}</span>
-              </button>
+                  {/* Botón sincronización Móvil & PC (accesible rápido) junto a Importar */}
+                  <button
+                    type="button"
+                    onClick={() => setShowSync(true)}
+                    className="flex items-center px-2 xl:px-2.5 py-1.5 bg-sky-600/80 hover:bg-sky-500 text-white rounded text-xs xl:text-sm font-semibold transition-colors"
+                    title="Vincular con Celular o Computadora"
+                  >
+                    <ArrowRightLeft size={14} className="mr-1 shrink-0" />
+                    <span>Sincronizar</span>
+                  </button>
+
+                  {/* Botón Respaldo en la Nube (Google Drive) junto a Sincronizar e Importar */}
+                  <button
+                    type="button"
+                    onClick={() => setShowGDriveModal(true)}
+                    className={`flex items-center px-2 xl:px-2.5 py-1.5 rounded text-xs xl:text-sm font-semibold transition-colors shadow-xs ${
+                      gdriveAutoStatus === 'synced'
+                        ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white'
+                        : gdriveAutoStatus === 'syncing'
+                        ? 'bg-amber-600/90 hover:bg-amber-500 text-white animate-pulse'
+                        : gdriveAutoStatus === 'error'
+                        ? 'bg-rose-600/90 hover:bg-rose-500 text-white'
+                        : 'bg-[#1e5282] hover:bg-sky-600 text-white'
+                    }`}
+                    title={
+                      gdriveAutoStatus === 'synced'
+                        ? `Google Drive: respaldo confirmado${lastGdriveBackupTime ? ` — ${new Date(lastGdriveBackupTime).toLocaleString('es-EC')}` : ''}`
+                        : gdriveAutoStatus === 'syncing'
+                        ? 'Google Drive: sincronizando datos'
+                        : gdriveAutoStatus === 'error'
+                        ? `Google Drive: error de respaldo — ${gdriveAutoError || 'revise la conexión'}`
+                        : navigator.onLine
+                        ? 'Google Drive: configure o revise el respaldo'
+                        : 'Sin conexión: respaldo en espera'
+                    }
+                  >
+                    {gdriveAutoStatus === 'synced' ? (
+                      <CloudCheck size={14} className="mr-1 shrink-0 text-emerald-200" />
+                    ) : gdriveAutoStatus === 'syncing' ? (
+                      <CloudUpload size={14} className="mr-1 shrink-0 animate-bounce" />
+                    ) : (
+                      <Cloud size={14} className="mr-1 shrink-0" />
+                    )}
+                    <span>
+                      {gdriveAutoStatus === 'synced'
+                        ? 'Drive guardado'
+                        : gdriveAutoStatus === 'syncing'
+                        ? 'Sincronizando…'
+                        : gdriveAutoStatus === 'error'
+                        ? 'Error Drive'
+                        : 'Google Drive'}
+                    </span>
+                  </button>
 
                   <button
                     type="button"
@@ -690,15 +656,61 @@ export default function App() {
                     <Printer size={14} className="mr-1 shrink-0" /> PDF
                   </button>
                 </div>
-                </div>
               </div>
+            </div>
+
+            {/* Right Mobile: Quick actions and Hamburger (< 1024px) */}
+            <div className="flex lg:hidden items-center justify-end gap-1.5 sm:gap-2 shrink-0">
+              {/* Botón sincronización Móvil */}
+              <button
+                type="button"
+                onClick={() => setShowSync(true)}
+                className="flex items-center px-2 sm:px-2.5 py-1.5 bg-sky-600/80 hover:bg-sky-500 text-white rounded text-xs font-semibold transition-colors"
+                title="Vincular con Celular o Computadora"
+              >
+                <ArrowRightLeft size={14} className="sm:mr-1 shrink-0" />
+                <span className="hidden sm:inline">Sincronizar</span>
+              </button>
+
+              {/* Botón Respaldo en la Nube (Google Drive) */}
+              <button
+                type="button"
+                onClick={() => setShowGDriveModal(true)}
+                className={`flex items-center px-2 sm:px-2.5 py-1.5 rounded text-xs font-semibold transition-colors shadow-xs ${
+                  gdriveAutoStatus === 'synced'
+                    ? 'bg-emerald-600/90 hover:bg-emerald-500 text-white'
+                    : gdriveAutoStatus === 'syncing'
+                    ? 'bg-amber-600/90 hover:bg-amber-500 text-white animate-pulse'
+                    : gdriveAutoStatus === 'error'
+                    ? 'bg-rose-600/90 hover:bg-rose-500 text-white'
+                    : 'bg-[#1e5282] hover:bg-sky-600 text-white'
+                }`}
+                title={
+                  gdriveAutoStatus === 'synced'
+                    ? 'Google Drive: respaldo confirmado'
+                    : gdriveAutoStatus === 'syncing'
+                    ? 'Google Drive: sincronizando datos'
+                    : gdriveAutoStatus === 'error'
+                    ? 'Google Drive: error de respaldo'
+                    : 'Google Drive'
+                }
+              >
+                {gdriveAutoStatus === 'synced' ? (
+                  <CloudCheck size={14} className="sm:mr-1 shrink-0 text-emerald-200" />
+                ) : gdriveAutoStatus === 'syncing' ? (
+                  <CloudUpload size={14} className="sm:mr-1 shrink-0 animate-bounce" />
+                ) : (
+                  <Cloud size={14} className="sm:mr-1 shrink-0" />
+                )}
+                <span className="hidden sm:inline">Drive</span>
+              </button>
 
               {/* Mobile Quick Action: Guardar */}
               <button
                 type="button"
                 onClick={handleManualSave}
                 disabled={!isFormValid}
-                className={`lg:hidden flex items-center px-2.5 py-1.5 rounded text-xs font-semibold transition-all shadow-xs ${
+                className={`flex items-center px-2.5 py-1.5 rounded text-xs font-semibold transition-all shadow-xs ${
                   isFormValid
                     ? 'bg-[#16794b] hover:bg-green-600 text-white cursor-pointer'
                     : 'bg-slate-600/70 text-slate-300 cursor-not-allowed opacity-50 shadow-none'
@@ -717,7 +729,7 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="p-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded lg:hidden transition-colors"
+                className="p-1.5 bg-slate-700 hover:bg-slate-600 text-white rounded transition-colors"
                 aria-label="Abrir menú"
               >
                 {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}

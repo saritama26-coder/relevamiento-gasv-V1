@@ -1,5 +1,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import react from '@vitejs/plugin-react';
+import fs from 'fs';
 import path from 'path';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
@@ -8,6 +9,41 @@ export default defineConfig(() => {
   return {
     base: '/relevamiento-gasv-V1/',
     plugins: [
+      {
+        name: 'spa-html-entry',
+        configureServer(server) {
+          server.middlewares.use(async (req, res, next) => {
+            const rawUrl = req.url?.split('?')[0] || '';
+            if (
+              rawUrl === '/' ||
+              rawUrl === '/relevamiento-gasv-V1' ||
+              rawUrl === '/relevamiento-gasv-V1/' ||
+              rawUrl === '/relevamiento-gasv-V1/index.html' ||
+              rawUrl === '/index.html'
+            ) {
+              try {
+                const template = fs.readFileSync(path.resolve(process.cwd(), 'index.vite.html'), 'utf-8');
+                const html = await server.transformIndexHtml(req.url || '/relevamiento-gasv-V1/', template);
+                res.setHeader('Content-Type', 'text/html; charset=utf-8');
+                return res.end(html);
+              } catch (e) {
+                return next(e);
+              }
+            }
+            next();
+          });
+        },
+      },
+      {
+        name: 'copy-dist-index',
+        closeBundle() {
+          const distViteHtml = path.resolve(process.cwd(), 'dist/index.vite.html');
+          const distHtml = path.resolve(process.cwd(), 'dist/index.html');
+          if (fs.existsSync(distViteHtml)) {
+            fs.copyFileSync(distViteHtml, distHtml);
+          }
+        },
+      },
       react(),
       tailwindcss(),
       VitePWA({
@@ -53,6 +89,13 @@ export default defineConfig(() => {
     resolve: {
       alias: {
         '@': path.resolve(process.cwd(), '.'),
+      },
+    },
+    build: {
+      rollupOptions: {
+        input: {
+          main: path.resolve(process.cwd(), 'index.vite.html'),
+        },
       },
     },
     server: {
