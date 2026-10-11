@@ -1,0 +1,1 @@
+if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/relevamiento-gasv-V1/sw.js', { scope: '/relevamiento-gasv-V1/' })})}
