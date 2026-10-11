@@ -24,6 +24,7 @@ provider.setCustomParameters({
 let isSigningIn = false;
 // Cache the access token in memory.
 let cachedAccessToken: string | null = null;
+let cachedAccessTokenExpiresAt = 0;
 
 // Initialize auth state listener.
 export const initAuth = (
@@ -37,6 +38,7 @@ export const initAuth = (
       }
     } else {
       cachedAccessToken = null;
+      cachedAccessTokenExpiresAt = 0;
       if (onAuthFailure) onAuthFailure();
     }
   });
@@ -53,6 +55,9 @@ export const googleSignIn = async (): Promise<{ user: User; accessToken: string 
     }
 
     cachedAccessToken = credential.accessToken;
+    // Google OAuth access tokens normally expire after about one hour. Expire locally early
+    // so a stale token is never reported as a confirmed authorization.
+    cachedAccessTokenExpiresAt = Date.now() + 50 * 60 * 1000;
     return { user: result.user, accessToken: cachedAccessToken };
   } catch (error: any) {
     console.error('Error al iniciar sesión con Google:', error);
@@ -63,10 +68,16 @@ export const googleSignIn = async (): Promise<{ user: User; accessToken: string 
 };
 
 export const getAccessToken = async (): Promise<string | null> => {
+  if (!cachedAccessToken || Date.now() >= cachedAccessTokenExpiresAt) {
+    cachedAccessToken = null;
+    cachedAccessTokenExpiresAt = 0;
+    return null;
+  }
   return cachedAccessToken;
 };
 
 export const logoutGoogle = async () => {
   await signOut(auth);
   cachedAccessToken = null;
+  cachedAccessTokenExpiresAt = 0;
 };
