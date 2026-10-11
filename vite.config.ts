@@ -6,6 +6,7 @@ import { VitePWA } from 'vite-plugin-pwa';
 
 export default defineConfig(() => {
   return {
+    base: '/relevamiento-gasv-V1/',
     plugins: [
       react(),
       tailwindcss(),
@@ -17,9 +18,10 @@ export default defineConfig(() => {
           'pwa-192x192.png',
           'pwa-512x512.png',
           'gasv-icon-right.png',
+          'gasv-logo.png',
         ],
         manifest: {
-          id: '/',
+          id: '/relevamiento-gasv-V1/',
           name: 'Relevamiento Arquitectónico',
           short_name: 'Relevamiento',
           description:
@@ -28,8 +30,8 @@ export default defineConfig(() => {
           background_color: '#17365d',
           display: 'standalone',
           orientation: 'any',
-          start_url: '/',
-          scope: '/',
+          start_url: '/relevamiento-gasv-V1/',
+          scope: '/relevamiento-gasv-V1/',
           icons: [
             {
               src: './gasv-icon-right.png',
