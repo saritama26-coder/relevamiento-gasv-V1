@@ -5,9 +5,11 @@ import path from 'path';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
-export default defineConfig(() => {
+export default defineConfig(({ command }) => {
+  const isDevServer = command === 'serve';
   return {
-    base: '/relevamiento-gasv-V1/',
+    // AI Studio previews the app from `/`, while GitHub Pages serves it from the repository path.
+    base: isDevServer ? '/' : '/relevamiento-gasv-V1/',
     plugins: [
       {
         name: 'spa-html-entry',
@@ -81,7 +83,8 @@ export default defineConfig(() => {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
         },
         devOptions: {
-          enabled: true,
+          // Avoid a development service worker caching the wrong base path in AI Studio previews.
+          enabled: !isDevServer,
           type: 'module',
         },
       }),
