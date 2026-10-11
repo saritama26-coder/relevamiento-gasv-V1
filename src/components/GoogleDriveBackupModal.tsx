@@ -37,7 +37,7 @@ interface GoogleDriveBackupModalProps {
     newFichas: Ficha[],
     newProjectData: ProjectData,
     newCatalogos: CatalogosMap
-  ) => void;
+  ) => Promise<void>;
   lastAutoBackupTime: string | null;
   autoBackupStatus: 'idle' | 'syncing' | 'synced' | 'error';
   autoBackupError: string | null;
@@ -93,6 +93,7 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
     setAutoBackupEnabled(enabled);
     localStorage.setItem('gdrive_auto_backup_enabled', enabled ? 'true' : 'false');
     setErrorMessage(null);
+    setSuccessMessage(null);
     if (!enabled) {
       setSuccessMessage('El respaldo automático quedó pausado. Tus fichas locales no se modificarán.');
       return;
@@ -102,8 +103,13 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
       setSuccessMessage('Respaldo automático activado. Autoriza Google Drive para iniciar la primera copia.');
       return;
     }
-    await onAutomaticBackupTrigger();
-    await loadBackups(currentToken);
+    try {
+      await onAutomaticBackupTrigger();
+      await loadBackups(currentToken);
+      setSuccessMessage('Respaldo automático activado y primera copia solicitada.');
+    } catch (e: any) {
+      setErrorMessage(e?.message || 'No se pudo iniciar el respaldo automático.');
+    }
   };
 
   const loadBackups = async (accessToken: string) => {
@@ -113,12 +119,13 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
       setBackupsList(files);
     } catch (e: any) {
       console.error(e);
+      setErrorMessage(e?.message || 'No se pudo consultar la lista de respaldos en Google Drive.');
     } finally {
       setIsLoadingBackups(false);
     }
   };
 
-  const handleLogin = async (): Promise<string | null> => {
+  const handleLogin = async (backupCurrentState = true): Promise<string | null> => {
     setIsLoggingIn(true);
     setErrorMessage(null);
     try {
@@ -127,7 +134,7 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
         setUser(res.user);
         setToken(res.accessToken);
         setSuccessMessage('Sesión iniciada con éxito. Google Drive vinculado.');
-        if (autoBackupEnabled) await onAutomaticBackupTrigger();
+        if (autoBackupEnabled && backupCurrentState) await onAutomaticBackupTrigger();
         await loadBackups(res.accessToken);
         return res.accessToken;
       }
@@ -156,7 +163,7 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
 
   const handleCreateManualBackup = async () => {
     let currentToken = await getAccessToken();
-    if (!currentToken) currentToken = await handleLogin();
+    if (!currentToken) currentToken = await handleLogin(false);
     if (!currentToken) {
       setErrorMessage('Autoriza Google Drive para continuar con el respaldo.');
       return;
@@ -202,11 +209,11 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
         file.id
       );
 
-      if (!payload || !payload.fichas) {
-        throw new Error('El archivo de respaldo no tiene el formato requerido.');
+      if (!payload || !Array.isArray(payload.fichas)) {
+        throw new Error('El archivo de respaldo no tiene una lista válida de ambientes.');
       }
 
-      onRestoreBackup(
+      await onRestoreBackup(
         payload.fichas || [],
         payload.projectData || {
           proyecto: '',
@@ -221,6 +228,7 @@ export const GoogleDriveBackupModal: React.FC<GoogleDriveBackupModalProps> = ({
       setSuccessMessage(
         `Respaldo restaurado correctamente (${payload.fichas.length} ambientes recuperados).`
       );
+      await loadBackups(currentToken);
     } catch (e: any) {
       setErrorMessage(e.message || 'Error al restaurar respaldo desde Drive.');
     } finally {
