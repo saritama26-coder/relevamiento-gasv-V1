@@ -46,7 +46,7 @@ export function ConsolidatedReport({ fichas, projectData, onClose }: Consolidate
     const c: Record<string, number> = { Bueno: 0, Regular: 0, Malo: 0, Crítico: 0 };
     sortedFichas.forEach((f) => {
       total += calculateArea(f);
-      const st = f.diagestado || 'Regular';
+      const st = f.estadoDimensional || f.diagestado || 'Regular';
       if (c[st] !== undefined) c[st]++;
     });
     return { areaTotal: total, counts: c };
@@ -378,21 +378,21 @@ export function ConsolidatedReport({ fichas, projectData, onClose }: Consolidate
                 </div>
               )}
 
-              {/* Diagnóstico */}
+              {/* Evaluación técnica y observaciones generales unificadas */}
               <div className="mb-4">
                 <h3 className="text-sm font-bold text-[#17365d] mb-2 border-b border-slate-200 pb-1">
-                  Diagnóstico Preliminar
+                  Evaluación general y observaciones
                 </h3>
                 <div className="grid grid-cols-2 gap-4 text-sm bg-slate-50 p-3 rounded border border-slate-200">
                   <div>
-                    <span className="font-bold text-slate-600">Estado:</span> {f.diagestado}
+                    <span className="font-bold text-slate-600">Estado general:</span> {f.estadoDimensional || f.diagestado || 'No consignado'}
                   </div>
                   <div>
-                    <span className="font-bold text-slate-600">Intervención Recomendada:</span> {f.interv}
+                    <span className="font-bold text-slate-600">Intervención recomendada:</span> {f.interv || 'No consignada'}
                   </div>
                   <div className="col-span-2">
-                    <span className="font-bold text-slate-600">Criterio Técnico:</span>
-                    <p className="mt-1 whitespace-pre-wrap">{f.diag || 'Sin observaciones'}</p>
+                    <span className="font-bold text-slate-600">Observaciones generales:</span>
+                    <p className="mt-1 whitespace-pre-wrap">{f.obs || f.diag || f.obsdim || 'Sin observaciones'}</p>
                   </div>
                 </div>
               </div>
