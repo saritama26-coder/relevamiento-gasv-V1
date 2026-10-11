@@ -26,7 +26,7 @@ import { ConsolidatedReport } from './components/ConsolidatedReport';
 import { PWAInstallButton } from './components/PWAInstallButton';
 import { DeviceSyncModal } from './components/DeviceSyncModal';
 import { OfflineIndicator } from './components/OfflineIndicator';
-import { GSARITAMA_LOGO_PNG } from './constants/logoData';
+import { GSARITAMA_HEADER_LOGO } from './constants/logoData';
 import { GoogleDriveBackupModal } from './components/GoogleDriveBackupModal';
 import { GoogleDriveService, BackupPayload } from './services/googleDriveService';
 import { getAccessToken } from './services/googleAuth';
@@ -759,11 +759,13 @@ export default function App() {
         <div className="p-4 print:p-0">
           <div className="hidden print:flex items-end justify-between border-b-2 border-slate-800 pb-3 mb-5">
             <div className="flex items-center space-x-3">
-              <img
-                src={GSARITAMA_LOGO_PNG}
-                alt="GSARITAMA ARQ."
-                className="report-document-logo h-12 w-[220px] shrink-0 object-contain object-center block"
-              />
+              <div className="report-logo-plate flex h-[54px] w-[220px] shrink-0 items-center justify-center overflow-visible">
+                <img
+                  src={GSARITAMA_HEADER_LOGO}
+                  alt="GSARITAMA ARQ."
+                  className="report-document-logo h-full w-full shrink-0 object-contain object-center block"
+                />
+              </div>
               <div className="font-bold text-[#17365d] text-lg uppercase tracking-wide">
                 FICHA DE RELEVAMIENTO ARQUITECTÓNICO
               </div>
