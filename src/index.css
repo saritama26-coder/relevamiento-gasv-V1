@@ -108,17 +108,30 @@
     font-size: 7.5pt;
     line-height: 1.15;
   }
-  .report-document-logo {
-    display: block !important;
+  .report-logo-plate {
+    display: flex !important;
     flex: 0 0 auto !important;
     width: 50mm !important;
     height: 12mm !important;
-    max-width: 50mm !important;
-    max-height: 12mm !important;
+    padding: 1mm !important;
+    box-sizing: border-box !important;
+    background-color: #17365d !important;
+    border: 0.4mm solid #17365d !important;
+    border-radius: 0 !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+  .report-document-logo {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100% !important;
+    max-height: 100% !important;
     object-fit: contain !important;
     object-position: center !important;
     overflow: visible !important;
-    background: #fff !important;
+    background: transparent !important;
     border: 0 !important;
     border-radius: 0 !important;
   }
