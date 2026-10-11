@@ -163,26 +163,22 @@ export const GoogleDriveService = {
    * List available backups in Google Drive
    */
   async listBackups(accessToken: string): Promise<DriveFileInfo[]> {
-    try {
-      const folderId = await this.getOrCreateBackupFolder(accessToken);
-      const q = encodeURIComponent(`'${folderId}' in parents and trashed = false`);
-      const res = await fetch(
-        `${DRIVE_API_URL}/files?q=${q}&orderBy=modifiedTime desc&fields=files(id,name,modifiedTime,size)`,
-        {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
-
-      if (!res.ok) {
-        return [];
+    const folderId = await this.getOrCreateBackupFolder(accessToken);
+    const q = encodeURIComponent(`'${folderId}' in parents and trashed = false`);
+    const res = await fetch(
+      `${DRIVE_API_URL}/files?q=${q}&orderBy=modifiedTime desc&fields=files(id,name,modifiedTime,size)`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
       }
+    );
 
-      const data = await res.json();
-      return data.files || [];
-    } catch (e) {
-      console.error('Error listando respaldos en Drive:', e);
-      return [];
+    if (!res.ok) {
+      const err = await res.text();
+      throw new Error(`No se pudo consultar los respaldos en Drive: ${err}`);
     }
+
+    const data = await res.json();
+    return data.files || [];
   },
 
   /**
