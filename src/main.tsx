@@ -12,6 +12,34 @@ if (typeof window !== 'undefined') {
   };
 }
 
+// Limpieza de Service Workers y CacheStorage sin recarga previa (no bloqueante)
+if (typeof window !== 'undefined') {
+  try {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker
+        .getRegistrations()
+        .then((regs) => {
+          Promise.all(regs.map((r) => r.unregister())).catch(() => {});
+        })
+        .catch((e) => {
+          console.warn('Limpieza SW/caché:', e);
+        });
+    }
+    if ('caches' in window) {
+      caches
+        .keys()
+        .then((keys) => {
+          Promise.all(keys.map((k) => caches.delete(k))).catch(() => {});
+        })
+        .catch((e) => {
+          console.warn('Limpieza SW/caché:', e);
+        });
+    }
+  } catch (e) {
+    console.warn('Limpieza SW/caché:', e);
+  }
+}
+
 const rootElement = document.getElementById('root');
 if (rootElement) {
   createRoot(rootElement).render(

@@ -15,17 +15,63 @@ export default defineConfig(({ command }) => {
         name: 'stale-html-proxy-fallback',
         enforce: 'pre',
         configureServer(server) {
+          const cleanupScript = `(async () => {
+  try {
+    if (sessionStorage.getItem('gasv-sw-cleaned')) return;
+    sessionStorage.setItem('gasv-sw-cleaned', '1');
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+    }
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+  } catch (e) { console.warn('Limpieza SW/caché:', e); }
+  location.reload();
+})();
+export default {};`;
+
           server.middlewares.use((req, res, next) => {
+            const rawUrl = req.url?.split('?')[0] || '';
+            if (rawUrl === '/' || rawUrl === '/index.html' || rawUrl === '/index.vite.html') {
+              const origSetHeader = res.setHeader.bind(res);
+              res.setHeader = ((name: string, value: any) => {
+                if (typeof name === 'string' && name.toLowerCase() === 'cache-control') {
+                  return origSetHeader('Cache-Control', 'no-store');
+                }
+                return origSetHeader(name, value);
+              }) as any;
+              origSetHeader('Cache-Control', 'no-store');
+            }
             if (req.url && req.url.includes('html-proxy')) {
+              res.statusCode = 200;
               res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-              return res.end('export default {};');
+              res.setHeader('Cache-Control', 'no-store');
+              res.setHeader('Clear-Site-Data', '"cache", "storage"');
+              return res.end(cleanupScript);
             }
             next();
           });
         },
         load(id) {
           if (id.includes('html-proxy')) {
-            return 'export default {};';
+            return `(async () => {
+  try {
+    if (sessionStorage.getItem('gasv-sw-cleaned')) return;
+    sessionStorage.setItem('gasv-sw-cleaned', '1');
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+    }
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k => caches.delete(k)));
+    }
+  } catch (e) { console.warn('Limpieza SW/caché:', e); }
+  location.reload();
+})();
+export default {};`;
           }
         },
       },
