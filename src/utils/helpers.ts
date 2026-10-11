@@ -38,6 +38,85 @@ export function createEmptyFicha(): Ficha {
   };
 }
 
+/**
+ * Consolida una sola vez los campos de observación de versiones anteriores.
+ * El texto original se conserva en "obs" con etiquetas de procedencia; los
+ * campos legacy quedan vacíos para que futuras lecturas no dupliquen el texto.
+ */
+export function migrateLegacyObservations(ficha: Ficha): Ficha {
+  const dimensionalText = String(ficha.obsdim || '').trim();
+  const diagnosticText = String(ficha.diag || '').trim();
+  const generalText = String(ficha.obs || '').trim();
+  const dimensionalState = String(ficha.estadoDimensional || '').trim();
+  const diagnosticState = String(ficha.diagestado || '').trim();
+
+  const normalize = (value: string) =>
+    value.normalize('NFD').replace(/[\\u0300-\\u036f]/g, '').replace(/\\s+/g, ' ').trim().toLowerCase();
+
+  const hasLegacyText = Boolean(dimensionalText || diagnosticText);
+  const statusesDiffer = Boolean(
+    dimensionalState &&
+    diagnosticState &&
+    normalize(dimensionalState) !== normalize(diagnosticState)
+  );
+  const stateNeedsSync = dimensionalState !== diagnosticState;
+
+  if (!hasLegacyText && !stateNeedsSync) return ficha;
+
+  const blocks: string[] = [];
+  const seen = new Set<string>();
+  const addBlock = (label: string, value: string) => {
+    const text = String(value || '').trim();
+    if (!text) return;
+    const key = normalize(text);
+    if (seen.has(key)) return;
+    seen.add(key);
+    blocks.push(`${label}:\\n${text}`);
+  };
+
+  // If two old status fields conflict, preserve both values in the migrated
+  // notes and use the more conservative state for the single visible control.
+  if (statusesDiffer) {
+    addBlock(
+      'ESTADOS REGISTRADOS ANTES DE LA CONSOLIDACIÓN',
+      `Estado del levantamiento dimensional: ${dimensionalState}.\\nEstado del diagnóstico preliminar: ${diagnosticState}.`
+    );
+  }
+
+  if (hasLegacyText) {
+    addBlock('LEVANTAMIENTO DIMENSIONAL', dimensionalText);
+    addBlock('DIAGNÓSTICO / CRITERIO TÉCNICO', diagnosticText);
+    addBlock('OBSERVACIONES GENERALES', generalText);
+  } else if (generalText && statusesDiffer) {
+    // Re-label the existing general note only when it is being combined with
+    // a status-history note; otherwise leave an already unified note untouched.
+    addBlock('OBSERVACIONES GENERALES', generalText);
+  }
+
+  const severity: Record<string, number> = {
+    'Bueno': 1,
+    'Regular': 2,
+    'Malo': 3,
+    'Crítico': 4,
+    'Critico': 4,
+  };
+  const states = [dimensionalState, diagnosticState].filter(Boolean);
+  const rankedStates = states.filter((state) => severity[state] !== undefined);
+  const canonicalState = rankedStates.length
+    ? rankedStates.sort((a, b) => severity[b] - severity[a])[0]
+    : diagnosticState || dimensionalState || 'Bueno';
+
+  const shouldCombineGeneralText = hasLegacyText || statusesDiffer;
+  return {
+    ...ficha,
+    ...(shouldCombineGeneralText ? { obs: blocks.join('\\n\\n') } : {}),
+    obsdim: '',
+    diag: '',
+    estadoDimensional: canonicalState,
+    diagestado: canonicalState,
+  };
+}
+
 export function compressImage(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -130,7 +209,7 @@ export function exportProjectBackup(fichas: Ficha[], projectData: ProjectData, c
     aplicacion: 'Relevamiento Arquitectónico GASV',
     exportado: new Date().toISOString(),
     proyecto: projectData,
-    fichas,
+    fichas: fichas.map(migrateLegacyObservations),
     catalogosPersonalizados: catalogos,
   };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
@@ -156,7 +235,11 @@ export function parseProjectBackup(file: File): Promise<{
 
         // Check if legacy format
         if (isLegacyV1(json)) {
-          resolve(convertLegacyV1(json));
+          const converted = convertLegacyV1(json);
+          resolve({
+            ...converted,
+            fichas: converted.fichas.map((ficha: Ficha) => migrateLegacyObservations(ficha)),
+          });
           return;
         }
 
@@ -164,7 +247,15 @@ export function parseProjectBackup(file: File): Promise<{
           throw new Error('El archivo no contiene el arreglo de fichas.');
         }
 
-        resolve(json);
+        resolve({
+          ...json,
+          fichas: json.fichas.map((rawFicha: Partial<Ficha>) =>
+            migrateLegacyObservations({
+              ...createEmptyFicha(),
+              ...rawFicha,
+            } as Ficha)
+          ),
+        });
       } catch (err: any) {
         reject(new Error('Archivo de respaldo inválido: ' + err.message));
       }
