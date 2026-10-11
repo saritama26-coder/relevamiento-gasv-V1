@@ -2,7 +2,7 @@ import { useMemo, useEffect, useCallback } from 'react';
 import { Printer, X } from 'lucide-react';
 import { Ficha, ProjectData } from '../types';
 import { calculateArea, sanitizeFilename, formatTimestamp } from '../utils/helpers';
-import { GSARITAMA_LOGO_PNG } from '../constants/logoData';
+import { GSARITAMA_HEADER_LOGO } from '../constants/logoData';
 
 interface ConsolidatedReportProps {
   fichas: Ficha[];
@@ -89,9 +89,9 @@ export function ConsolidatedReport({ fichas, projectData, onClose }: Consolidate
       {/* Sticky Top Bar for actions */}
       <div className="bg-slate-800 text-white p-3 sm:p-4 print:hidden flex flex-wrap justify-between items-center sticky top-0 z-50 shadow-md gap-2">
         <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
-          <div className="bg-white p-1 rounded-sm shrink-0 w-[160px] h-[42px] flex items-center justify-center border border-slate-300 overflow-visible">
+          <div className="report-logo-plate shrink-0 w-[190px] h-[45px] flex items-center justify-center rounded-sm overflow-visible">
             <img
-              src={GSARITAMA_LOGO_PNG}
+              src={GSARITAMA_HEADER_LOGO}
               alt="GSARITAMA ARQ."
               className="h-full w-full shrink-0 object-contain object-center block"
             />
@@ -124,11 +124,13 @@ export function ConsolidatedReport({ fichas, projectData, onClose }: Consolidate
           {/* Header */}
           <div className="flex items-end justify-between border-b-2 border-slate-800 pb-3 mb-6">
             <div className="flex items-center space-x-3">
-              <img
-                src={GSARITAMA_LOGO_PNG}
-                alt="GSARITAMA ARQ."
-                className="report-document-logo h-12 sm:h-14 w-[220px] shrink-0 object-contain object-center block"
-              />
+              <div className="report-logo-plate flex h-[54px] w-[220px] shrink-0 items-center justify-center overflow-visible">
+                <img
+                  src={GSARITAMA_HEADER_LOGO}
+                  alt="GSARITAMA ARQ."
+                  className="report-document-logo h-full w-full shrink-0 object-contain object-center block"
+                />
+              </div>
               <div className="text-xl font-bold text-[#17365d] uppercase tracking-wide">
                 FICHA DE RELEVAMIENTO ARQUITECTÓNICO
               </div>
