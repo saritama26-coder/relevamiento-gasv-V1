@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from 'react';
-import { WandSparkles, Trash, Camera, Image as ImageIcon } from 'lucide-react';
+import { WandSparkles, Trash, Camera, Image as ImageIcon, Copy, RefreshCw } from 'lucide-react';
 import { Ficha, ProjectData } from '../types';
 import { DataTable } from './DataTable';
 import { useCatalogos } from '../context/CatalogContext';
@@ -30,6 +30,86 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
   const { listas } = useCatalogos();
   const codigoMissing = !String(ficha.codigo || '').trim();
   const ambienteMissing = !String(ficha.ambiente || '').trim();
+  const [observationVariant, setObservationVariant] = useState(0);
+
+  // Offline technical drafting: only uses information already recorded in this ficha.
+  const buildObservationDraft = (variant: number): string => {
+    const identity = [
+      ficha.ambiente ? `ambiente ${ficha.ambiente}` : '',
+      ficha.codigo ? `código ${ficha.codigo}` : '',
+      ficha.bloque ? `bloque ${ficha.bloque}` : '',
+    ].filter(Boolean).join(', ');
+
+    const facts: string[] = [];
+    const dimensions = [
+      ficha.largo ? `largo ${ficha.largo} m` : '',
+      ficha.ancho ? `ancho ${ficha.ancho} m` : '',
+      ficha.altura ? `altura libre ${ficha.altura} m` : '',
+    ].filter(Boolean);
+    if (dimensions.length) facts.push(`Dimensiones anotadas: ${dimensions.join(', ')}.`);
+
+    const area = calculateArea(ficha);
+    const perimeter = calculatePerimeter(ficha);
+    if (area > 0) facts.push(`Área calculada: ${area.toFixed(2)} m².`);
+    if (perimeter > 0) facts.push(`Perímetro calculado: ${perimeter.toFixed(2)} m.`);
+
+    const state = ficha.estadoDimensional || ficha.diagestado;
+    if (state) facts.push(`Estado general registrado: ${state}.`);
+    if (ficha.interv) facts.push(`Intervención recomendada: ${ficha.interv}.`);
+
+    const elements = [
+      ...(Array.isArray(ficha.cons) ? ficha.cons.map((row) => row.elemento || row.descripcion) : []),
+      ...(Array.isArray(ficha.equip) ? ficha.equip.map((row) => row.elemento || row.descripcion) : []),
+      ...(Array.isArray(ficha.elec) ? ficha.elec.map((row) => row.elemento) : []),
+      ...(Array.isArray(ficha.hidro) ? ficha.hidro.map((row) => row.elemento) : []),
+    ].map((value) => String(value || '').trim()).filter(Boolean);
+    if (elements.length) facts.push(`Elementos consignados: ${Array.from(new Set(elements)).slice(0, 4).join(', ')}.`);
+
+    const pathologies = (Array.isArray(ficha.pat) ? ficha.pat : [])
+      .filter((row) => row.elemento || row.patologia)
+      .map((row) => `${row.elemento || 'Elemento'}${row.patologia ? `: ${row.patologia}` : ''}${row.ubicacion ? ` (${row.ubicacion})` : ''}`)
+      .slice(0, 3);
+    if (pathologies.length) facts.push(`Patologías registradas: ${pathologies.join('; ')}.`);
+    if (Array.isArray(ficha.fotos) && ficha.fotos.length) {
+      facts.push(`Registro fotográfico: ${ficha.fotos.length} fotografía(s).`);
+    }
+
+    const openings = [
+      `Observación técnica del ${identity || 'ambiente sin identificación consignada'}.`,
+      `En la ficha correspondiente al ${identity || 'ambiente sin identificación consignada'}, se registran los siguientes datos.`,
+      `Resumen del relevamiento: ${identity || 'ambiente sin identificación consignada'}.`,
+    ];
+    const closing = 'La redacción resume exclusivamente los datos registrados y no sustituye la verificación técnica en campo.';
+    const orderedFacts = variant % 3 === 1 ? [...facts].reverse() : variant % 3 === 2 ? facts.filter((_, index) => index % 2 === 0).concat(facts.filter((_, index) => index % 2 === 1)) : facts;
+    const fullText = [openings[variant % 3], ...orderedFacts, closing].join(' ');
+    return fullText.trim().split(/\\s+/).slice(0, 100).join(' ');
+  };
+
+  const handleGenerateObservation = (regenerate = false) => {
+    if (String(ficha.obs || '').trim() && !window.confirm('La observación general ya contiene texto. ¿Desea reemplazarlo con una nueva propuesta?')) return;
+    const nextVariant = regenerate ? (observationVariant + 1) % 3 : 0;
+    onChange({ obs: buildObservationDraft(nextVariant) });
+    setObservationVariant(nextVariant);
+  };
+
+  const handleCopyObservations = async () => {
+    const text = String(ficha.obs || '').trim();
+    if (!text) {
+      alert('No hay observaciones para copiar.');
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('Observaciones copiadas.');
+    } catch {
+      window.prompt('Copie las observaciones generales:', text);
+    }
+  };
+
+  const handleClearObservations = () => {
+    if (!String(ficha.obs || '').trim()) return;
+    if (window.confirm('¿Desea limpiar las observaciones generales?')) onChange({ obs: '' });
+  };
 
   const [asistente, setAsistente] = useState({
     elemento: '',
@@ -322,11 +402,11 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
           </div>
 
           <div>
-            <label className="text-xs font-bold text-gray-500">Estado general</label>
+            <label className="text-xs font-bold text-gray-500">Estado general de conservación</label>
             <select
               className="w-full p-2 border rounded"
-              value={ficha.estadoDimensional}
-              onChange={(e) => onChange({ estadoDimensional: e.target.value })}
+              value={ficha.estadoDimensional || ficha.diagestado || 'Bueno'}
+              onChange={(e) => onChange({ estadoDimensional: e.target.value, diagestado: e.target.value })}
             >
               {ESTADOS.map((st) => (
                 <option key={st} value={st}>
@@ -336,14 +416,19 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
             </select>
           </div>
 
-          <div className="md:col-span-4">
-            <label className="text-xs font-bold text-gray-500">Observaciones</label>
-            <textarea
+          <div>
+            <label className="text-xs font-bold text-gray-500">Intervención recomendada</label>
+            <select
               className="w-full p-2 border rounded"
-              rows={2}
-              value={ficha.obsdim}
-              onChange={(e) => onChange({ obsdim: e.target.value })}
-            />
+              value={ficha.interv || 'Mantenimiento preventivo'}
+              onChange={(e) => onChange({ interv: e.target.value })}
+            >
+              {INTERVENCIONES.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>
@@ -646,66 +731,47 @@ export function FichaForm({ ficha, projectData, onChange }: FichaFormProps) {
         </div>
       </div>
 
-      {/* 10. Diagnóstico preliminar */}
-      <div className="print-card bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-        <h2 className="text-xl font-semibold text-blue-900 mb-4 border-b pb-2 print:text-lg">
-          10. Diagnóstico preliminar
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label className="text-xs font-bold text-gray-500">Estado</label>
-            <select
-              className="w-full p-2 border rounded"
-              value={ficha.diagestado}
-              onChange={(e) => onChange({ diagestado: e.target.value })}
-            >
-              {ESTADOS.map((st) => (
-                <option key={st} value={st}>
-                  {st}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div>
-            <label className="text-xs font-bold text-gray-500">Intervención</label>
-            <select
-              className="w-full p-2 border rounded"
-              value={ficha.interv}
-              onChange={(e) => onChange({ interv: e.target.value })}
-            >
-              {INTERVENCIONES.map((it) => (
-                <option key={it} value={it}>
-                  {it}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <label className="text-xs font-bold text-gray-500">Diagnóstico / criterio técnico</label>
-        <textarea
-          className="w-full p-2 border rounded"
-          rows={3}
-          value={ficha.diag}
-          onChange={(e) => onChange({ diag: e.target.value })}
-        />
-      </div>
-
-      {/* 11 & 12. Observaciones y Verificación */}
+      {/* 10. Observaciones generales y 11. Verificación */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="print-card bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <h2 className="text-xl font-semibold text-blue-900 mb-4 border-b pb-2 print:text-lg">
-            11. Observaciones generales
+            10. Observaciones generales
           </h2>
           <textarea
-            className="w-full p-2 border rounded h-32"
+            className="w-full p-2 border rounded min-h-40"
+            rows={7}
             value={ficha.obs}
             onChange={(e) => onChange({ obs: e.target.value })}
           />
+
+          <div className="print:hidden mt-3 rounded-lg border border-sky-200 bg-sky-50/70 p-3">
+            <div className="flex items-center gap-2 mb-1.5">
+              <WandSparkles size={16} className="text-blue-700 shrink-0" />
+              <h3 className="text-sm font-bold text-blue-900">Asistente de redacción técnica</h3>
+            </div>
+            <p className="text-xs text-slate-600 mb-3">
+              Genera una propuesta de hasta 100 palabras usando únicamente dimensiones, estado, intervención, elementos, patologías y fotografías ya registrados. Revisa el texto antes de guardar.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button type="button" onClick={() => handleGenerateObservation(false)} className="inline-flex items-center gap-1.5 rounded bg-blue-700 hover:bg-blue-600 px-3 py-2 text-xs font-semibold text-white">
+                <WandSparkles size={14} /> Generar
+              </button>
+              <button type="button" onClick={() => handleGenerateObservation(true)} className="inline-flex items-center gap-1.5 rounded bg-slate-700 hover:bg-slate-600 px-3 py-2 text-xs font-semibold text-white">
+                <RefreshCw size={14} /> Regenerar
+              </button>
+              <button type="button" onClick={handleCopyObservations} className="inline-flex items-center gap-1.5 rounded border border-slate-300 bg-white hover:bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
+                <Copy size={14} /> Copiar
+              </button>
+              <button type="button" onClick={handleClearObservations} className="inline-flex items-center gap-1.5 rounded border border-rose-200 bg-white hover:bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">
+                <Trash size={14} /> Limpiar
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="print-card bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <h2 className="text-xl font-semibold text-blue-900 mb-4 border-b pb-2 print:text-lg">
-            12. Verificación
+            11. Verificación
           </h2>
           <div className="space-y-3">
             <div>
