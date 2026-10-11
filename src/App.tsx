@@ -476,7 +476,7 @@ export default function App() {
         <header className="bg-[#17365d] text-white px-3 sm:px-5 py-2.5 sm:py-3 shadow-md print:hidden sticky top-0 z-50">
           <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 sm:gap-x-4 max-w-7xl mx-auto">
             {/* Left: Architect Details & Title */}
-            <div className="flex items-center space-x-2.5 sm:space-x-4 min-w-0 flex-[1_1_260px]">
+            <div className="flex items-center space-x-2.5 sm:space-x-4 min-w-0 flex-[0_1_520px]">
               <div className="gasv-mobile-icon-lockup flex items-center shrink-0">
                 <img
                   src={`${import.meta.env.BASE_URL}gasv-logo.png`}
@@ -485,8 +485,8 @@ export default function App() {
                 />
               </div>
 
-              <div className="min-w-0 border-l border-white/30 pl-2.5 sm:pl-3.5">
-                <h1 className="text-xs sm:text-base font-bold tracking-wider leading-tight text-white uppercase truncate">
+              <div className="min-w-0 sm:min-w-[290px] border-l border-white/30 pl-2.5 sm:pl-3.5">
+                <h1 className="text-xs sm:text-base font-bold tracking-wider leading-tight text-white uppercase truncate sm:overflow-visible sm:text-clip">
                   RELEVAMIENTO ARQUITECTÓNICO
                 </h1>
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 mt-0.5">
@@ -550,7 +550,8 @@ export default function App() {
               </button>
 
               {/* Desktop Groups (Visible from lg: 1024px) */}
-              <div className="hidden lg:flex flex-wrap items-center justify-end gap-2 min-w-0">
+              <div className="hidden lg:flex flex-col items-end gap-2 min-w-0 w-full">
+                <div className="flex items-center justify-end gap-2 w-full">
                 {/* GRUPO 1: Acciones principales: [Nuevo] | [Guardar] */}
                 <div className="flex items-center bg-black/20 p-0.5 rounded-md border border-white/10 space-x-1">
                   <button
@@ -608,6 +609,8 @@ export default function App() {
                   </button>
                 </div>
 
+                </div>
+                <div className="flex items-center justify-end gap-2 w-full">
                 {/* GRUPO 3: Gestión y exportación: [Importar] | [Exportar] | [CSV] | [PDF] | [Bajar .HTML] */}
                 <div className="flex items-center bg-black/20 p-0.5 rounded-md border border-white/10 space-x-1">
                   <button
@@ -686,6 +689,7 @@ export default function App() {
                   >
                     <Printer size={14} className="mr-1 shrink-0" /> PDF
                   </button>
+                </div>
                 </div>
               </div>
 
