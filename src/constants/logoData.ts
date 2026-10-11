@@ -1,5 +1,4 @@
-// Usa el mismo logotipo horizontal publicado que aparece en la cabecera principal.
-// Se elimina la antigua imagen PNG incrustada, cuyo contenido se mostraba recortado
-// en la vista consolidada y al imprimir/exportar a PDF.
+// Logotipo horizontal negro sobre fondo blanco para informes, manuales e impresión.
+// No utilizar gasv-logo.png aquí: esa variante es blanca y queda invisible sobre blanco.
 const baseUrl = (import.meta.env?.BASE_URL || '/').replace(/\/+$/, '');
-export const GSARITAMA_LOGO_PNG = `${baseUrl}/gasv-logo.png`;
+export const GSARITAMA_LOGO_PNG = `${baseUrl}/gsaritama_official.svg`;
